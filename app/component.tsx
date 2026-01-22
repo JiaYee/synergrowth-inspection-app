@@ -33,7 +33,7 @@ export default function ComponentScreen() {
       <View style={styles.content}>
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: MOCK_PRODUCT_IMAGE }}
+            source={MOCK_PRODUCT_IMAGE}
             style={styles.productImage}
             resizeMode="contain"
           />

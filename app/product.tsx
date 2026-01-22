@@ -17,7 +17,7 @@ export default function ProductScreen() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Image
-          source={{ uri: MOCK_PRODUCT_IMAGE }}
+          source={MOCK_PRODUCT_IMAGE}
           style={styles.productImage}
           resizeMode="contain"
         />

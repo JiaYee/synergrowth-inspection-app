@@ -49,5 +49,5 @@ export const MOCK_COMPONENTS: Component[] = [
   },
 ];
 
-// Mock product image URL (using a placeholder for POC)
-export const MOCK_PRODUCT_IMAGE = 'https://via.placeholder.com/400x300/4CAF50/FFFFFF?text=Product+Image';
+// Mock product image
+export const MOCK_PRODUCT_IMAGE = require('@/assets/images/fce55b4f-896e-4763-83c2-1bc574fc6926.jpg');

@@ -1,5 +1,5 @@
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { router } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function WelcomeScreen() {
   const handleEnter = () => {
@@ -10,7 +10,7 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>
-          Automated{'\n'}Inspection{'\n'}System
+          Synergrowth{'\n'}Automated{'\n'}Inspection{'\n'}System
         </Text>
         
         <TouchableOpacity style={styles.button} onPress={handleEnter}>
