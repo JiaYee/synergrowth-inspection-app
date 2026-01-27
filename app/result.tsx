@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, Alert, ActivityIndicator, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
-import { uploadImage } from '@/services/api';
 
 export default function ResultScreen() {
   const params = useLocalSearchParams();
@@ -12,30 +11,13 @@ export default function ResultScreen() {
   const componentId = params.componentId as string;
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { inspectionData, components, currentComponentIndex, setCurrentComponentIndex, reset } = useInspection();
+  const { components, currentComponentIndex, setCurrentComponentIndex, reset } = useInspection();
 
   const handleFeedback = async (humanResult: 'PASS' | 'FAIL') => {
-    if (!inspectionData) {
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0];
-
-      // Send feedback back to server
-      await uploadImage(imageUri, {
-        product_model: inspectionData.product_model,
-        production_line: inspectionData.production_line,
-        station_number: inspectionData.station_number,
-        production_shift: inspectionData.production_shift,
-        operator: inspectionData.operator,
-        component: componentId,
-        timestamp: timestamp,
-        device_id: inspectionData.device_id,
-        machine_result: machineResult,
-        human_result: humanResult,
-      });
+      // Note: Feedback submission removed as new API doesn't support it
+      // Just proceed with navigation after user confirmation
 
       // Move to next component or finish
       if (currentComponentIndex < components.length - 1) {
@@ -51,9 +33,6 @@ export default function ResultScreen() {
           },
         ]);
       }
-    } catch (error) {
-      console.error('Error submitting feedback:', error);
-      Alert.alert('Error', 'Failed to submit feedback. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

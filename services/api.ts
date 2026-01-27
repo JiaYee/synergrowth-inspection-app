@@ -1,5 +1,6 @@
 // API service for communicating with backend
 const API_BASE_URL = 'https://synergrowth-python-api.onrender.com';
+const PREDICT_API_URL = 'https://deep-learning-celestica-senai.onrender.com/predict';
 
 export interface UploadMetadata {
   product_model: string;
@@ -17,6 +18,12 @@ export interface UploadMetadata {
 export interface UploadResponse {
   machine_result: 'PASS' | 'FAIL';
   confidence: number;
+}
+
+export interface PredictResponse {
+  filename: string;
+  prediction: 'pass' | 'fail';
+  probability: number;
 }
 
 export async function uploadImage(
@@ -59,6 +66,34 @@ export async function uploadImage(
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`Upload failed: ${response.statusText} - ${errorText}`);
+  }
+  
+  return response.json();
+}
+
+export async function predictImage(
+  imageUri: string
+): Promise<PredictResponse> {
+  const formData = new FormData();
+  
+  // Add image file - React Native FormData format
+  // The new API expects the field name to be 'file'
+  const imageFile = {
+    uri: imageUri,
+    type: 'image/jpeg',
+    name: 'photo.jpg',
+  } as any;
+  formData.append('file', imageFile);
+  
+  const response = await fetch(PREDICT_API_URL, {
+    method: 'POST',
+    body: formData,
+    // Don't set Content-Type header - let fetch set it with boundary
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Prediction failed: ${response.statusText} - ${errorText}`);
   }
   
   return response.json();

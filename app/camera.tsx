@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator, Text } fr
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
-import { uploadImage } from '@/services/api';
+import { predictImage } from '@/services/api';
 import * as Device from 'expo-device';
 
 export default function CameraScreen() {
@@ -44,28 +44,21 @@ export default function CameraScreen() {
         throw new Error('Failed to capture photo');
       }
 
-      // Prepare metadata
       const currentComponent = components[currentComponentIndex];
-      const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0];
 
-      // Upload image and get prediction
-      const response = await uploadImage(photo.uri, {
-        product_model: inspectionData.product_model,
-        production_line: inspectionData.production_line,
-        station_number: inspectionData.station_number,
-        production_shift: inspectionData.production_shift,
-        operator: inspectionData.operator,
-        component: currentComponent.id,
-        timestamp: timestamp,
-        device_id: inspectionData.device_id,
-      });
+      // Get prediction from new API
+      const response = await predictImage(photo.uri);
+
+      // Map response: prediction ("pass"/"fail") to uppercase, probability to confidence
+      const machineResult = response.prediction.toUpperCase() as 'PASS' | 'FAIL';
+      const confidence = response.probability;
 
       // Navigate to result screen with the prediction
       router.push({
         pathname: '/result',
         params: {
-          machineResult: response.machine_result,
-          confidence: response.confidence.toString(),
+          machineResult: machineResult,
+          confidence: confidence.toString(),
           imageUri: photo.uri,
           componentId: currentComponent.id,
         },
