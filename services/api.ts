@@ -97,10 +97,17 @@ export async function predictImage(
   } as any;
   formData.append('file', imageFile);
   
-  // Log request
+  // Log request payload
+  const payload = {
+    file: {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    },
+  };
   console.log('[API] POST /predict');
   console.log('[API] URL:', PREDICT_API_URL);
-  console.log('[API] Request: file (image)');
+  console.log('[API] Request payload:', JSON.stringify(payload, null, 2));
   
   const response = await fetch(PREDICT_API_URL, {
     method: 'POST',
@@ -145,10 +152,18 @@ export async function submitInspectionResult(
   formData.append('machine_prediction', metadata.machine_prediction);
   formData.append('human_prediction', metadata.human_prediction);
   
-  // Log request
+  // Log request payload
+  const payload = {
+    file: {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    },
+    ...metadata,
+  };
   console.log('[API] POST /final');
   console.log('[API] URL:', FINAL_API_URL);
-  console.log('[API] Request metadata:', JSON.stringify(metadata, null, 2));
+  console.log('[API] Request payload:', JSON.stringify(payload, null, 2));
   
   const response = await fetch(FINAL_API_URL, {
     method: 'POST',
