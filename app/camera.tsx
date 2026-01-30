@@ -49,9 +49,9 @@ export default function CameraScreen() {
       // Get prediction from new API
       const response = await predictImage(photo.uri);
 
-      // Map response: prediction ("pass"/"fail") to uppercase, probability to confidence
+      // Map response: prediction ("pass"/"fail") to uppercase, score to confidence
       const machineResult = response.prediction.toUpperCase() as 'PASS' | 'FAIL';
-      const confidence = response.probability;
+      const confidence = response.score;
 
       // Navigate to result screen with the prediction
       router.push({

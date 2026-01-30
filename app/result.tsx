@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, Alert, ActivityIndicator, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
+import { submitInspectionResult } from '@/services/api';
 
 export default function ResultScreen() {
   const params = useLocalSearchParams();
@@ -11,13 +12,41 @@ export default function ResultScreen() {
   const componentId = params.componentId as string;
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { components, currentComponentIndex, setCurrentComponentIndex, reset } = useInspection();
+  const { inspectionData, components, currentComponentIndex, setCurrentComponentIndex, reset } = useInspection();
 
   const handleFeedback = async (humanResult: 'PASS' | 'FAIL') => {
+    if (!inspectionData) {
+      Alert.alert('Error', 'Inspection data not found.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // Note: Feedback submission removed as new API doesn't support it
-      // Just proceed with navigation after user confirmation
+      // Format current datetime as "YYYY-MM-DD HH:MM:SS"
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const currentDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+      // Map fields from app format to backend format
+      const metadata = {
+        product_code: inspectionData.product_model,
+        production_line: inspectionData.production_line,
+        line_station: inspectionData.station_number,
+        component_number: componentId,
+        operator_id: inspectionData.operator,
+        current_datetime: currentDatetime,
+        device_id: inspectionData.device_id,
+        machine_prediction: machineResult.toLowerCase() as 'pass' | 'fail',
+        human_prediction: humanResult.toLowerCase() as 'pass' | 'fail',
+      };
+
+      // Submit inspection result to backend
+      await submitInspectionResult(imageUri, metadata);
 
       // Move to next component or finish
       if (currentComponentIndex < components.length - 1) {
@@ -33,6 +62,9 @@ export default function ResultScreen() {
           },
         ]);
       }
+    } catch (error) {
+      console.error('Error submitting inspection result:', error);
+      Alert.alert('Error', 'Failed to submit inspection result. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
