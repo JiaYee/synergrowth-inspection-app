@@ -1,7 +1,11 @@
 // API service for communicating with backend
+import { DEMO_MODE } from '@/constants/config';
+
 const API_BASE_URL = 'https://synergrowth-python-api.onrender.com';
 const PREDICT_API_URL = 'https://deep-learning-celestica-senai.onrender.com/predict';
 const FINAL_API_URL = 'https://deep-learning-celestica-senai.onrender.com/final';
+
+let predictCallCount = 0;
 
 export interface UploadMetadata {
   product_model: string;
@@ -43,6 +47,17 @@ export async function uploadImage(
   imageUri: string,
   metadata: UploadMetadata
 ): Promise<UploadResponse> {
+  if (DEMO_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const score = 0.9 + Math.random() * 0.1;
+    const result: UploadResponse = {
+      machine_result: 'PASS',
+      confidence: score,
+    };
+    console.log('[DEMO] uploadImage mocked:', result);
+    return result;
+  }
+
   const formData = new FormData();
   
   // Add image file - React Native FormData format
@@ -87,6 +102,16 @@ export async function uploadImage(
 export async function predictImage(
   imageUri: string
 ): Promise<PredictResponse> {
+  if (DEMO_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    predictCallCount += 1;
+    const score = 0.9 + Math.random() * 0.1;
+    const prediction = predictCallCount === 1 ? 'fail' : 'pass';
+    const result: PredictResponse = { prediction, score };
+    console.log('[DEMO] predictImage mocked:', result);
+    return result;
+  }
+
   const formData = new FormData();
   
   // Add image file - React Native FormData format
@@ -132,6 +157,13 @@ export async function submitInspectionResult(
   imageUri: string,
   metadata: FinalSubmitMetadata
 ): Promise<{ status: string }> {
+  if (DEMO_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const result = { status: 'success' };
+    console.log('[DEMO] submitInspectionResult mocked:', result);
+    return result;
+  }
+
   const formData = new FormData();
   
   // Add image file - React Native FormData format

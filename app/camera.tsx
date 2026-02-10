@@ -1,16 +1,90 @@
-import { useState, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator, Text, Image } from 'react-native';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { router } from 'expo-router';
-import { useInspection } from '@/services/inspection-context';
-import { predictImage } from '@/services/api';
+import { predictImage } from "@/services/api";
+import { useInspection } from "@/services/inspection-context";
+import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import { manipulateAsync } from "expo-image-manipulator";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+const GUIDE_BOX_WIDTH_RATIO = 0.7; // 70% of preview width
+
+async function cropToGuideBox(
+  uri: string,
+  photoWidth: number,
+  photoHeight: number,
+  previewWidth: number,
+  previewHeight: number,
+): Promise<string> {
+  if (
+    previewWidth <= 0 ||
+    previewHeight <= 0 ||
+    photoWidth <= 0 ||
+    photoHeight <= 0
+  ) {
+    return uri;
+  }
+
+  const boxSize = previewWidth * GUIDE_BOX_WIDTH_RATIO;
+  const originX = (previewWidth - boxSize) / 2;
+  const originY = (previewHeight - boxSize) / 2;
+
+  // Camera preview uses "cover" mode: photo fills view, excess cropped. This is the display scale.
+  const displayScale = Math.max(
+    previewWidth / photoWidth,
+    previewHeight / photoHeight,
+  );
+  const visibleWidth = previewWidth / displayScale;
+  const visibleHeight = previewHeight / displayScale;
+  const offsetX = (photoWidth - visibleWidth) / 2;
+  const offsetY = (photoHeight - visibleHeight) / 2;
+
+  const cropOriginX = Math.max(0, Math.round(offsetX + originX / displayScale));
+  const cropOriginY = Math.max(0, Math.round(offsetY + originY / displayScale));
+  const cropWidth = Math.min(
+    photoWidth - cropOriginX,
+    Math.round(boxSize / displayScale),
+  );
+  const cropHeight = Math.min(
+    photoHeight - cropOriginY,
+    Math.round(boxSize / displayScale),
+  );
+
+  if (cropWidth <= 0 || cropHeight <= 0) {
+    return uri;
+  }
+
+  const result = await manipulateAsync(uri, [
+    {
+      crop: {
+        originX: cropOriginX,
+        originY: cropOriginY,
+        width: cropWidth,
+        height: cropHeight,
+      },
+    },
+  ]);
+
+  return result.uri;
+}
 
 export default function CameraScreen() {
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null);
+  const previewLayoutRef = useRef<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
   const { inspectionData, components, currentComponentIndex } = useInspection();
 
   if (!permission) {
@@ -20,7 +94,9 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
         <TouchableOpacity style={styles.button} onPress={requestPermission}>
           <Text style={styles.buttonText}>Grant Permission</Text>
         </TouchableOpacity>
@@ -29,7 +105,11 @@ export default function CameraScreen() {
   }
 
   const handleTakePicture = async () => {
-    if (!cameraRef.current || !inspectionData || !components[currentComponentIndex]) {
+    if (
+      !cameraRef.current ||
+      !inspectionData ||
+      !components[currentComponentIndex]
+    ) {
       return;
     }
 
@@ -41,34 +121,54 @@ export default function CameraScreen() {
       });
 
       if (!photo?.uri) {
-        throw new Error('Failed to capture photo');
+        throw new Error("Failed to capture photo");
       }
 
+      const { width: photoWidth, height: photoHeight } = photo;
+      const { width: previewWidth, height: previewHeight } =
+        previewLayoutRef.current;
+
+      const uriToUse =
+        photoWidth > 0 &&
+        photoHeight > 0 &&
+        previewWidth > 0 &&
+        previewHeight > 0
+          ? await cropToGuideBox(
+              photo.uri,
+              photoWidth,
+              photoHeight,
+              previewWidth,
+              previewHeight,
+            )
+          : photo.uri;
+
       // Show preview immediately before API call
-      setCapturedPhotoUri(photo.uri);
+      setCapturedPhotoUri(uriToUse);
 
       const currentComponent = components[currentComponentIndex];
 
       // Get prediction from API (user sees photo + loading overlay while waiting)
-      const response = await predictImage(photo.uri);
+      const response = await predictImage(uriToUse);
 
       // Map response: prediction ("pass"/"fail") to uppercase, score to confidence
-      const machineResult = response.prediction.toUpperCase() as 'PASS' | 'FAIL';
+      const machineResult = response.prediction.toUpperCase() as
+        | "PASS"
+        | "FAIL";
       const confidence = response.score;
 
       // Navigate to result screen with the prediction
       router.push({
-        pathname: '/result',
+        pathname: "/result",
         params: {
           machineResult: machineResult,
           confidence: confidence.toString(),
-          imageUri: photo.uri,
+          imageUri: uriToUse,
           componentId: currentComponent.id,
         },
       });
     } catch (error) {
-      console.error('Error capturing/uploading photo:', error);
-      Alert.alert('Error', 'Failed to analyze photo. Please retake.');
+      console.error("Error capturing/uploading photo:", error);
+      Alert.alert("Error", "Failed to analyze photo. Please retake.");
     } finally {
       setIsCapturing(false);
     }
@@ -96,7 +196,10 @@ export default function CameraScreen() {
         )}
         {!isCapturing && (
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.retakeButton} onPress={handleRetake}>
+            <TouchableOpacity
+              style={styles.retakeButton}
+              onPress={handleRetake}
+            >
               <Text style={styles.retakeButtonText}>Retake</Text>
             </TouchableOpacity>
           </View>
@@ -108,20 +211,25 @@ export default function CameraScreen() {
   // Live camera view
   return (
     <View style={styles.container}>
-      <CameraView
-        ref={cameraRef}
-        style={styles.camera}
-        facing={facing}
-      >
+      <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
         {/* Centering guide overlay - red border */}
-        <View style={styles.overlay}>
+        <View
+          style={styles.overlay}
+          onLayout={(e) => {
+            const { width, height } = e.nativeEvent.layout;
+            previewLayoutRef.current = { width, height };
+          }}
+        >
           <View style={styles.guideBox} />
         </View>
 
         {/* Take Picture Button */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.captureButton, isCapturing && styles.captureButtonDisabled]}
+            style={[
+              styles.captureButton,
+              isCapturing && styles.captureButtonDisabled,
+            ]}
             onPress={handleTakePicture}
             disabled={isCapturing}
           >
@@ -140,13 +248,13 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   permissionContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   camera: {
@@ -154,85 +262,85 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   guideBox: {
-    width: '70%',
+    width: "70%",
     aspectRatio: 1,
     borderWidth: 3,
-    borderColor: '#FF0000',
-    backgroundColor: 'transparent',
+    borderColor: "#FF0000",
+    backgroundColor: "transparent",
   },
   buttonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 40,
     left: 0,
     right: 0,
-    alignItems: 'center',
+    alignItems: "center",
   },
   captureButton: {
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     paddingHorizontal: 40,
     paddingVertical: 16,
     borderRadius: 8,
     minWidth: 200,
-    alignItems: 'center',
+    alignItems: "center",
   },
   captureButtonDisabled: {
     opacity: 0.6,
   },
   captureButtonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   previewImage: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 12,
   },
   loadingText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   retakeButton: {
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     paddingHorizontal: 40,
     paddingVertical: 16,
     borderRadius: 8,
     minWidth: 200,
-    alignItems: 'center',
+    alignItems: "center",
   },
   retakeButtonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   message: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
-    color: '#000000',
+    color: "#000000",
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     paddingHorizontal: 40,
     paddingVertical: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
