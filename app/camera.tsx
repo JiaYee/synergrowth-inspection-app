@@ -1,15 +1,15 @@
 import { useState, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Alert, ActivityIndicator, Text, Image } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
 import { predictImage } from '@/services/api';
-import * as Device from 'expo-device';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [isCapturing, setIsCapturing] = useState(false);
+  const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null);
   const { inspectionData, components, currentComponentIndex } = useInspection();
 
@@ -44,9 +44,12 @@ export default function CameraScreen() {
         throw new Error('Failed to capture photo');
       }
 
+      // Show preview immediately before API call
+      setCapturedPhotoUri(photo.uri);
+
       const currentComponent = components[currentComponentIndex];
 
-      // Get prediction from new API
+      // Get prediction from API (user sees photo + loading overlay while waiting)
       const response = await predictImage(photo.uri);
 
       // Map response: prediction ("pass"/"fail") to uppercase, score to confidence
@@ -65,12 +68,44 @@ export default function CameraScreen() {
       });
     } catch (error) {
       console.error('Error capturing/uploading photo:', error);
-      Alert.alert('Error', 'Failed to capture or upload photo. Please try again.');
+      Alert.alert('Error', 'Failed to analyze photo. Please retake.');
     } finally {
       setIsCapturing(false);
     }
   };
 
+  const handleRetake = () => {
+    setCapturedPhotoUri(null);
+    setIsCapturing(false);
+  };
+
+  // Photo preview screen (shown immediately after capture, while API loads)
+  if (capturedPhotoUri) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{ uri: capturedPhotoUri }}
+          style={styles.previewImage}
+          resizeMode="contain"
+        />
+        {isCapturing && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#FFF" />
+            <Text style={styles.loadingText}>Analyzing...</Text>
+          </View>
+        )}
+        {!isCapturing && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.retakeButton} onPress={handleRetake}>
+              <Text style={styles.retakeButtonText}>Retake</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  }
+
+  // Live camera view
   return (
     <View style={styles.container}>
       <CameraView
@@ -148,6 +183,36 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   captureButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  previewImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  retakeButton: {
+    backgroundColor: '#000000',
+    paddingHorizontal: 40,
+    paddingVertical: 16,
+    borderRadius: 8,
+    minWidth: 200,
+    alignItems: 'center',
+  },
+  retakeButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: '600',
