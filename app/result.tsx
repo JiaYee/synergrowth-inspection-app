@@ -97,7 +97,7 @@ export default function ResultScreen() {
           Result: {machineResult}
         </Text>
         <Text style={styles.confidenceText}>
-          Confidence: {(confidence * 100).toFixed(0)}%
+          Confidence: {(Math.floor(confidence * 10000) / 100).toFixed(2)}%
         </Text>
 
         {/* Feedback Buttons */}
