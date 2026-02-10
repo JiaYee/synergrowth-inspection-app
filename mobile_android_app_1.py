@@ -1,3 +1,4 @@
+
 # -------------------------------------------------------------------------------------------------------------
 # This code will simulate:
 # [a] Operator enter metadata on Android mobile app
@@ -15,7 +16,12 @@ server_ip = "deep-learning-celestica-senai.onrender.com"
 url = f"https://{server_ip}/predict"
 
 
-image_path = "junction_box_a_station_2_component_1_08.jpg"
+image_path = "ANDELI_DZ47_63_4000A_S02_C02_FAIL_01.jpg"
+# image_path = "ANDELI_DZ47_63_4000A_S02_C02_FAIL_07.jpg"
+# image_path = "ANDELI_DZ47_63_4000A_S02_C02_FAIL_13.jpg"
+# image_path = "ANDELI_DZ47_63_4000A_S02_C02_PASS_01.jpg"
+# image_path = "ANDELI_DZ47_63_4000A_S02_C02_PASS_04.jpg"
+# image_path = "ANDELI_DZ47_63_4000A_S02_C02_PASS_10.jpg"
 
 
 def send_image():
