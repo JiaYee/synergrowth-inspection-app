@@ -37,6 +37,7 @@ export default function ResultScreen() {
         product_code: inspectionData.product_model,
         production_line: inspectionData.production_line,
         line_station: inspectionData.station_number,
+        production_shift: inspectionData.production_shift,
         component_number: componentId,
         operator_id: inspectionData.operator,
         current_datetime: currentDatetime,

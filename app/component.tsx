@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
-import { MOCK_PRODUCT_IMAGE } from '@/constants/mock-data';
+import { MOCK_PRODUCT_WITH_RED_BOX_IMAGE } from '@/constants/mock-data';
 
 export default function ComponentScreen() {
   const { components, currentComponentIndex, setCurrentComponentIndex } = useInspection();
@@ -33,21 +33,9 @@ export default function ComponentScreen() {
       <View style={styles.content}>
         <View style={styles.imageContainer}>
           <Image
-            source={MOCK_PRODUCT_IMAGE}
+            source={MOCK_PRODUCT_WITH_RED_BOX_IMAGE}
             style={styles.productImage}
             resizeMode="contain"
-          />
-          {/* Red highlight box overlay */}
-          <View
-            style={[
-              styles.highlightBox,
-              {
-                left: currentComponent.coordinates.x1,
-                top: currentComponent.coordinates.y1,
-                width: currentComponent.coordinates.x2 - currentComponent.coordinates.x1,
-                height: currentComponent.coordinates.y2 - currentComponent.coordinates.y1,
-              },
-            ]}
           />
         </View>
         
@@ -80,19 +68,12 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '90%',
     height: 400,
-    position: 'relative',
     marginBottom: 20,
   },
   productImage: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
-  },
-  highlightBox: {
-    position: 'absolute',
-    borderWidth: 3,
-    borderColor: '#FF0000',
-    backgroundColor: 'transparent',
   },
   label: {
     fontSize: 24,

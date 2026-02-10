@@ -49,5 +49,6 @@ export const MOCK_COMPONENTS: Component[] = [
   },
 ];
 
-// Mock product image
-export const MOCK_PRODUCT_IMAGE = require('@/assets/images/fce55b4f-896e-4763-83c2-1bc574fc6926.jpg');
+// Mock product images
+export const MOCK_PRODUCT_IMAGE = require('@/assets/images/product.png');
+export const MOCK_PRODUCT_WITH_RED_BOX_IMAGE = require('@/assets/images/product-with-red-box.png');

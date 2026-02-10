@@ -30,6 +30,7 @@ export interface FinalSubmitMetadata {
   product_code: string;
   production_line: string;
   line_station: string;
+  production_shift: string;
   component_number: string;
   operator_id: string;
   current_datetime: string;  // Format: "YYYY-MM-DD HH:MM:SS"
@@ -145,6 +146,7 @@ export async function submitInspectionResult(
   formData.append('product_code', metadata.product_code);
   formData.append('production_line', metadata.production_line);
   formData.append('line_station', metadata.line_station);
+  formData.append('production_shift', metadata.production_shift);
   formData.append('component_number', metadata.component_number);
   formData.append('operator_id', metadata.operator_id);
   formData.append('current_datetime', metadata.current_datetime);
