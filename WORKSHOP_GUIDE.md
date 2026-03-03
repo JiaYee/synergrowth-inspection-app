@@ -14,6 +14,7 @@
 - [Day 1 — Session 2: Project Structure & Welcome Screen Labs](#day-1--session-2-project-structure--welcome-screen-labs)
 - [Day 2 — Session 1: Selection Screen & Mock Data Labs](#day-2--session-1-selection-screen--mock-data-labs)
 - [Day 2 — Session 2: Product, Component, Camera & Result Screen Labs](#day-2--session-2-product-component-camera--result-screen-labs)
+- [Day 2 — Session 3: New Features, Logo & Saving Your Work](#day-2--session-3-new-features-logo--saving-your-work)
 - [Quick Reference Cheat Sheet](#quick-reference-cheat-sheet)
 
 ---
@@ -1622,6 +1623,379 @@ You now understand:
 
 ---
 
+# Day 2 — Session 3: New Features, Logo & Saving Your Work
+
+> **Goal:** Add a logo to the Welcome screen, create a brand-new screen, add a button that navigates to it, and learn how to save your work with Git & GitHub.
+
+---
+
+### Lab 42: Add a Logo to the Welcome Screen
+
+**File:** `app/(tabs)/index.tsx`
+
+The `Image` component works just like `Text` or `View` — it's a building block that displays a picture. Let's add the app icon as a logo on the Welcome screen.
+
+1. First, add `Image` to the import line at the top of the file. Find:
+
+```tsx
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+```
+
+2. Add `Image` to the list:
+
+```tsx
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+```
+
+3. Now add the logo image above the title. Find the `<Text style={styles.title}>` line and add an `Image` element above it:
+
+```tsx
+<Image
+  source={require('@/assets/images/icon.png')}
+  style={styles.logo}
+/>
+
+<Text style={styles.title}>
+  My Factory{'\n'}Inspector
+</Text>
+```
+
+> `require()` tells React Native to load a local image file. The `@/` prefix means "start from the project root."
+
+4. Add the `logo` style in the `StyleSheet.create({...})` section (add it before the `title` style):
+
+```tsx
+logo: {
+  width: 120,
+  height: 120,
+  marginBottom: 30,
+  resizeMode: 'contain',
+},
+```
+
+> `resizeMode: 'contain'` makes the image fit inside the given width and height without cropping or stretching.
+
+5. **Save** and check your phone — you now have a logo above the title!
+
+> **Try it:** Change `width` and `height` to `160` to make the logo bigger. Or try `borderRadius: 60` to make it circular!
+
+Learn more: [Image docs](https://reactnative.dev/docs/image)
+
+---
+
+### Lab 43: Add a New Button to the Welcome Screen
+
+**File:** `app/(tabs)/index.tsx`
+
+Let's add a second button below the existing one. This new button will have an **outline style** (transparent background with a border) to look different from the primary button.
+
+1. Find the existing button:
+
+```tsx
+<TouchableOpacity style={styles.button} onPress={handleEnter}>
+  <Text style={styles.buttonText}>Start Inspection</Text>
+</TouchableOpacity>
+```
+
+2. Add a second button right below it:
+
+```tsx
+<TouchableOpacity style={styles.button} onPress={handleEnter}>
+  <Text style={styles.buttonText}>Start Inspection</Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.secondaryButton}>
+  <Text style={styles.secondaryButtonText}>About</Text>
+</TouchableOpacity>
+```
+
+3. Add the new styles in the `StyleSheet.create({...})` section:
+
+```tsx
+secondaryButton: {
+  marginTop: 16,
+  paddingVertical: 16,
+  borderRadius: 30,
+  width: '90%',
+  alignItems: 'center',
+  borderWidth: 2,
+  borderColor: '#1565C0',
+  backgroundColor: 'transparent',
+},
+secondaryButtonText: {
+  color: '#1565C0',
+  fontSize: 18,
+  fontWeight: '600',
+},
+```
+
+4. **Save** and check your phone — you now have a second "About" button with an outline style!
+
+> Notice the new button doesn't do anything yet when you tap it. We'll fix that in Lab 45 after creating the page it should go to.
+
+---
+
+### Lab 44: Create a New Screen (About Page)
+
+In Expo Router, **every file in the `app/` folder automatically becomes a screen**. So creating a new screen is as simple as creating a new file!
+
+**Step A — Create the file**
+
+1. Right-click the `app/` folder in your editor and choose **New File**.
+2. Name it exactly: `about.tsx`
+3. Paste the following code into the new file:
+
+```tsx
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function AboutScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>About This App</Text>
+
+      <Text style={styles.description}>
+        This is an automated inspection system{'\n'}
+        built with React Native and Expo.
+      </Text>
+
+      <Text style={styles.version}>Version 1.0.0</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#1565C0',
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#666666',
+    lineHeight: 24,
+  },
+  version: {
+    fontSize: 14,
+    color: '#999999',
+  },
+});
+```
+
+4. **Save** the file.
+
+**Step B — Register the screen in the navigation**
+
+**File:** `app/_layout.tsx`
+
+Every new screen must also be registered in the navigation layout so the app knows it exists.
+
+1. Open `app/_layout.tsx`.
+2. Find the last `Stack.Screen` entry:
+
+```tsx
+<Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+```
+
+3. Add a new line right below it for the About screen:
+
+```tsx
+<Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+<Stack.Screen name="about" options={{ title: 'About' }} />
+```
+
+4. **Save** the file.
+
+> You've created a brand-new screen and registered it in the app's navigation! The screen exists but nothing links to it yet — that's what Lab 45 is for.
+
+---
+
+### Lab 45: Connect the Button to Navigate to the New Page
+
+**File:** `app/(tabs)/index.tsx`
+
+Now let's wire up the "About" button from Lab 43 so it navigates to the About screen from Lab 44.
+
+1. Find the `handleEnter` function near the top of the file:
+
+```tsx
+const handleEnter = () => {
+  router.push('/selection');
+};
+```
+
+2. Add a new handler function right below it:
+
+```tsx
+const handleEnter = () => {
+  router.push('/selection');
+};
+
+const handleAbout = () => {
+  router.push('/about');
+};
+```
+
+> `router.push('/about')` tells Expo Router to navigate to `app/about.tsx`. The `/about` path matches the file name — this is how file-based routing works.
+
+3. Now find the "About" button you added in Lab 43 and connect the handler using `onPress`:
+
+```tsx
+<TouchableOpacity style={styles.secondaryButton} onPress={handleAbout}>
+  <Text style={styles.secondaryButtonText}>About</Text>
+</TouchableOpacity>
+```
+
+4. **Save** and test on your phone:
+   - Tap the **About** button on the Welcome screen
+   - You should see the About screen with the title, description, and version number
+   - Tap the **back arrow** in the header bar to return to the Welcome screen
+
+> **You just built a complete feature from scratch:** a new button, a new page, and the navigation between them. This is the same pattern used to build every screen in the app!
+
+---
+
+### Saving Your Work with Git & GitHub
+
+So far you've made many changes to the app, but they only exist on your computer. Let's learn how to **save your code online** so you never lose it and can share it with others.
+
+#### What Are Git and GitHub?
+
+- **Git** is a tool that tracks changes in your code (like "save points" in a video game). It runs locally on your computer.
+- **GitHub** is a website that stores your Git repositories online. Think of it as Google Drive — but for code.
+
+```
+Your Computer (Git)  ──push──▶  GitHub.com (online backup)
+                     ◀──pull──
+```
+
+#### Step 1: Create a GitHub Account
+
+If you don't already have one:
+
+1. Go to [github.com](https://github.com/) and click **Sign up**.
+2. Enter your email address, create a password, and choose a username.
+3. Complete the email verification step.
+4. You now have a GitHub account!
+
+> **Already have an account?** Skip to Step 2.
+
+#### Step 2: Create a New Repository on GitHub
+
+A "repository" (or "repo") is a project folder on GitHub.
+
+1. Log in to [github.com](https://github.com/).
+2. Click the **+** button in the top-right corner → **New repository**.
+3. Fill in:
+   - **Repository name:** `my-inspection-app` (or any name you like)
+   - **Description:** (optional) `My factory inspection app`
+   - Choose **Public** or **Private**
+   - **Do NOT** check "Add a README file" (we already have code to push)
+4. Click **Create repository**.
+5. You will see a setup page with commands — **keep this page open**, we'll need the URL.
+
+#### Step 3: Check What You've Changed
+
+In your terminal (make sure you are inside the project folder), run:
+
+```bash
+git status
+```
+
+This shows all the files you have modified or created. Modified files appear in **red**.
+
+#### Step 4: Stage Your Changes
+
+"Staging" means telling Git which changes you want to include in your next save point. To stage **all** changes:
+
+```bash
+git add .
+```
+
+> The `.` means "everything in the current folder." You can also stage a single file: `git add app/about.tsx`
+
+Run `git status` again — staged files now appear in **green**.
+
+#### Step 5: Commit Your Changes
+
+A "commit" is a save point. Each commit needs a short message describing what you changed:
+
+```bash
+git commit -m "Add logo, about page, and custom styles"
+```
+
+> **Tip:** Write messages that describe *what* you did. Good: `"Add about page with navigation"`. Bad: `"Changed some files"`.
+
+#### Step 6: Connect to Your GitHub Repository
+
+Copy the repository URL from the GitHub page you kept open (it looks like `https://github.com/YOUR_USERNAME/my-inspection-app.git`).
+
+Run this command, replacing `YOUR_USERNAME` with your actual GitHub username:
+
+```bash
+git remote set-url origin https://github.com/YOUR_USERNAME/my-inspection-app.git
+```
+
+> This tells Git where to upload your code. We use `set-url` because the project already has a remote from cloning.
+
+#### Step 7: Push Your Code to GitHub
+
+```bash
+git branch -M main
+git push -u origin main
+```
+
+> The first time you push, GitHub may ask you to log in. A browser window will open — follow the prompts to authenticate.
+
+After the push completes, **refresh your GitHub repository page** — you should see all your code online!
+
+#### Git Commands Cheat Sheet
+
+| Command | What It Does |
+|---------|-------------|
+| `git status` | See which files have changed |
+| `git add .` | Stage all changes for commit |
+| `git add <file>` | Stage a specific file |
+| `git commit -m "message"` | Save staged changes with a description |
+| `git push` | Upload commits to GitHub |
+| `git pull` | Download latest changes from GitHub |
+| `git log --oneline` | View your commit history |
+
+#### Making More Changes Later
+
+Every time you finish a batch of changes and want to save, repeat these three commands:
+
+```bash
+git add .
+git commit -m "Describe what you changed"
+git push
+```
+
+That's it — three commands to save your work forever!
+
+---
+
+### Day 2 — Session 3 Recap
+
+You now know how to:
+- Add an **image/logo** to any screen using the `Image` component
+- **Create a brand-new screen** by adding a file in the `app/` folder
+- **Register a new screen** in `app/_layout.tsx`
+- **Add a button** and wire it to **navigate** to another screen with `router.push()`
+- **Save your code** to GitHub using `git add`, `git commit`, and `git push`
+- Create a **GitHub account** and repository
+
+---
+
 ## Quick Reference Cheat Sheet
 
 Use this table whenever you need to find where to change something:
@@ -1641,6 +2015,7 @@ Use this table whenever you need to find where to change something:
 | Camera screen | `app/camera.tsx` |
 | Result screen (PASS/FAIL) | `app/result.tsx` |
 | Screen titles in header bar | `app/_layout.tsx` |
+| About screen | `app/about.tsx` |
 | Navigation flow / add new screen | `app/_layout.tsx` + new file in `app/` |
 | Global state (shared data) | `services/inspection-context.tsx` |
 
@@ -1657,6 +2032,7 @@ Use this table whenever you need to find where to change something:
 | React — Official Docs | [react.dev](https://react.dev/) |
 | Node.js — Download | [nodejs.org](https://nodejs.org/) |
 | Git — Download | [git-scm.com](https://git-scm.com/) |
+| GitHub — Create Account | [github.com](https://github.com/) |
 | VS Code — Download | [code.visualstudio.com](https://code.visualstudio.com/) |
 | Cursor — Download | [cursor.com](https://www.cursor.com/) |
 | Expo Go — Android | [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) |
@@ -1724,6 +2100,15 @@ Use this table whenever you need to find where to change something:
 | 40 | Feedback button colors (green/red) | `app/result.tsx` |
 | 41 | Theme tint color | `constants/theme.ts` |
 
+### Day 2 — Session 3 (Labs 42–45 + Git)
+| Lab | What You Changed | File |
+|-----|-----------------|------|
+| 42 | Added logo image to Welcome screen | `app/(tabs)/index.tsx` |
+| 43 | Added a second "About" button | `app/(tabs)/index.tsx` |
+| 44 | Created a new About screen + registered in navigation | `app/about.tsx`, `app/_layout.tsx` |
+| 45 | Wired button to navigate to the About screen | `app/(tabs)/index.tsx` |
+| — | Saved work to GitHub (git add, commit, push) | Terminal |
+
 ---
 
-> **Congratulations!** You have successfully explored, modified, and customized a React Native (Expo) mobile application across 41 hands-on labs. You now have practical experience with the codebase and can confidently make UI and data changes on your own.
+> **Congratulations!** You have successfully explored, modified, and customized a React Native (Expo) mobile application across 45 hands-on labs. You created new UI elements, built a brand-new screen with navigation, and learned to save your code to GitHub. You now have practical experience with the codebase and can confidently make UI, data, and structural changes on your own.
