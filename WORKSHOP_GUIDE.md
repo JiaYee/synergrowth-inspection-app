@@ -6,6 +6,48 @@
 
 ---
 
+## TLDR
+
+### Install
+1. **Node** — Engine that runs JavaScript
+2. **Git** — Push/Pull your code
+3. **VSCode** — Code editor
+4. **Expo Go** — Mobile preview on your phone
+5. `cd synergrowth-inspection-app`
+6. `npm install`
+7. `npx expo start`
+
+### App Structure
+1. **App >>> Screens** — Each file in `app/` is a screen
+2. **App >>> Layout** — `app/_layout.tsx` registers all screens
+3. **Assets >>> Images** — `assets/images/` holds all images
+
+### Screen Structure
+1. **Imports** — What you need (`Text`, `Image`, `View`, etc.)
+2. **Components** — What you see (`<Text>`, `<Image>`, `<TextInput>`)
+3. **Styles** — How it looks (color, size, spacing)
+
+### Data Structure
+1. **Export** — Make data available (`export const OPERATORS = [...]`)
+2. **Import** — Bring data in (`import { OPERATORS } from ...`)
+3. **Use** — Display or reference it in your screen
+
+### Add Image
+1. Put image in `assets/images/` (e.g. `icon.png`)
+2. Use it: `<Image source={require('@/assets/images/icon.png')} />`
+
+### AI Framework
+1. **Requirement** — What do I want?
+   > *"Add a new text field for batch number"*
+2. **Context** — What do I have?
+   > *Select all, copy, paste into AI*
+
+### Next Workshop
+1. External Packages
+2. Send/Receive from Server
+
+---
+
 ## Table of Contents
 
 - [Introduction: Native vs Hybrid Mobile Apps](#introduction-native-vs-hybrid-mobile-apps)
