@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { MOCK_PRODUCT_IMAGE } from '@/constants/mock-data';
 

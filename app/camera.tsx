@@ -1,8 +1,10 @@
-import { predictImage } from "@/services/api";
+import { compressImage, predictImage } from "@/services/api";
 import { useInspection } from "@/services/inspection-context";
+import { Asset } from "expo-asset";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
 import { router } from "expo-router";
+import { MOCK_PRODUCT_IMAGE } from "@/constants/mock-data";
 import { useRef, useState } from "react";
 import {
     ActivityIndicator,
@@ -124,7 +126,7 @@ export default function CameraScreen() {
       const { width: previewWidth, height: previewHeight } =
         previewLayoutRef.current;
 
-      const uriToUse =
+      const croppedUri =
         photoWidth > 0 &&
         photoHeight > 0 &&
         previewWidth > 0 &&
@@ -139,24 +141,30 @@ export default function CameraScreen() {
           : photo.uri;
 
       // Show preview immediately before API call
-      setCapturedPhotoUri(uriToUse);
+      setCapturedPhotoUri(croppedUri);
+
+      // Resolve product asset URI and compress both images
+      const productAsset = Asset.fromModule(MOCK_PRODUCT_IMAGE);
+      await productAsset.downloadAsync();
+      const productImageUri = productAsset.localUri ?? productAsset.uri;
+      const compressedProduct = await compressImage(productImageUri);
+      const compressedCaptured = await compressImage(croppedUri);
 
       // Get prediction from API (user sees photo + loading overlay while waiting)
-      const response = await predictImage(uriToUse);
+      const response = await predictImage(compressedProduct, compressedCaptured);
 
-      // Map response: prediction ("pass"/"fail") to uppercase, score to confidence
       const machineResult = response.prediction.toUpperCase() as
         | "PASS"
         | "FAIL";
-      const confidence = response.score;
 
       // Navigate to result screen with the prediction
       router.push({
         pathname: "/result",
         params: {
-          machineResult: machineResult,
-          confidence: confidence.toString(),
-          imageUri: uriToUse,
+          machineResult,
+          matchingRate: response.matching_rate.toString(),
+          justification: response.justification,
+          imageUri: croppedUri,
         },
       });
     } catch (error) {

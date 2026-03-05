@@ -5,7 +5,8 @@ import { useInspection } from '@/services/inspection-context';
 export default function ResultScreen() {
   const params = useLocalSearchParams();
   const machineResult = params.machineResult as 'PASS' | 'FAIL';
-  const confidence = parseFloat(params.confidence as string);
+  const matchingRate = parseFloat(params.matchingRate as string);
+  const justification = params.justification as string;
   const imageUri = params.imageUri as string;
 
   const { reset } = useInspection();
@@ -32,9 +33,12 @@ export default function ResultScreen() {
         <Text style={styles.resultText}>
           Result: {machineResult}
         </Text>
-        <Text style={styles.confidenceText}>
-          Confidence: {(Math.floor(confidence * 10000) / 100).toFixed(2)}%
+        <Text style={styles.matchingRateText}>
+          Matching rate: {(Math.floor(matchingRate * 100) / 100).toFixed(2)}%
         </Text>
+        {justification ? (
+          <Text style={styles.justificationText}>{justification}</Text>
+        ) : null}
 
         {/* Done Button */}
         <TouchableOpacity
@@ -86,10 +90,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#000000',
   },
-  confidenceText: {
+  matchingRateText: {
     fontSize: 16,
+    marginBottom: 8,
+    color: '#666666',
+  },
+  justificationText: {
+    fontSize: 14,
     marginBottom: 30,
     color: '#666666',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingHorizontal: 20,
   },
   doneButton: {
     width: '100%',
