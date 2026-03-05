@@ -9,7 +9,6 @@ import {
   STATION_NUMBERS,
   PRODUCTION_SHIFTS,
   OPERATORS,
-  MOCK_COMPONENTS,
 } from '@/constants/mock-data';
 
 interface DropdownProps {
@@ -74,7 +73,7 @@ function Dropdown({ label, value, options, onSelect }: DropdownProps) {
 }
 
 export default function SelectionScreen() {
-  const { setInspectionData, setComponents } = useInspection();
+  const { setInspectionData } = useInspection();
   const [productModel, setProductModel] = useState('');
   const [productionLine, setProductionLine] = useState('');
   const [stationNumber, setStationNumber] = useState('');
@@ -97,9 +96,6 @@ export default function SelectionScreen() {
       operator: operator,
       device_id: deviceId,
     });
-
-    // Set mock components for POC
-    setComponents(MOCK_COMPONENTS);
     
     router.push('/product');
   };

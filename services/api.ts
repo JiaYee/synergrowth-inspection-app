@@ -13,7 +13,6 @@ export interface UploadMetadata {
   station_number: string;
   production_shift: string;
   operator: string;
-  component: string;
   timestamp: string;
   device_id: string;
   machine_result?: string;
@@ -74,7 +73,6 @@ export async function uploadImage(
   formData.append('station_number', metadata.station_number);
   formData.append('production_shift', metadata.production_shift);
   formData.append('operator', metadata.operator);
-  formData.append('component', metadata.component);
   formData.append('timestamp', metadata.timestamp);
   formData.append('device_id', metadata.device_id);
   

@@ -1,16 +1,10 @@
-import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View } from 'react-native';
 import { router } from 'expo-router';
-import { useInspection } from '@/services/inspection-context';
 import { MOCK_PRODUCT_IMAGE } from '@/constants/mock-data';
 
 export default function ProductScreen() {
-  const { components, setCurrentComponentIndex } = useInspection();
-
   const handleNext = () => {
-    if (components.length > 0) {
-      setCurrentComponentIndex(0);
-      router.push('/component');
-    }
+    router.push('/camera');
   };
 
   return (

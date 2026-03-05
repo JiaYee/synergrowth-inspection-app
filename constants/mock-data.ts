@@ -29,26 +29,5 @@ export const OPERATORS = [
   'OPERATOR_3',
 ];
 
-// Mock component data with coordinates (x1, y1, x2, y2)
-export interface Component {
-  id: string;
-  name: string;
-  coordinates: { x1: number; y1: number; x2: number; y2: number };
-}
-
-export const MOCK_COMPONENTS: Component[] = [
-  {
-    id: 'COMPONENT_1',
-    name: 'Component 1',
-    coordinates: { x1: 100, y1: 50, x2: 200, y2: 150 },
-  },
-  {
-    id: 'COMPONENT_2',
-    name: 'Component 2',
-    coordinates: { x1: 250, y1: 50, x2: 350, y2: 150 },
-  },
-];
-
 // Mock product images
 export const MOCK_PRODUCT_IMAGE = require('@/assets/images/product.png');
-export const MOCK_PRODUCT_WITH_RED_BOX_IMAGE = require('@/assets/images/product-with-red-box.png');

@@ -85,7 +85,7 @@ export default function CameraScreen() {
     width: 0,
     height: 0,
   });
-  const { inspectionData, components, currentComponentIndex } = useInspection();
+  const { inspectionData } = useInspection();
 
   if (!permission) {
     return <View />;
@@ -105,11 +105,7 @@ export default function CameraScreen() {
   }
 
   const handleTakePicture = async () => {
-    if (
-      !cameraRef.current ||
-      !inspectionData ||
-      !components[currentComponentIndex]
-    ) {
+    if (!cameraRef.current || !inspectionData) {
       return;
     }
 
@@ -145,8 +141,6 @@ export default function CameraScreen() {
       // Show preview immediately before API call
       setCapturedPhotoUri(uriToUse);
 
-      const currentComponent = components[currentComponentIndex];
-
       // Get prediction from API (user sees photo + loading overlay while waiting)
       const response = await predictImage(uriToUse);
 
@@ -163,7 +157,6 @@ export default function CameraScreen() {
           machineResult: machineResult,
           confidence: confidence.toString(),
           imageUri: uriToUse,
-          componentId: currentComponent.id,
         },
       });
     } catch (error) {

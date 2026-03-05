@@ -9,10 +9,9 @@ export default function ResultScreen() {
   const machineResult = params.machineResult as 'PASS' | 'FAIL';
   const confidence = parseFloat(params.confidence as string);
   const imageUri = params.imageUri as string;
-  const componentId = params.componentId as string;
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { inspectionData, components, currentComponentIndex, setCurrentComponentIndex, reset } = useInspection();
+  const { inspectionData, reset } = useInspection();
 
   const handleFeedback = async (humanResult: 'PASS' | 'FAIL') => {
     if (!inspectionData) {
@@ -38,7 +37,7 @@ export default function ResultScreen() {
         production_line: inspectionData.production_line,
         line_station: inspectionData.station_number,
         production_shift: inspectionData.production_shift,
-        component_number: componentId,
+        component_number: inspectionData.product_model,
         operator_id: inspectionData.operator,
         current_datetime: currentDatetime,
         device_id: inspectionData.device_id,
@@ -49,20 +48,14 @@ export default function ResultScreen() {
       // Submit inspection result to backend
       await submitInspectionResult(imageUri, metadata);
 
-      // Move to next component or finish
-      if (currentComponentIndex < components.length - 1) {
-        setCurrentComponentIndex(currentComponentIndex + 1);
-        router.push('/component');
-      } else {
-        // All components inspected, reset and go back to welcome
-        reset();
-        Alert.alert('Complete', 'All components have been inspected.', [
-          {
-            text: 'OK',
-            onPress: () => router.push('/(tabs)'),
-          },
-        ]);
-      }
+      // Inspection complete, reset and go back to welcome
+      reset();
+      Alert.alert('Complete', 'Inspection complete.', [
+        {
+          text: 'OK',
+          onPress: () => router.push('/(tabs)'),
+        },
+      ]);
     } catch (error) {
       console.error('Error submitting inspection result:', error);
       Alert.alert('Error', 'Failed to submit inspection result. Please try again.');
