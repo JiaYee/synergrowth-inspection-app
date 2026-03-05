@@ -1,7 +1,7 @@
 // API service for communicating with backend
-import { DEMO_MODE } from '@/constants/config';
+import { API_BASE_URL, DEMO_MODE } from '@/constants/config';
 
-const ANALYZE_API_URL = 'https://deep-learning-celestica-senai.onrender.com/predict';
+const ANALYZE_API_URL = `${API_BASE_URL}/analyze`;
 
 let predictCallCount = 0;
 
