@@ -1,17 +1,30 @@
+import { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router } from 'expo-router';
-import { MOCK_PRODUCT_IMAGE } from '@/constants/mock-data';
+import { useInspection } from '@/services/inspection-context';
 
 export default function ProductScreen() {
+  const { inspectionData } = useInspection();
+
+  useEffect(() => {
+    if (!inspectionData) {
+      router.replace('/');
+    }
+  }, [inspectionData]);
+
   const handleNext = () => {
     router.push('/camera');
   };
+
+  if (!inspectionData) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Image
-          source={MOCK_PRODUCT_IMAGE}
+          source={inspectionData.product_image}
           style={styles.productImage}
           resizeMode="contain"
         />

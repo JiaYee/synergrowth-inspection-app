@@ -5,6 +5,7 @@ import { useInspection } from '@/services/inspection-context';
 import * as Device from 'expo-device';
 import {
   PRODUCT_MODELS,
+  PRODUCT_MODEL_IMAGES,
   PRODUCTION_LINES,
   STATION_NUMBERS,
   PRODUCTION_SHIFTS,
@@ -90,6 +91,7 @@ export default function SelectionScreen() {
     
     setInspectionData({
       product_model: productModel,
+      product_image: PRODUCT_MODEL_IMAGES[productModel],
       production_line: productionLine,
       station_number: stationNumber,
       production_shift: productionShift,

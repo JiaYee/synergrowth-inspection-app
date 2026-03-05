@@ -4,7 +4,6 @@ import { Asset } from "expo-asset";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
 import { router } from "expo-router";
-import { MOCK_PRODUCT_IMAGE } from "@/constants/mock-data";
 import { useRef, useState } from "react";
 import {
     ActivityIndicator,
@@ -144,7 +143,7 @@ export default function CameraScreen() {
       setCapturedPhotoUri(croppedUri);
 
       // Resolve product asset URI and compress both images
-      const productAsset = Asset.fromModule(MOCK_PRODUCT_IMAGE);
+      const productAsset = Asset.fromModule(inspectionData.product_image);
       await productAsset.downloadAsync();
       const productImageUri = productAsset.localUri ?? productAsset.uri;
       const compressedProduct = await compressImage(productImageUri);

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface InspectionData {
   product_model: string;
+  product_image: number;
   production_line: string;
   station_number: string;
   production_shift: string;

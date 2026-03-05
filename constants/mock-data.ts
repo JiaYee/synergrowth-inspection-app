@@ -29,5 +29,9 @@ export const OPERATORS = [
   'OPERATOR_3',
 ];
 
-// Mock product images
-export const MOCK_PRODUCT_IMAGE = require('@/assets/images/product.png');
+// Per-product images (add product_x.png, product_y.png, product_z.png to assets/images)
+export const PRODUCT_MODEL_IMAGES: Record<string, number> = {
+  PRODUCT_X: require('@/assets/images/product_x.png'),
+  PRODUCT_Y: require('@/assets/images/product_y.png'),
+  PRODUCT_Z: require('@/assets/images/product_z.png'),
+};
