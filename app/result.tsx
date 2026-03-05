@@ -1,75 +1,18 @@
-import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Image, View, Alert, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
-import { submitInspectionResult } from '@/services/api';
 
 export default function ResultScreen() {
   const params = useLocalSearchParams();
   const machineResult = params.machineResult as 'PASS' | 'FAIL';
   const confidence = parseFloat(params.confidence as string);
   const imageUri = params.imageUri as string;
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { inspectionData, reset } = useInspection();
 
-  const handleFeedback = async (humanResult: 'PASS' | 'FAIL') => {
-    if (!inspectionData) {
-      Alert.alert('Error', 'Inspection data not found.');
-      return;
-    }
+  const { reset } = useInspection();
 
-    setIsSubmitting(true);
-    try {
-      // Format current datetime as "YYYY-MM-DD HH:MM:SS"
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      const currentDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-      // Map fields from app format to backend format
-      const metadata = {
-        product_code: inspectionData.product_model,
-        production_line: inspectionData.production_line,
-        line_station: inspectionData.station_number,
-        production_shift: inspectionData.production_shift,
-        component_number: inspectionData.product_model,
-        operator_id: inspectionData.operator,
-        current_datetime: currentDatetime,
-        device_id: inspectionData.device_id,
-        machine_prediction: machineResult.toLowerCase() as 'pass' | 'fail',
-        human_prediction: humanResult.toLowerCase() as 'pass' | 'fail',
-      };
-
-      // Submit inspection result to backend
-      await submitInspectionResult(imageUri, metadata);
-
-      // Inspection complete, reset and go back to welcome
-      reset();
-      Alert.alert('Complete', 'Inspection complete.', [
-        {
-          text: 'OK',
-          onPress: () => router.push('/(tabs)'),
-        },
-      ]);
-    } catch (error) {
-      console.error('Error submitting inspection result:', error);
-      Alert.alert('Error', 'Failed to submit inspection result. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const getAgreeButtonLabel = () => {
-    return machineResult === 'PASS' ? 'YES, PASS' : 'YES, FAIL';
-  };
-
-  const getDisagreeButtonLabel = () => {
-    return machineResult === 'PASS' ? 'NO, FAIL' : 'NO, PASS';
+  const handleDone = () => {
+    reset();
+    router.push('/(tabs)');
   };
 
   return (
@@ -93,36 +36,13 @@ export default function ResultScreen() {
           Confidence: {(Math.floor(confidence * 10000) / 100).toFixed(2)}%
         </Text>
 
-        {/* Feedback Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.feedbackButton, styles.agreeButton]}
-            onPress={() => handleFeedback(machineResult)}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.buttonText}>
-                {getAgreeButtonLabel()}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.feedbackButton, styles.disagreeButton]}
-            onPress={() => handleFeedback(machineResult === 'PASS' ? 'FAIL' : 'PASS')}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.buttonText}>
-                {getDisagreeButtonLabel()}
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
+        {/* Done Button */}
+        <TouchableOpacity
+          style={styles.doneButton}
+          onPress={handleDone}
+        >
+          <Text style={styles.buttonText}>Done</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -171,21 +91,13 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: '#666666',
   },
-  buttonContainer: {
+  doneButton: {
     width: '100%',
-    gap: 16,
-  },
-  feedbackButton: {
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
     minHeight: 50,
     justifyContent: 'center',
-  },
-  agreeButton: {
-    backgroundColor: '#000000',
-  },
-  disagreeButton: {
     backgroundColor: '#000000',
   },
   buttonText: {
