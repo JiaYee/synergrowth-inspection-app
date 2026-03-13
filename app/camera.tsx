@@ -3,8 +3,9 @@ import { useInspection } from "@/services/inspection-context";
 import { Asset } from "expo-asset";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -88,6 +89,13 @@ export default function CameraScreen() {
   });
   const { inspectionData } = useInspection();
 
+  useFocusEffect(
+    useCallback(() => {
+      setCapturedPhotoUri(null);
+      setIsCapturing(false);
+    }, [])
+  );
+
   if (!permission) {
     return <View />;
   }
@@ -150,7 +158,14 @@ export default function CameraScreen() {
       const compressedCaptured = await compressImage(croppedUri);
 
       // Get prediction from API (user sees photo + loading overlay while waiting)
-      const response = await predictImage(compressedProduct, compressedCaptured);
+      const response = await predictImage(compressedProduct, compressedCaptured, {
+        product_model: inspectionData.product_model,
+        production_line: inspectionData.production_line,
+        station_number: inspectionData.station_number,
+        production_shift: inspectionData.production_shift,
+        operator: inspectionData.operator,
+        device_id: inspectionData.device_id,
+      });
 
       const machineResult = response.prediction.toUpperCase() as
         | "PASS"
@@ -161,7 +176,7 @@ export default function CameraScreen() {
         pathname: "/result",
         params: {
           machineResult,
-          matchingRate: response.matching_rate.toString(),
+          confidence: response.confidence.toString(),
           justification: response.justification,
           imageUri: croppedUri,
         },

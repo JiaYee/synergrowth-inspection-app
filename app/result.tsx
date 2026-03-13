@@ -5,7 +5,7 @@ import { useInspection } from '@/services/inspection-context';
 export default function ResultScreen() {
   const params = useLocalSearchParams();
   const machineResult = params.machineResult as 'PASS' | 'FAIL';
-  const matchingRate = parseFloat(params.matchingRate as string);
+  const confidence = parseFloat(params.confidence as string);
   const justification = params.justification as string;
   const imageUri = params.imageUri as string;
 
@@ -14,6 +14,10 @@ export default function ResultScreen() {
   const handleDone = () => {
     reset();
     router.push('/(tabs)');
+  };
+
+  const handleRetry = () => {
+    router.back();
   };
 
   return (
@@ -33,12 +37,20 @@ export default function ResultScreen() {
         <Text style={styles.resultText}>
           Result: {machineResult}
         </Text>
-        <Text style={styles.matchingRateText}>
-          Matching rate: {(Math.floor(matchingRate * 100) / 100).toFixed(2)}%
+        <Text style={styles.confidenceText}>
+          Confidence: {(Math.floor(confidence * 100) / 100).toFixed(2)}%
         </Text>
         {justification ? (
           <Text style={styles.justificationText}>{justification}</Text>
         ) : null}
+
+        {/* Retry Button */}
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={handleRetry}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
 
         {/* Done Button */}
         <TouchableOpacity
@@ -90,18 +102,35 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#000000',
   },
-  matchingRateText: {
+  confidenceText: {
     fontSize: 16,
     marginBottom: 8,
     color: '#666666',
   },
   justificationText: {
     fontSize: 14,
-    marginBottom: 30,
+    marginBottom: 20,
     color: '#666666',
     textAlign: 'center',
     fontStyle: 'italic',
     paddingHorizontal: 20,
+  },
+  retryButton: {
+    width: '100%',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    minHeight: 50,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#000000',
+    marginBottom: 12,
+  },
+  retryButtonText: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '600',
   },
   doneButton: {
     width: '100%',

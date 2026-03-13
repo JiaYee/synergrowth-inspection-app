@@ -1,4 +1,4 @@
 export const DEMO_MODE = false;
 
-/** API base URL: always production */
-export const API_BASE_URL = "https://synergrowth-python-api.vercel.app";
+/** API base URL: local Flask server (replace with your laptop IP on same network) */
+export const API_BASE_URL = "http://192.168.0.189:5000";
