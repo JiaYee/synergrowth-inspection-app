@@ -82,16 +82,26 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<{
+    result: "PASS" | "FAIL";
+    confidence: number;
+    justification: string;
+  } | null>(null);
   const cameraRef = useRef<CameraView>(null);
   const previewLayoutRef = useRef<{ width: number; height: number }>({
     width: 0,
     height: 0,
   });
-  const { inspectionData } = useInspection();
+  const {
+    inspectionData,
+    addInspectionResult,
+    advanceToNextPoint,
+  } = useInspection();
 
   useFocusEffect(
     useCallback(() => {
       setCapturedPhotoUri(null);
+      setAnalysisResult(null);
       setIsCapturing(false);
     }, [])
   );
@@ -119,6 +129,7 @@ export default function CameraScreen() {
     }
 
     setIsCapturing(true);
+    setAnalysisResult(null);
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 1.0, // Full resolution
@@ -147,17 +158,16 @@ export default function CameraScreen() {
             )
           : photo.uri;
 
-      // Show preview immediately before API call
+      // Show preview immediately
       setCapturedPhotoUri(croppedUri);
 
-      // Resolve product asset URI and compress both images
+      // Immediately send to API for analysis
       const productAsset = Asset.fromModule(inspectionData.product_image);
       await productAsset.downloadAsync();
       const productImageUri = productAsset.localUri ?? productAsset.uri;
       const compressedProduct = await compressImage(productImageUri);
       const compressedCaptured = await compressImage(croppedUri);
 
-      // Get prediction from API (user sees photo + loading overlay while waiting)
       const response = await predictImage(compressedProduct, compressedCaptured, {
         product_model: inspectionData.product_model,
         production_line: inspectionData.production_line,
@@ -167,23 +177,16 @@ export default function CameraScreen() {
         device_id: inspectionData.device_id,
       });
 
-      const machineResult = response.prediction.toUpperCase() as
-        | "PASS"
-        | "FAIL";
+      const machineResult = response.prediction.toUpperCase() as "PASS" | "FAIL";
 
-      // Navigate to result screen with the prediction
-      router.push({
-        pathname: "/result",
-        params: {
-          machineResult,
-          confidence: response.confidence.toString(),
-          justification: response.justification,
-          imageUri: croppedUri,
-        },
+      setAnalysisResult({
+        result: machineResult,
+        confidence: response.confidence,
+        justification: response.justification,
       });
     } catch (error) {
-      console.error("Error capturing/uploading photo:", error);
-      Alert.alert("Error", "Failed to analyze photo. Please retake.");
+      console.error("Error capturing/analyzing photo:", error);
+      Alert.alert("Error", "Failed to capture or analyze photo. Please retry.");
     } finally {
       setIsCapturing(false);
     }
@@ -191,10 +194,32 @@ export default function CameraScreen() {
 
   const handleRetake = () => {
     setCapturedPhotoUri(null);
+    setAnalysisResult(null);
     setIsCapturing(false);
   };
 
-  // Photo preview screen (shown immediately after capture, while API loads)
+  const handleNext = () => {
+    if (!capturedPhotoUri || !analysisResult) return;
+
+    addInspectionResult({
+      imageUri: capturedPhotoUri,
+      result: analysisResult.result,
+      confidence: analysisResult.confidence,
+      justification: analysisResult.justification,
+    });
+
+    const hasMorePoints = advanceToNextPoint();
+
+    setCapturedPhotoUri(null);
+    setAnalysisResult(null);
+    if (hasMorePoints) {
+      router.replace("/product");
+    } else {
+      router.replace("/summary");
+    }
+  };
+
+  // Photo preview screen - show result at bottom, above Retake/Next
   if (capturedPhotoUri) {
     return (
       <View style={styles.container}>
@@ -210,13 +235,52 @@ export default function CameraScreen() {
           </View>
         )}
         {!isCapturing && (
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.retakeButton}
-              onPress={handleRetake}
-            >
-              <Text style={styles.retakeButtonText}>Retake</Text>
-            </TouchableOpacity>
+          <View style={styles.bottomSection}>
+            {analysisResult && (
+              <View style={styles.resultPanel}>
+                <Text style={styles.resultLabel}>Result:</Text>
+                <Text
+                  style={[
+                    styles.resultValue,
+                    analysisResult.result === "PASS"
+                      ? styles.passText
+                      : styles.failText,
+                  ]}
+                >
+                  {analysisResult.result}
+                </Text>
+                <Text style={styles.confidenceText}>
+                  Confidence:{" "}
+                  {(Math.floor(analysisResult.confidence * 100) / 100).toFixed(2)}%
+                </Text>
+                {analysisResult.justification ? (
+                  <Text style={styles.justificationText} numberOfLines={2}>
+                    {analysisResult.justification}
+                  </Text>
+                ) : null}
+              </View>
+            )}
+            {!analysisResult && (
+              <Text style={styles.analysisErrorText}>
+                Analysis failed. Tap Retake to try again.
+              </Text>
+            )}
+            <View style={styles.previewButtonRow}>
+              <TouchableOpacity
+                style={styles.retakeButton}
+                onPress={handleRetake}
+              >
+                <Text style={styles.retakeButtonText}>Retake</Text>
+              </TouchableOpacity>
+              {analysisResult && (
+                <TouchableOpacity
+                  style={styles.nextButton}
+                  onPress={handleNext}
+                >
+                  <Text style={styles.nextButtonText}>Next</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         )}
       </View>
@@ -327,15 +391,84 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
   },
+  bottomSection: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
+  resultPanel: {
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+  },
+  resultLabel: {
+    color: "#FFF",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  resultValue: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  passText: {
+    color: "#90EE90",
+  },
+  failText: {
+    color: "#FF6B6B",
+  },
+  confidenceText: {
+    color: "#FFF",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  justificationText: {
+    color: "#CCC",
+    fontSize: 12,
+    fontStyle: "italic",
+  },
+  analysisErrorText: {
+    color: "#FF6B6B",
+    fontSize: 14,
+    textAlign: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  previewButtonRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 16,
+  },
   retakeButton: {
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#FFF",
+    paddingHorizontal: 40,
+    paddingVertical: 16,
+    borderRadius: 8,
+    minWidth: 140,
+    alignItems: "center",
+  },
+  retakeButtonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  nextButton: {
     backgroundColor: "#000000",
     paddingHorizontal: 40,
     paddingVertical: 16,
     borderRadius: 8,
-    minWidth: 200,
+    minWidth: 140,
     alignItems: "center",
   },
-  retakeButtonText: {
+  nextButtonText: {
     color: "#FFF",
     fontSize: 18,
     fontWeight: "600",

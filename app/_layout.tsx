@@ -15,6 +15,7 @@ export default function RootLayout() {
           <Stack.Screen name="product" options={{ title: 'Product View' }} />
           <Stack.Screen name="camera" options={{ title: 'Camera', headerShown: false }} />
           <Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+          <Stack.Screen name="summary" options={{ title: 'Inspection Summary' }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="dark" />
