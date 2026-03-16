@@ -1,6 +1,6 @@
 # Synergrowth Inspection App — Participant Workshop Guide
 
-> **2-Day Hands-On Workshop**
+> **4-Day Hands-On Workshop**
 > This guide is your single source of truth. Follow it screen-by-screen, lab-by-lab.
 > Every lab is a small, safe change — nothing will break your app.
 
@@ -42,9 +42,12 @@
 2. **Context** — What do I have?
    > *Select all, copy, paste into AI*
 
-### Next Workshop
-1. External Packages
-2. Send/Receive from Server
+### Server Connection (Day 3–4)
+1. **Server** — `python prediction_app_in_laptop_using_vscode.py` (runs AI model)
+2. **Config** — `constants/config.ts` → set `DEMO_MODE = false` and `API_BASE_URL`
+3. **Inspection Points** — `utils/inspection-points.ts` → add/remove/move red boxes
+4. **Uploads** — `uploads/` folder on laptop (images saved with metadata filenames)
+5. **Report** — `GET /report` → returns `{ total, pass, fail }`
 
 ---
 
@@ -57,6 +60,10 @@
 - [Day 2 — Session 1: Selection Screen & Mock Data Labs](#day-2--session-1-selection-screen--mock-data-labs)
 - [Day 2 — Session 2: Product, Component, Camera & Result Screen Labs](#day-2--session-2-product-component-camera--result-screen-labs)
 - [Day 2 — Session 3: New Features, Logo & Saving Your Work](#day-2--session-3-new-features-logo--saving-your-work)
+- [Day 3 — Session 1: Server Setup & Connecting Mobile to Laptop](#day-3--session-1-server-setup--connecting-mobile-to-laptop)
+- [Day 3 — Session 2: Customizing Red Boxes & Inspection Points](#day-3--session-2-customizing-red-boxes--inspection-points)
+- [Day 4 — Session 1: Server Files & Report Endpoint](#day-4--session-1-server-files--report-endpoint)
+- [Day 4 — Session 2: Inspection Summary & End-to-End Flow](#day-4--session-2-inspection-summary--end-to-end-flow)
 - [Quick Reference Cheat Sheet](#quick-reference-cheat-sheet)
 
 ---
@@ -2060,6 +2067,14 @@ Use this table whenever you need to find where to change something:
 | About screen | `app/about.tsx` |
 | Navigation flow / add new screen | `app/_layout.tsx` + new file in `app/` |
 | Global state (shared data) | `services/inspection-context.tsx` |
+| Inspection point coordinates & count | `utils/inspection-points.ts` |
+| Camera guide box size | `app/camera.tsx` (`GUIDE_BOX_WIDTH_RATIO`) |
+| Summary screen (results list) | `app/summary.tsx` |
+| Server startup | `prediction_app_in_laptop_using_vscode.py` |
+| Server Python dependencies | `requirements.txt` (flask, tensorflow, pandas) |
+| AI model file | `ANDELI_DZ47_63_S02_C02.keras` |
+| Saved inspection images | `uploads/` folder on the laptop |
+| Inspection report (pass/fail counts) | `GET /report` on the server |
 
 ---
 
@@ -2080,6 +2095,9 @@ Use this table whenever you need to find where to change something:
 | Expo Go — Android | [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) |
 | Expo Go — iOS | [Apple App Store](https://apps.apple.com/app/expo-go/id982107779) |
 | HTML Color Codes | [htmlcolorcodes.com](https://htmlcolorcodes.com/) |
+| Python — Download | [python.org/downloads](https://www.python.org/downloads/) |
+| Flask — Official Docs | [flask.palletsprojects.com](https://flask.palletsprojects.com/) |
+| TensorFlow — Official Docs | [tensorflow.org](https://www.tensorflow.org/) |
 
 ---
 
@@ -2151,6 +2169,1169 @@ Use this table whenever you need to find where to change something:
 | 45 | Wired button to navigate to the About screen | `app/(tabs)/index.tsx` |
 | — | Saved work to GitHub (git add, commit, push) | Terminal |
 
+### Day 3 — Session 1 (Labs 46–51)
+| Lab | What You Did | File / Tool |
+|-----|-------------|-------------|
+| 46 | Installed Python on the laptop | Terminal |
+| 47 | First-time server setup (venv, pip install) | Terminal |
+| 48 | Started the Flask prediction server | `prediction_app_in_laptop_using_vscode.py` |
+| 49 | Found laptop IP address, verified from phone | Terminal / Phone browser |
+| 50 | Set `DEMO_MODE = false` and `API_BASE_URL` | `constants/config.ts` |
+| 51 | Tested full phone-to-server connection | End-to-end test |
+
+### Day 3 — Session 2 (Labs 52–58)
+| Lab | What You Changed | File |
+|-----|-----------------|------|
+| 52 | Product screen red box coordinates | `utils/inspection-points.ts` |
+| 53 | Camera guide box size | `app/camera.tsx` |
+| 54 | Camera guide box aspect ratio (square → rectangle) | `app/camera.tsx` |
+| 55 | Walkthrough of InspectionPoint data structure | `utils/inspection-points.ts` |
+| 56 | Added a third inspection point | `utils/inspection-points.ts` |
+| 57 | Reduced to a single inspection point | `utils/inspection-points.ts` |
+| 58 | Added five inspection points with custom coordinates | `utils/inspection-points.ts` |
+
+### Day 4 — Session 1 (Labs 59–65)
+| Lab | What You Did | File / Tool |
+|-----|-------------|-------------|
+| 59 | Inspected the uploads/ folder | Terminal / File Explorer |
+| 60 | Decoded filename metadata structure | `prediction_app_in_laptop_using_vscode.py` |
+| 61 | Walkthrough of /report endpoint | Browser (`GET /report`) |
+| 62 | Tested /report endpoint with curl | Terminal |
+| 63 | Tested /predict endpoint with curl | Terminal |
+| 64 | Analyzed inspection data using filenames | Terminal (PowerShell / bash) |
+| 65 | Used AI to analyze inspection data | ChatGPT / Claude prompt |
+
+### Day 4 — Session 2 (Labs 66–72)
+| Lab | What You Changed | File |
+|-----|-----------------|------|
+| 66 | Summary screen title text | `app/summary.tsx` |
+| 67 | Summary title style (size, color) | `app/summary.tsx` |
+| 68 | Done button color | `app/summary.tsx` |
+| 69 | Completion modal message | `app/summary.tsx` |
+| 70 | Return button text | `app/summary.tsx` |
+| 71 | Result card PASS/FAIL colors | `app/summary.tsx` |
+| 72 | Full end-to-end integration test | All files |
+
 ---
 
-> **Congratulations!** You have successfully explored, modified, and customized a React Native (Expo) mobile application across 45 hands-on labs. You created new UI elements, built a brand-new screen with navigation, and learned to save your code to GitHub. You now have practical experience with the codebase and can confidently make UI, data, and structural changes on your own.
+> **End of Day 1–2.** You have completed 45 hands-on labs covering UI customization, data changes, new screens, and Git.
+
+---
+
+# Day 3 — Session 1: Server Setup & Connecting Mobile to Laptop
+
+> **Goal:** Set up the Python prediction server on the laptop, find your IP address, configure the mobile app to talk to the laptop, and verify end-to-end communication.
+
+---
+
+### What Are We Doing Differently Now?
+
+In Day 1–2, the app ran in **Demo Mode** — all predictions were faked locally. Starting today, we connect the mobile app to a **real AI server** running on a laptop. The server receives photos, runs them through a TensorFlow deep learning model, and returns a real PASS or FAIL prediction.
+
+```
+┌──────────────┐       Wi-Fi (same network)       ┌──────────────────┐
+│  Mobile App  │  ──── POST /predict (image) ────▶ │  Laptop Server   │
+│  (Expo Go)   │  ◀─── { prediction, confidence }─ │  (Flask + TF)    │
+└──────────────┘                                   └──────────────────┘
+```
+
+### Server Project Structure
+
+The server lives in the `deep_learning_celestica_senai_laptop` folder:
+
+```
+deep_learning_celestica_senai_laptop/
+├── prediction_app_in_laptop_using_vscode.py   ← Main Flask server
+├── requirements.txt                           ← Python dependencies
+├── ANDELI_DZ47_63_S02_C02.keras               ← TensorFlow model file
+├── uploads/                                   ← Created at runtime (saved images)
+└── .venv/                                     ← Python virtual environment
+```
+
+| File | Purpose |
+|------|---------|
+| `prediction_app_in_laptop_using_vscode.py` | Flask app — receives images, runs AI model, returns predictions |
+| `requirements.txt` | Lists Python packages: `flask`, `tensorflow`, `pandas` |
+| `ANDELI_DZ47_63_S02_C02.keras` | The trained deep learning model (must be in the same folder) |
+| `uploads/` | Where the server saves every image it receives (auto-created) |
+
+---
+
+### Lab 46: Install Python on the Laptop
+
+> **Skip this lab if Python is already installed.**
+
+1. Download Python from [python.org/downloads](https://www.python.org/downloads/).
+2. **Important:** During installation, check the box **"Add Python to PATH"**.
+3. After install, open a terminal and verify:
+
+```bash
+python --version
+```
+
+You should see something like `Python 3.10.x` or later.
+
+4. Also verify `pip` (Python's package manager):
+
+```bash
+pip --version
+```
+
+---
+
+### Lab 47: First-Time Server Setup
+
+Open a terminal on the **laptop** (not the phone) and run these commands:
+
+**Step A — Navigate to the server folder:**
+
+```bash
+cd deep_learning_celestica_senai_laptop
+```
+
+**Step B — Create a virtual environment:**
+
+A virtual environment keeps the server's Python packages isolated from your system.
+
+```bash
+python -m venv .venv
+```
+
+**Step C — Activate the virtual environment:**
+
+On **Windows**:
+```bash
+.venv\Scripts\activate.bat
+```
+
+On **macOS/Linux**:
+```bash
+source .venv/bin/activate
+```
+
+You should see `(.venv)` appear at the beginning of your terminal prompt.
+
+**Step D — Install dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs Flask (web server), TensorFlow (AI model), and pandas.
+
+> **Note:** TensorFlow is a large package (~500 MB). The first install may take several minutes.
+
+**Step E — Verify the model file exists:**
+
+Make sure `ANDELI_DZ47_63_S02_C02.keras` is in the project folder. This is the trained AI model. Without it, the server will not start.
+
+---
+
+### Lab 48: Start the Server
+
+With the virtual environment activated, run:
+
+```bash
+python prediction_app_in_laptop_using_vscode.py
+```
+
+You should see output like:
+
+```
+INFO:root:Loading TensorFlow model into memory...
+INFO:root:Model loaded successfully.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.x.x:5000
+```
+
+The server is now listening on **port 5000**.
+
+> **Keep this terminal open!** The server stops if you close it. To stop manually, press `Ctrl+C`.
+
+**Quick health check** — open a browser on the laptop and go to:
+
+```
+http://127.0.0.1:5000
+```
+
+You should see: **"Server is up! Model is pre-loaded."**
+
+---
+
+### Lab 49: Find Your Laptop's IP Address
+
+The mobile app needs to know the laptop's IP address on the Wi-Fi network.
+
+**On Windows:**
+```bash
+ipconfig
+```
+
+Look for **Wireless LAN adapter Wi-Fi** → **IPv4 Address**. It looks like `192.168.x.x`.
+
+**On macOS:**
+```bash
+ifconfig | grep "inet "
+```
+
+**On Linux:**
+```bash
+hostname -I
+```
+
+Write down this IP address — you will need it in the next lab.
+
+> **Example:** If your IP is `192.168.0.105`, the server URL is `http://192.168.0.105:5000`.
+
+#### Verification: Can You Reach the Server from Your Phone?
+
+1. Make sure your **phone and laptop are on the same Wi-Fi network**.
+2. Open a browser **on your phone**.
+3. Type: `http://192.168.x.x:5000` (use your actual IP).
+4. You should see: **"Server is up! Model is pre-loaded."**
+
+If you **cannot** reach the server:
+- Double-check both devices are on the same Wi-Fi.
+- Check if the laptop's firewall is blocking port 5000.
+- On Windows, you may need to allow Python through the firewall when prompted.
+
+---
+
+### Lab 50: Turn Off Demo Mode & Set the Base URL
+
+**File:** `constants/config.ts` (in the mobile app project)
+
+This is the most important configuration step. We are switching from fake local predictions to real server predictions.
+
+1. Open `constants/config.ts`:
+
+```tsx
+export const DEMO_MODE = false;
+
+/** API base URL: local Flask server (replace with your laptop IP on same network) */
+export const API_BASE_URL = "http://192.168.0.3:5000";
+```
+
+2. Change the `API_BASE_URL` to use **your laptop's IP address** (from Lab 49):
+
+```tsx
+export const DEMO_MODE = false;
+
+/** API base URL: local Flask server (replace with your laptop IP on same network) */
+export const API_BASE_URL = "http://192.168.x.x:5000";
+```
+
+> Replace `192.168.x.x` with your actual IP address. Keep the `http://` prefix and `:5000` port.
+
+3. Make sure `DEMO_MODE` is set to `false`. If it is `true`, change it to `false`:
+
+```tsx
+export const DEMO_MODE = false;
+```
+
+4. **Save** the file.
+
+#### How the Data Flows
+
+Here is what happens when you tap "Take Picture" in the app:
+
+```
+1. Camera captures photo
+2. Photo is cropped to the red guide box area
+3. Photo is compressed (resized to max 800px, JPEG quality 0.7)
+4. App sends POST request to http://192.168.x.x:5000/predict
+   - Body: FormData with the image file + metadata
+   - Metadata: product_model, station_number, production_line, etc.
+5. Server receives the image
+6. Server resizes image to 288×288 and runs AI model
+7. Server saves image to uploads/ folder with metadata filename
+8. Server returns JSON: { "prediction": "pass"|"fail", "confidence": 0.95 }
+9. App displays the result (PASS/FAIL with confidence %)
+```
+
+Open `services/api.ts` to see this in code:
+
+```tsx
+const PREDICT_API_URL = `${API_BASE_URL}/predict`;
+```
+
+The `predictImage()` function builds a `FormData` object with the image and metadata, sends it via `fetch()`, and parses the JSON response.
+
+---
+
+### Lab 51: Test the Full Connection
+
+1. Make sure the **server is running** on the laptop (Lab 48).
+2. Make sure `DEMO_MODE = false` and the **IP address is correct** (Lab 50).
+3. Make sure your **phone and laptop are on the same Wi-Fi**.
+4. Open the app on your phone via Expo Go.
+5. Go through the flow: **Welcome → Selection → Product → Camera**.
+6. Take a picture — the app should show "Analyzing..." then display a real **PASS** or **FAIL** result from the server.
+7. Check the server terminal — you should see a log line like:
+
+```
+INFO:__main__:Saved: 20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unknown_pass_0.95.jpg -> ...
+```
+
+> **Troubleshooting:**
+> - "Network request failed" → Check IP address, same Wi-Fi, and firewall.
+> - "Prediction failed: 400" → The server did not receive the image file correctly.
+> - App still shows mock results → Make sure `DEMO_MODE = false` and you saved the file.
+
+---
+
+### Day 3 — Session 1 Recap
+
+You now understand:
+- How to set up the Python server (virtual environment, dependencies, model file)
+- How to start and stop the server
+- How to find your laptop's IP address
+- How to configure the mobile app's `API_BASE_URL` in `constants/config.ts`
+- The full data flow: phone captures image → POST to server → AI prediction → response displayed
+- How to troubleshoot connection issues
+
+---
+
+# Day 3 — Session 2: Customizing Red Boxes & Inspection Points
+
+> **Goal:** Understand how red box coordinates work on the product overlay and camera overlay, change them, and learn how to add or remove inspection points.
+
+---
+
+### How Red Boxes Work — Two Different Systems
+
+The app has red boxes in **two places**, and they work differently:
+
+| Location | Purpose | Coordinate System | File |
+|----------|---------|-------------------|------|
+| Product screen | Highlights area to inspect on the product photo | **Normalized (0–1)** — relative to image size | `utils/inspection-points.ts` |
+| Camera screen | Guide box for the operator to align the camera | **Percentage of screen** — fixed centered square | `app/camera.tsx` |
+
+#### Product Screen Red Box (Normalized Coordinates)
+
+On the Product screen, red boxes use **normalized coordinates** (values between 0 and 1). This means the box position scales automatically regardless of screen size.
+
+```
+(0,0) ─────────────── (1,0)
+  │                      │
+  │    ┌──────┐          │
+  │    │ Red  │          │
+  │    │ Box  │          │
+  │    └──────┘          │
+  │                      │
+(0,1) ─────────────── (1,1)
+```
+
+- `x: 0.15` means the box starts at 15% from the left edge
+- `y: 0.2` means the box starts at 20% from the top edge
+- `width: 0.3` means the box is 30% of the image width
+- `height: 0.3` means the box is 30% of the image height
+
+#### Camera Screen Red Box (Guide Box)
+
+On the Camera screen, the red box is a **fixed centered square** that takes up 70% of the preview width. It tells the operator where to aim the camera. The captured photo is then **cropped to this box area**.
+
+---
+
+### Lab 52: Change Product Screen Red Box Coordinates
+
+**File:** `utils/inspection-points.ts`
+
+1. Open `utils/inspection-points.ts`:
+
+```tsx
+/** Hardcoded to 2 inspection points per product */
+export function generateInspectionPoints(): InspectionPoint[] {
+  return [
+    { id: 'point-1', x: 0.15, y: 0.2, width: 0.3, height: 0.3 },
+    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+  ];
+}
+```
+
+2. Let's move the first red box to the **top-right** corner and make it smaller:
+
+```tsx
+export function generateInspectionPoints(): InspectionPoint[] {
+  return [
+    { id: 'point-1', x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
+    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+  ];
+}
+```
+
+3. **Save** and navigate to the Product screen — the first red box is now in the top-right area and smaller.
+
+> **Experiment:** Try different values between 0 and 1. Remember:
+> - `x` and `y` are the **top-left corner** of the box
+> - `width` and `height` are the **size** of the box
+> - Make sure `x + width ≤ 1` and `y + height ≤ 1`, or the box will overflow off the image
+
+---
+
+### Lab 53: Change Camera Guide Box Size
+
+**File:** `app/camera.tsx`
+
+The camera guide box size is controlled by a constant at the top of the file.
+
+1. Open `app/camera.tsx` and find:
+
+```tsx
+const GUIDE_BOX_WIDTH_RATIO = 0.7; // 70% of preview width
+```
+
+2. Change it to a smaller box (50% of preview width):
+
+```tsx
+const GUIDE_BOX_WIDTH_RATIO = 0.5; // 50% of preview width
+```
+
+3. **Save** and go to the Camera screen — the guide box is now smaller, requiring the operator to get closer to the component.
+
+> **Tip:** A smaller guide box means the operator must be more precise when framing the shot. A larger guide box is more forgiving. Common values: `0.5` (tight) to `0.8` (loose).
+
+---
+
+### Lab 54: Change Camera Guide Box to a Rectangle (Custom Aspect Ratio)
+
+**File:** `app/camera.tsx`
+
+Currently the guide box is a perfect square (`aspectRatio: 1`). Let's make it a rectangle.
+
+1. Find the `guideBox` style:
+
+```tsx
+guideBox: {
+  width: "70%",
+  aspectRatio: 1,
+  borderWidth: 3,
+  borderColor: "#FF0000",
+  backgroundColor: "transparent",
+},
+```
+
+2. Change `aspectRatio` to make it wider than tall (landscape rectangle):
+
+```tsx
+guideBox: {
+  width: "70%",
+  aspectRatio: 1.5,
+  borderWidth: 3,
+  borderColor: "#FF0000",
+  backgroundColor: "transparent",
+},
+```
+
+3. **Save** and check the Camera screen — the guide box is now a horizontal rectangle.
+
+> `aspectRatio: 1` = square, `aspectRatio: 1.5` = landscape, `aspectRatio: 0.75` = portrait. Match this to the shape of the component you are inspecting.
+
+---
+
+### Lab 55: Understand the InspectionPoint Data Structure
+
+**File:** `utils/inspection-points.ts`
+
+Before we add or remove inspection points, let's understand the data structure:
+
+```tsx
+export interface InspectionPoint {
+  id: string;      // Unique identifier (e.g. 'point-1')
+  x: number;       // Left edge position (0 to 1)
+  y: number;       // Top edge position (0 to 1)
+  width: number;   // Box width (0 to 1)
+  height: number;  // Box height (0 to 1)
+}
+```
+
+Each inspection point represents **one area** on the product that needs to be inspected. The app loops through all points — for each point:
+1. The Product screen shows the product image with the red box highlighting that point
+2. The operator taps "Next" → Camera screen opens
+3. The operator takes a photo of that area
+4. The photo is sent to the AI server for prediction
+5. The result is saved
+6. If there are more points, the app goes back to the Product screen for the next point
+7. When all points are done, the app goes to the Summary screen
+
+The number of inspection points is simply **the length of the array** returned by `generateInspectionPoints()`.
+
+---
+
+### Lab 56: Add a Third Inspection Point
+
+**File:** `utils/inspection-points.ts`
+
+1. Open `utils/inspection-points.ts`.
+2. Add a third inspection point to the array:
+
+```tsx
+export function generateInspectionPoints(): InspectionPoint[] {
+  return [
+    { id: 'point-1', x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
+    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+    { id: 'point-3', x: 0.1, y: 0.6, width: 0.35, height: 0.25 },
+  ];
+}
+```
+
+3. **Save** and navigate through the app — the Product screen will now show **"Inspection Point 1 of 3"**, and you will need to capture 3 photos before reaching the Summary.
+
+---
+
+### Lab 57: Reduce to a Single Inspection Point
+
+**File:** `utils/inspection-points.ts`
+
+1. Remove all but the first point:
+
+```tsx
+export function generateInspectionPoints(): InspectionPoint[] {
+  return [
+    { id: 'point-1', x: 0.15, y: 0.2, width: 0.3, height: 0.3 },
+  ];
+}
+```
+
+2. **Save** and test — the app now only requires **one** photo before going to the Summary.
+
+> **Key insight:** The number of inspection points is controlled entirely by this array. Need 5 points? Add 5 objects. Need 1? Keep just 1. The rest of the app (Product screen, Camera screen, Summary screen) adapts automatically because it loops through the array.
+
+---
+
+### Lab 58: Add Five Inspection Points with Custom Coordinates
+
+**File:** `utils/inspection-points.ts`
+
+This is a challenge lab — place 5 red boxes across different areas of the product image:
+
+```tsx
+export function generateInspectionPoints(): InspectionPoint[] {
+  return [
+    { id: 'point-1', x: 0.05, y: 0.05, width: 0.2, height: 0.2 },
+    { id: 'point-2', x: 0.75, y: 0.05, width: 0.2, height: 0.2 },
+    { id: 'point-3', x: 0.35, y: 0.35, width: 0.3, height: 0.3 },
+    { id: 'point-4', x: 0.05, y: 0.7, width: 0.2, height: 0.25 },
+    { id: 'point-5', x: 0.7, y: 0.7, width: 0.25, height: 0.25 },
+  ];
+}
+```
+
+**Save** and test the full flow — you should need to capture 5 photos, one for each inspection point. The Product screen will show each red box in sequence.
+
+> **Visual map of the 5 points:**
+> ```
+> ┌──────────────────────────┐
+> │ [1]              [2]     │
+> │                          │
+> │       [3]                │
+> │                          │
+> │ [4]              [5]     │
+> └──────────────────────────┘
+> ```
+
+---
+
+### Day 3 — Session 2 Recap
+
+You now understand:
+- The **two red box systems**: normalized coordinates on the Product screen, percentage-based guide box on the Camera screen
+- How to change red box **position** (x, y) and **size** (width, height) using values between 0 and 1
+- How to change the **camera guide box** size and aspect ratio
+- How to **add** or **remove** inspection points by modifying the array in `utils/inspection-points.ts`
+- That the number of inspection points = the number of items in the array — the rest of the app adapts automatically
+
+---
+
+# Day 4 — Session 1: Server Files & Report Endpoint
+
+> **Goal:** Understand how images are saved on the laptop server, how the filename contains rich metadata, and how to use the /report endpoint to extract insights from inspection data.
+
+---
+
+### Where Are the Images Saved?
+
+Every time the mobile app sends a photo to `POST /predict`, the server does two things:
+1. Runs the AI model to get a PASS/FAIL prediction
+2. **Saves the original image** to the `uploads/` folder with metadata baked into the filename
+
+The `uploads/` folder is automatically created the first time an image is received. It lives inside the server project:
+
+```
+deep_learning_celestica_senai_laptop/
+├── prediction_app_in_laptop_using_vscode.py
+├── uploads/                              ← Images saved here
+│   ├── 20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unknown_pass_0.95.jpg
+│   ├── 20260316_143045_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unknown_fail_0.62.jpg
+│   └── ...
+```
+
+---
+
+### Lab 59: Inspect the Uploads Folder
+
+1. Make sure the server is running and you have completed at least one full inspection from the mobile app.
+2. Open the `uploads/` folder on the laptop (using File Explorer or terminal):
+
+```bash
+cd deep_learning_celestica_senai_laptop/uploads
+dir
+```
+
+> On macOS/Linux use `ls` instead of `dir`.
+
+3. You should see `.jpg` files with long, descriptive filenames.
+
+---
+
+### Lab 60: Decode the Filename Metadata
+
+Every saved image has a structured filename. Let's break it down:
+
+**Example filename:**
+```
+20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unknown_pass_0.95.jpg
+```
+
+The filename is built from parts separated by underscores. The **last two parts** (before `.jpg`) are always the **prediction label** and **confidence**:
+
+| Part | Meaning | Example |
+|------|---------|---------|
+| Timestamp | When the photo was taken | `20260316_143022` (2026-03-16 at 14:30:22) |
+| Product Model | Which product was inspected | `WIDGET_PRO` |
+| Station Number | Which station | `STATION_1` |
+| Production Line | Which line | `LINE_A` |
+| Production Shift | Which shift | `SHIFT_A` |
+| Operator | Who did the inspection | `ALI` |
+| Device ID | Which phone/device | `unknown` |
+| **Prediction** | AI result | `pass` or `fail` |
+| **Confidence** | How sure the AI is | `0.95` (95%) |
+
+Here is the code from `prediction_app_in_laptop_using_vscode.py` that builds the filename:
+
+```python
+ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+meta_keys = ['product_model', 'station_number', 'production_line',
+             'production_shift', 'operator', 'device_id']
+meta = {k: _sanitize(request.form.get(k)) for k in meta_keys}
+parts = [
+    ts,
+    meta['product_model'],
+    meta['station_number'],
+    meta['production_line'],
+    meta['production_shift'],
+    meta['operator'],
+    meta['device_id'],
+    label,
+    f"{confidence:.2f}",
+]
+filename = '_'.join(parts) + '.jpg'
+```
+
+> **Key insight:** Every image is self-documenting. You don't need a database — the filename **is** the database record. You can sort, filter, and analyze images just by reading filenames.
+
+---
+
+### Lab 61: Understand the /report Endpoint
+
+The server has a `GET /report` endpoint that reads the `uploads/` folder and counts how many images passed vs. failed.
+
+1. With the server running, open a browser and go to:
+
+```
+http://192.168.x.x:5000/report
+```
+
+(Use your actual laptop IP address.)
+
+2. You will see a JSON response like:
+
+```json
+{
+  "total": 5,
+  "pass": 3,
+  "fail": 2
+}
+```
+
+Here is the server code that powers this:
+
+```python
+@app.route('/report', methods=['GET'])
+def report():
+    """Return prediction counts from saved photos in uploads/."""
+    if not UPLOAD_DIR.exists():
+        return jsonify({"total": 0, "pass": 0, "fail": 0})
+    pass_count = 0
+    fail_count = 0
+    for f in UPLOAD_DIR.glob("*.jpg"):
+        parts = f.stem.split("_")
+        if len(parts) >= 2:
+            label = parts[-2].lower()
+            if label == "pass":
+                pass_count += 1
+            elif label == "fail":
+                fail_count += 1
+    return jsonify({
+        "total": pass_count + fail_count,
+        "pass": pass_count,
+        "fail": fail_count
+    })
+```
+
+The logic:
+1. List all `.jpg` files in `uploads/`
+2. Split each filename by `_`
+3. The **second-to-last** part is always the label (`pass` or `fail`)
+4. Count totals and return JSON
+
+---
+
+### Lab 62: Test the Report Endpoint with curl
+
+You can also call the report endpoint from the terminal:
+
+```bash
+curl http://192.168.x.x:5000/report
+```
+
+Or from the laptop itself:
+
+```bash
+curl http://127.0.0.1:5000/report
+```
+
+This returns the same JSON. Useful for automation or scripting.
+
+---
+
+### Lab 63: Test the Predict Endpoint with curl
+
+You can simulate the mobile app by sending an image from the terminal:
+
+```bash
+curl -X POST -F "file=@path/to/test_image.jpg" -F "product_model=TEST_PRODUCT" -F "station_number=STATION_1" -F "operator=ALI" http://127.0.0.1:5000/predict
+```
+
+The response will look like:
+
+```json
+{
+  "prediction": "pass",
+  "confidence": 0.92
+}
+```
+
+And a new file will appear in `uploads/` with all the metadata in the filename.
+
+---
+
+### Lab 64: Analyze Inspection Data Using Filenames
+
+Since all metadata is encoded in the filename, you can extract insights by parsing filenames. Here are useful analyses:
+
+**Count failures by operator (using terminal):**
+
+On **Windows PowerShell**:
+```powershell
+Get-ChildItem uploads/*.jpg | Where-Object { $_.Name -match '_fail_' } | ForEach-Object { $_.Name }
+```
+
+On **macOS/Linux**:
+```bash
+ls uploads/ | grep '_fail_'
+```
+
+**Count inspections per shift:**
+
+On **Windows PowerShell**:
+```powershell
+Get-ChildItem uploads/*.jpg | ForEach-Object { $_.Name } | Select-String -Pattern 'SHIFT_[ABC]' -AllMatches | ForEach-Object { $_.Matches.Value } | Group-Object | Select-Object Name, Count
+```
+
+---
+
+### Lab 65: Use AI to Analyze Inspection Data
+
+Here is a sample prompt you can use with ChatGPT, Claude, or any AI assistant to gain insights from your inspection data:
+
+> **Copy and paste this prompt, then paste your filenames after it:**
+
+```
+I have a folder of factory inspection images. Each filename contains metadata in this format:
+{timestamp}_{product_model}_{station_number}_{production_line}_{production_shift}_{operator}_{device_id}_{pass|fail}_{confidence}.jpg
+
+Here are my filenames:
+[paste your filenames here]
+
+Please analyze this data and tell me:
+1. Overall pass/fail rate
+2. Which operator has the highest failure rate?
+3. Which station has the most failures?
+4. Which shift has the most failures?
+5. Are there any patterns in the timestamps (e.g., failures clustering at certain times)?
+6. What is the average confidence score for pass vs. fail predictions?
+7. Any recommendations for improving quality?
+```
+
+To get the list of filenames:
+
+On **Windows**:
+```bash
+dir uploads /b
+```
+
+On **macOS/Linux**:
+```bash
+ls uploads/
+```
+
+Copy the output and paste it into the AI prompt.
+
+> **This is powerful.** Without building any dashboard or database, you can get actionable insights just from filenames + an AI assistant. This is a practical technique for small-scale factory inspection systems.
+
+---
+
+### Day 4 — Session 1 Recap
+
+You now understand:
+- The `uploads/` folder stores every image the server receives
+- Each filename is a self-documenting record with timestamp, product, station, line, shift, operator, device, prediction, and confidence
+- The `GET /report` endpoint counts pass/fail totals by parsing filenames
+- How to test the server endpoints using curl
+- How to extract insights from filenames using terminal commands or AI prompts
+- That no separate database is needed — the filesystem **is** the data store
+
+---
+
+# Day 4 — Session 2: Inspection Summary & End-to-End Flow
+
+> **Goal:** Understand the final Summary screen, walk through the complete inspection cycle, customize the summary, and test the full end-to-end flow from Welcome to Done.
+
+---
+
+### The Complete Inspection Flow
+
+Let's map out the entire flow from start to finish:
+
+```
+Welcome Screen
+  │
+  ▼  Tap "Enter"
+Selection Screen
+  │  (pick product, line, station, shift, operator)
+  ▼  Tap "Enter"
+Product Screen ◄────────────────────┐
+  │  (shows product image + red box │
+  │   for current inspection point) │
+  ▼  Tap "Next"                     │
+Camera Screen                       │
+  │  (live camera + guide box)      │
+  │  Tap "Take Picture"             │
+  │  → Photo cropped + compressed   │
+  │  → Sent to server /predict      │
+  │  → Result shown (PASS/FAIL)     │
+  ▼  Tap "Next"                     │
+  │                                 │
+  ├── More points? ─── YES ─────────┘
+  │
+  ▼  NO (all points inspected)
+Summary Screen
+  │  (list of all inspection results)
+  ▼  Tap "Done"
+Completion Modal
+  │  ("All inspections completed")
+  ▼  Tap "Return"
+Welcome Screen (everything reset)
+```
+
+---
+
+### Summary Screen Walkthrough
+
+**File:** `app/summary.tsx`
+
+The Summary screen displays all inspection results in a scrollable list. Each result shows:
+
+1. **Thumbnail** — the cropped photo that was captured
+2. **Point label** — "Point 1", "Point 2", etc.
+3. **Result** — PASS (green) or FAIL (red)
+4. **Confidence** — how confident the AI is (e.g., 95.00%)
+5. **Justification** — a short text explanation
+
+Here is the key rendering code:
+
+```tsx
+{inspectionResults.map((item, index) => (
+  <View key={index} style={styles.resultCard}>
+    <Image
+      source={{ uri: item.imageUri }}
+      style={styles.thumbnail}
+      resizeMode="cover"
+    />
+    <View style={styles.resultInfo}>
+      <Text style={styles.pointLabel}>Point {index + 1}</Text>
+      <Text
+        style={[
+          styles.resultText,
+          item.result === 'PASS' ? styles.passText : styles.failText,
+        ]}
+      >
+        {item.result}
+      </Text>
+      <Text style={styles.confidenceText}>
+        Confidence: {(Math.floor(item.confidence * 100) / 100).toFixed(2)}%
+      </Text>
+      {item.justification ? (
+        <Text style={styles.justificationText} numberOfLines={2}>
+          {item.justification}
+        </Text>
+      ) : null}
+    </View>
+  </View>
+))}
+```
+
+The `inspectionResults` array comes from the global state (`inspection-context.tsx`). Each time the Camera screen gets a result from the server, it adds an entry:
+
+```tsx
+addInspectionResult({
+  imageUri: capturedPhotoUri,
+  result: analysisResult.result,      // 'PASS' or 'FAIL'
+  confidence: analysisResult.confidence,
+  justification: analysisResult.justification,
+});
+```
+
+---
+
+### The "Done" Button Flow
+
+When the operator taps **Done**:
+
+1. A modal appears with the message: *"All inspections have been completed. Test completed. Data saved."*
+2. The operator taps **Return**.
+3. The app calls `reset()` which clears all state:
+
+```tsx
+const reset = () => {
+  setInspectionData(null);       // Clears selected product/station/etc.
+  setInspectionPoints([]);        // Clears the inspection points
+  setInspectionResults([]);       // Clears all results
+  setCurrentPointIndex(0);        // Resets the point counter
+};
+```
+
+4. The app navigates to the Welcome screen using `router.replace('/(tabs)')`.
+5. The operator can start a brand-new inspection cycle.
+
+---
+
+### Lab 66: Change the Summary Screen Title
+
+**File:** `app/summary.tsx`
+
+1. Find:
+
+```tsx
+<Text style={styles.title}>Inspection Summary</Text>
+```
+
+2. Change it to:
+
+```tsx
+<Text style={styles.title}>Quality Report</Text>
+```
+
+3. **Save** and check.
+
+---
+
+### Lab 67: Change the Summary Title Style
+
+**File:** `app/summary.tsx`
+
+1. Find the `title` style:
+
+```tsx
+title: {
+  fontSize: 24,
+  fontWeight: 'bold',
+  marginBottom: 24,
+  color: '#000000',
+  textAlign: 'center',
+},
+```
+
+2. Change it to:
+
+```tsx
+title: {
+  fontSize: 28,
+  fontWeight: 'bold',
+  marginBottom: 24,
+  color: '#1565C0',
+  textAlign: 'center',
+},
+```
+
+3. **Save** and check — the title is now blue and larger.
+
+---
+
+### Lab 68: Change the Done Button Color
+
+**File:** `app/summary.tsx`
+
+1. Find the `doneButton` style:
+
+```tsx
+doneButton: {
+  backgroundColor: '#000000',
+  padding: 16,
+  borderRadius: 8,
+  alignItems: 'center',
+  marginTop: 20,
+},
+```
+
+2. Change it to:
+
+```tsx
+doneButton: {
+  backgroundColor: '#4CAF50',
+  padding: 16,
+  borderRadius: 8,
+  alignItems: 'center',
+  marginTop: 20,
+},
+```
+
+3. **Save** and check — the Done button is now green.
+
+---
+
+### Lab 69: Change the Completion Modal Message
+
+**File:** `app/summary.tsx`
+
+1. Find the modal text:
+
+```tsx
+<Text style={styles.modalTitle}>Complete</Text>
+<Text style={styles.modalMessage}>
+  All inspections have been completed. Test completed. Data saved.
+</Text>
+```
+
+2. Change it to your own message:
+
+```tsx
+<Text style={styles.modalTitle}>Inspection Complete!</Text>
+<Text style={styles.modalMessage}>
+  All inspection points have been checked. Results have been recorded on the server.
+</Text>
+```
+
+3. **Save** and test by completing a full inspection cycle to see the modal.
+
+---
+
+### Lab 70: Change the Return Button Text
+
+**File:** `app/summary.tsx`
+
+1. Find:
+
+```tsx
+<TouchableOpacity
+  style={styles.returnButton}
+  onPress={handleReturn}
+>
+  <Text style={styles.returnButtonText}>Return</Text>
+</TouchableOpacity>
+```
+
+2. Change the text:
+
+```tsx
+<TouchableOpacity
+  style={styles.returnButton}
+  onPress={handleReturn}
+>
+  <Text style={styles.returnButtonText}>Start New Inspection</Text>
+</TouchableOpacity>
+```
+
+3. **Save** and check — the modal button now says "Start New Inspection" instead of "Return".
+
+---
+
+### Lab 71: Change the Result Card Colors
+
+**File:** `app/summary.tsx`
+
+1. Find the pass and fail text colors:
+
+```tsx
+passText: {
+  color: '#228B22',
+},
+failText: {
+  color: '#DC143C',
+},
+```
+
+2. Change them to more vivid colors:
+
+```tsx
+passText: {
+  color: '#00C853',
+},
+failText: {
+  color: '#FF1744',
+},
+```
+
+3. **Save** and check — PASS and FAIL results are now brighter.
+
+---
+
+### Lab 72: Full End-to-End Test
+
+This is the final integration test. Complete the entire flow:
+
+1. **Welcome Screen** → Tap **Enter**
+2. **Selection Screen** → Pick a product, line, station, shift, operator → Tap **Enter**
+3. **Product Screen** → See the red box on inspection point 1 → Tap **Next**
+4. **Camera Screen** → Align the component inside the guide box → Tap **Take Picture**
+5. Wait for the AI prediction → See PASS or FAIL with confidence → Tap **Next**
+6. **Product Screen** → See the red box on inspection point 2 → Tap **Next**
+7. **Camera Screen** → Take another picture → Get result → Tap **Next**
+8. *(Repeat for all remaining inspection points)*
+9. **Summary Screen** → Review all results with thumbnails, PASS/FAIL, confidence
+10. Tap **Done** → See the completion modal
+11. Tap **Start New Inspection** → Back to Welcome screen, ready for next product
+
+**Meanwhile, on the laptop:**
+- Check the server terminal for log entries
+- Open the `uploads/` folder — you should see new `.jpg` files
+- Visit `http://192.168.x.x:5000/report` in a browser — totals should match
+
+> **Congratulations!** You have just completed a full AI-powered factory inspection from your phone, with real-time predictions from a deep learning model running on a laptop.
+
+---
+
+### Day 4 — Session 2 Recap
+
+You now understand:
+- The complete inspection flow from Welcome to Done and back
+- How the Summary screen renders all inspection results from the shared state
+- How the "Done" → modal → "Return" flow works, including state reset
+- How to customize the Summary screen (title, colors, button text, modal message)
+- How to verify the full pipeline end-to-end: mobile app → server → uploads → report
+
+---
+
+> **Congratulations!** You have completed a 4-day, 72-lab hands-on workshop. You built, customized, and connected a full AI-powered factory inspection system — a React Native mobile app capturing photos, a Flask + TensorFlow server running predictions, and a file-based reporting system. You can now confidently modify the UI, configure inspection points, set up the server, and analyze inspection data on your own.
