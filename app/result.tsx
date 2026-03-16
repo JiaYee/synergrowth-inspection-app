@@ -1,4 +1,5 @@
-import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, TouchableOpacity, Image, View, Text, Modal } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
 
@@ -10,10 +11,16 @@ export default function ResultScreen() {
   const imageUri = params.imageUri as string;
 
   const { reset } = useInspection();
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   const handleDone = () => {
+    setShowCompleteModal(true);
+  };
+
+  const handleReturn = () => {
+    setShowCompleteModal(false);
     reset();
-    router.push('/(tabs)');
+    router.replace('/(tabs)');
   };
 
   const handleRetry = () => {
@@ -60,6 +67,29 @@ export default function ResultScreen() {
           <Text style={styles.buttonText}>Done</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Completion Modal */}
+      <Modal
+        visible={showCompleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleReturn}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Complete</Text>
+            <Text style={styles.modalMessage}>
+              All inspections have been completed. Test completed. Data saved.
+            </Text>
+            <TouchableOpacity
+              style={styles.returnButton}
+              onPress={handleReturn}
+            >
+              <Text style={styles.returnButtonText}>Return</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -144,6 +174,41 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF',
     fontSize: 18,
+    fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 20,
+    width: '80%',
+  },
+  modalTitle: {
+    marginBottom: 16,
+    color: '#000000',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalMessage: {
+    marginBottom: 20,
+    color: '#000000',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  returnButton: {
+    padding: 12,
+    backgroundColor: '#000000',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  returnButtonText: {
+    color: '#FFF',
+    fontSize: 16,
     fontWeight: '600',
   },
 });
