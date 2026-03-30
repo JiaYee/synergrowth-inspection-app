@@ -2255,6 +2255,21 @@ deep_learning_celestica_senai_laptop/
 | `ANDELI_DZ47_63_S02_C02.keras` | The trained deep learning model (must be in the same folder) |
 | `uploads/` | Where the server saves every image it receives (auto-created) |
 
+### Clone the server repository (GitHub)
+
+The workshop server code, model file, and sample images live in this public repository:
+
+**[github.com/JiaYee/deep_learning_celestica_senai_laptop](https://github.com/JiaYee/deep_learning_celestica_senai_laptop)**
+
+On the laptop, clone it once (for example into your usual projects folder):
+
+```bash
+git clone https://github.com/JiaYee/deep_learning_celestica_senai_laptop.git
+cd deep_learning_celestica_senai_laptop
+```
+
+Use the `develop` branch if your instructor asks for it: after cloning, run `git checkout develop`.
+
 ---
 
 ### Lab 46: Install Python on the Laptop
@@ -2283,11 +2298,16 @@ pip --version
 
 Open a terminal on the **laptop** (not the phone) and run these commands:
 
-**Step A — Navigate to the server folder:**
+**Step A — Get the server folder:**
+
+If you do not have the project yet, clone it from GitHub:
 
 ```bash
+git clone https://github.com/JiaYee/deep_learning_celestica_senai_laptop.git
 cd deep_learning_celestica_senai_laptop
 ```
+
+If you already cloned or copied the folder, open a terminal and `cd` into `deep_learning_celestica_senai_laptop` (use your actual path).
 
 **Step B — Create a virtual environment:**
 
