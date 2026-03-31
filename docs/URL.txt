@@ -1,1 +1,10 @@
 https://tinyurl.com/3103260715
+
+feat: new color
+fix: broken icon
+chore: housekeeping
+
+git config user.name "tai"
+git config user.email "taijiayee@gmail.com"
+
+git fetch
