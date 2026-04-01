@@ -9,6 +9,7 @@
 ## TLDR
 
 ### Install
+
 1. **Node** — Engine that runs JavaScript
 2. **Git** — Push/Pull your code
 3. **VSCode** — Code editor
@@ -18,31 +19,37 @@
 7. `npx expo start`
 
 ### App Structure
+
 1. **App >>> Screens** — Each file in `app/` is a screen
 2. **App >>> Layout** — `app/_layout.tsx` registers all screens
 3. **Assets >>> Images** — `assets/images/` holds all images
 
 ### Screen Structure
+
 1. **Imports** — What you need (`Text`, `Image`, `View`, etc.)
 2. **Components** — What you see (`<Text>`, `<Image>`, `<TextInput>`)
 3. **Styles** — How it looks (color, size, spacing)
 
 ### Data Structure
+
 1. **Export** — Make data available (`export const OPERATORS = [...]`)
 2. **Import** — Bring data in (`import { OPERATORS } from ...`)
 3. **Use** — Display or reference it in your screen
 
 ### Add Image
+
 1. Put image in `assets/images/` (e.g. `icon.png`)
 2. Use it: `<Image source={require('@/assets/images/icon.png')} />`
 
 ### AI Framework
+
 1. **Requirement** — What do I want?
-   > *"Add a new text field for batch number"*
+   > _"Add a new text field for batch number"_
 2. **Context** — What do I have?
-   > *Select all, copy, paste into AI*
+   > _Select all, copy, paste into AI_
 
 ### Server Connection (Day 3–4)
+
 1. **Server** — `python prediction_app_in_laptop_using_vscode.py` (runs AI model)
 2. **Config** — `constants/config.ts` → set `DEMO_MODE = false` and `API_BASE_URL`
 3. **Inspection Points** — `utils/inspection-points.ts` → add/remove/move red boxes
@@ -76,10 +83,10 @@ Before we dive into code, let's understand the landscape of mobile app developme
 
 A **native app** is built using the platform's own language and tools:
 
-| Platform | Language | IDE |
-|----------|----------|-----|
-| Android | Kotlin / Java | Android Studio |
-| iOS | Swift / Objective-C | Xcode |
+| Platform | Language            | IDE            |
+| -------- | ------------------- | -------------- |
+| Android  | Kotlin / Java       | Android Studio |
+| iOS      | Swift / Objective-C | Xcode          |
 
 **Pros:** Best performance, full access to device hardware, platform-specific UI.
 **Cons:** You must write and maintain **two completely separate codebases** — one for Android, one for iOS.
@@ -90,11 +97,11 @@ A **hybrid (cross-platform) app** lets you write **one codebase** that runs on b
 
 Popular frameworks include:
 
-| Framework | Language | Official Site |
-|-----------|----------|---------------|
-| React Native | JavaScript / TypeScript | [reactnative.dev](https://reactnative.dev/) |
-| Flutter | Dart | [flutter.dev](https://flutter.dev/) |
-| .NET MAUI | C# | [learn.microsoft.com/dotnet/maui](https://learn.microsoft.com/en-us/dotnet/maui/) |
+| Framework    | Language                | Official Site                                                                     |
+| ------------ | ----------------------- | --------------------------------------------------------------------------------- |
+| React Native | JavaScript / TypeScript | [reactnative.dev](https://reactnative.dev/)                                       |
+| Flutter      | Dart                    | [flutter.dev](https://flutter.dev/)                                               |
+| .NET MAUI    | C#                      | [learn.microsoft.com/dotnet/maui](https://learn.microsoft.com/en-us/dotnet/maui/) |
 
 **Pros:** One codebase for both platforms, faster development, shared team skills.
 **Cons:** Slight performance trade-off compared to fully native, occasional platform-specific quirks.
@@ -262,16 +269,14 @@ From now on, every time you **save a file**, the app on your phone will **update
 
 ```tsx
 <Text style={styles.title}>
-  Synergrowth{'\n'}Automated{'\n'}Inspection{'\n'}System
+  Synergrowth{"\n"}Automated{"\n"}Inspection{"\n"}System
 </Text>
 ```
 
 3. Change it to:
 
 ```tsx
-<Text style={styles.title}>
-  My Factory{'\n'}Inspector
-</Text>
+<Text style={styles.title}>My Factory{"\n"}Inspector</Text>
 ```
 
 4. **Save the file** (Ctrl+S / Cmd+S).
@@ -439,6 +444,7 @@ backgroundColor: '#F5F5F5',
 ### Day 1 — Session 1 Recap
 
 You have:
+
 - Cloned and installed the project
 - Run the app on your phone using Expo Go
 - Changed text content, font size, colors, and background
@@ -489,11 +495,14 @@ Open `app/_layout.tsx` — this is the navigation hub:
 ```tsx
 <Stack>
   <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-  <Stack.Screen name="selection" options={{ title: 'Select Details' }} />
-  <Stack.Screen name="product" options={{ title: 'Product View' }} />
-  <Stack.Screen name="component" options={{ title: 'Component Inspection' }} />
-  <Stack.Screen name="camera" options={{ title: 'Camera', headerShown: false }} />
-  <Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+  <Stack.Screen name="selection" options={{ title: "Select Details" }} />
+  <Stack.Screen name="product" options={{ title: "Product View" }} />
+  <Stack.Screen name="component" options={{ title: "Component Inspection" }} />
+  <Stack.Screen
+    name="camera"
+    options={{ title: "Camera", headerShown: false }}
+  />
+  <Stack.Screen name="result" options={{ title: "Inspection Result" }} />
 </Stack>
 ```
 
@@ -502,8 +511,8 @@ Each `Stack.Screen` name corresponds to a file. For example, `name="selection"` 
 Screens navigate using `router.push()` and `router.replace()`:
 
 ```tsx
-router.push('/selection');   // Go to selection screen (can go back)
-router.replace('/');         // Go to home screen (replaces history)
+router.push("/selection"); // Go to selection screen (can go back)
+router.replace("/"); // Go to home screen (replaces history)
 ```
 
 Learn more: [Expo Router — Navigating between pages](https://docs.expo.dev/router/navigating-pages/)
@@ -512,29 +521,29 @@ Learn more: [Expo Router — Navigating between pages](https://docs.expo.dev/rou
 
 These are the building blocks used across every screen:
 
-| Component | What it does | Learn more |
-|-----------|-------------|------------|
-| `View` | Container (like a `<div>`) | [View docs](https://reactnative.dev/docs/view) |
-| `Text` | Displays text | [Text docs](https://reactnative.dev/docs/text) |
-| `Image` | Displays images | [Image docs](https://reactnative.dev/docs/image) |
+| Component          | What it does                      | Learn more                                                             |
+| ------------------ | --------------------------------- | ---------------------------------------------------------------------- |
+| `View`             | Container (like a `<div>`)        | [View docs](https://reactnative.dev/docs/view)                         |
+| `Text`             | Displays text                     | [Text docs](https://reactnative.dev/docs/text)                         |
+| `Image`            | Displays images                   | [Image docs](https://reactnative.dev/docs/image)                       |
 | `TouchableOpacity` | Pressable button with fade effect | [TouchableOpacity docs](https://reactnative.dev/docs/touchableopacity) |
-| `ScrollView` | Scrollable container | [ScrollView docs](https://reactnative.dev/docs/scrollview) |
-| `StyleSheet` | Defines styles (like CSS) | [StyleSheet docs](https://reactnative.dev/docs/stylesheet) |
-| `TextInput` | Text input field | [TextInput docs](https://reactnative.dev/docs/textinput) |
+| `ScrollView`       | Scrollable container              | [ScrollView docs](https://reactnative.dev/docs/scrollview)             |
+| `StyleSheet`       | Defines styles (like CSS)         | [StyleSheet docs](https://reactnative.dev/docs/stylesheet)             |
+| `TextInput`        | Text input field                  | [TextInput docs](https://reactnative.dev/docs/textinput)               |
 
 ### Styling in React Native
 
 React Native uses `StyleSheet.create()` instead of CSS files. The syntax is similar to CSS but uses camelCase:
 
-| CSS | React Native |
-|-----|-------------|
+| CSS                      | React Native             |
+| ------------------------ | ------------------------ |
 | `background-color: red;` | `backgroundColor: 'red'` |
-| `font-size: 16px;` | `fontSize: 16` |
-| `font-weight: bold;` | `fontWeight: 'bold'` |
-| `text-align: center;` | `textAlign: 'center'` |
-| `border-radius: 8px;` | `borderRadius: 8` |
-| `padding: 20px;` | `padding: 20` |
-| `margin-bottom: 10px;` | `marginBottom: 10` |
+| `font-size: 16px;`       | `fontSize: 16`           |
+| `font-weight: bold;`     | `fontWeight: 'bold'`     |
+| `text-align: center;`    | `textAlign: 'center'`    |
+| `border-radius: 8px;`    | `borderRadius: 8`        |
+| `padding: 20px;`         | `padding: 20`            |
+| `margin-bottom: 10px;`   | `marginBottom: 10`       |
 
 Learn more: [React Native — Style](https://reactnative.dev/docs/style)
 
@@ -542,13 +551,13 @@ Learn more: [React Native — Style](https://reactnative.dev/docs/style)
 
 React Native uses **Flexbox** for layout. Key properties:
 
-| Property | What it does |
-|----------|-------------|
-| `flex: 1` | Take up all available space |
-| `flexDirection: 'column'` | Stack children vertically (default) |
-| `flexDirection: 'row'` | Stack children horizontally |
-| `justifyContent: 'center'` | Center children along main axis |
-| `alignItems: 'center'` | Center children along cross axis |
+| Property                   | What it does                        |
+| -------------------------- | ----------------------------------- |
+| `flex: 1`                  | Take up all available space         |
+| `flexDirection: 'column'`  | Stack children vertically (default) |
+| `flexDirection: 'row'`     | Stack children horizontally         |
+| `justifyContent: 'center'` | Center children along main axis     |
+| `alignItems: 'center'`     | Center children along cross axis    |
 
 Learn more: [React Native — Flexbox](https://reactnative.dev/docs/flexbox)
 
@@ -608,9 +617,7 @@ borderRadius: 30,
 1. Find the title `<Text>` element:
 
 ```tsx
-<Text style={styles.title}>
-  My Factory{'\n'}Inspector
-</Text>
+<Text style={styles.title}>My Factory{"\n"}Inspector</Text>
 ```
 
 2. Add a new `<Text>` element right below it:
@@ -719,13 +726,13 @@ button: {
 2. Find this line:
 
 ```tsx
-<Stack.Screen name="selection" options={{ title: 'Select Details' }} />
+<Stack.Screen name="selection" options={{ title: "Select Details" }} />
 ```
 
 3. Change the title:
 
 ```tsx
-<Stack.Screen name="selection" options={{ title: 'Station Setup' }} />
+<Stack.Screen name="selection" options={{ title: "Station Setup" }} />
 ```
 
 4. **Save** and navigate to the Selection screen on your phone — the header bar now says "Station Setup".
@@ -739,13 +746,13 @@ button: {
 1. Find this line:
 
 ```tsx
-<Stack.Screen name="product" options={{ title: 'Product View' }} />
+<Stack.Screen name="product" options={{ title: "Product View" }} />
 ```
 
 2. Change it to:
 
 ```tsx
-<Stack.Screen name="product" options={{ title: 'Inspect This Product' }} />
+<Stack.Screen name="product" options={{ title: "Inspect This Product" }} />
 ```
 
 3. **Save** and check.
@@ -755,6 +762,7 @@ button: {
 ### Day 1 — Session 2 Recap
 
 You now understand:
+
 - The project folder structure
 - How Expo Router maps files to screens
 - Core React Native components (`View`, `Text`, `Image`, `TouchableOpacity`)
@@ -775,35 +783,15 @@ You now understand:
 Open `constants/mock-data.ts`. This file contains all the dropdown options used in the Selection screen:
 
 ```tsx
-export const PRODUCT_MODELS = [
-  'PRODUCT_X',
-  'PRODUCT_Y',
-  'PRODUCT_Z',
-];
+export const PRODUCT_MODELS = ["PRODUCT_X", "PRODUCT_Y", "PRODUCT_Z"];
 
-export const PRODUCTION_LINES = [
-  'LINE_A',
-  'LINE_B',
-  'LINE_C',
-];
+export const PRODUCTION_LINES = ["LINE_A", "LINE_B", "LINE_C"];
 
-export const STATION_NUMBERS = [
-  'STATION_1',
-  'STATION_2',
-  'STATION_3',
-];
+export const STATION_NUMBERS = ["STATION_1", "STATION_2", "STATION_3"];
 
-export const PRODUCTION_SHIFTS = [
-  'SHIFT_A',
-  'SHIFT_B',
-  'SHIFT_C',
-];
+export const PRODUCTION_SHIFTS = ["SHIFT_A", "SHIFT_B", "SHIFT_C"];
 
-export const OPERATORS = [
-  'OPERATOR_1',
-  'OPERATOR_2',
-  'OPERATOR_3',
-];
+export const OPERATORS = ["OPERATOR_1", "OPERATOR_2", "OPERATOR_3"];
 ```
 
 The Selection screen (`app/selection.tsx`) imports these arrays and renders them as dropdown options. When you change the arrays, the dropdowns update automatically.
@@ -832,22 +820,13 @@ Learn more: [React Context](https://react.dev/learn/passing-data-deeply-with-con
 2. Find the `PRODUCTION_LINES` array:
 
 ```tsx
-export const PRODUCTION_LINES = [
-  'LINE_A',
-  'LINE_B',
-  'LINE_C',
-];
+export const PRODUCTION_LINES = ["LINE_A", "LINE_B", "LINE_C"];
 ```
 
 3. Add `'LINE_D'` at the end (don't forget the comma after `'LINE_C'`):
 
 ```tsx
-export const PRODUCTION_LINES = [
-  'LINE_A',
-  'LINE_B',
-  'LINE_C',
-  'LINE_D',
-];
+export const PRODUCTION_LINES = ["LINE_A", "LINE_B", "LINE_C", "LINE_D"];
 ```
 
 4. **Save** and open the Selection screen on your phone.
@@ -862,22 +841,18 @@ export const PRODUCTION_LINES = [
 1. Find the `OPERATORS` array:
 
 ```tsx
-export const OPERATORS = [
-  'OPERATOR_1',
-  'OPERATOR_2',
-  'OPERATOR_3',
-];
+export const OPERATORS = ["OPERATOR_1", "OPERATOR_2", "OPERATOR_3"];
 ```
 
 2. Add your name and a colleague's name:
 
 ```tsx
 export const OPERATORS = [
-  'OPERATOR_1',
-  'OPERATOR_2',
-  'OPERATOR_3',
-  'ALI',
-  'SITI',
+  "OPERATOR_1",
+  "OPERATOR_2",
+  "OPERATOR_3",
+  "ALI",
+  "SITI",
 ];
 ```
 
@@ -892,20 +867,13 @@ export const OPERATORS = [
 1. Find the `STATION_NUMBERS` array:
 
 ```tsx
-export const STATION_NUMBERS = [
-  'STATION_1',
-  'STATION_2',
-  'STATION_3',
-];
+export const STATION_NUMBERS = ["STATION_1", "STATION_2", "STATION_3"];
 ```
 
 2. Remove `'STATION_3'`:
 
 ```tsx
-export const STATION_NUMBERS = [
-  'STATION_1',
-  'STATION_2',
-];
+export const STATION_NUMBERS = ["STATION_1", "STATION_2"];
 ```
 
 3. **Save** and check the Station Number dropdown — only 2 options remain.
@@ -919,21 +887,17 @@ export const STATION_NUMBERS = [
 1. Find the `PRODUCT_MODELS` array:
 
 ```tsx
-export const PRODUCT_MODELS = [
-  'PRODUCT_X',
-  'PRODUCT_Y',
-  'PRODUCT_Z',
-];
+export const PRODUCT_MODELS = ["PRODUCT_X", "PRODUCT_Y", "PRODUCT_Z"];
 ```
 
 2. Replace with your own product names:
 
 ```tsx
 export const PRODUCT_MODELS = [
-  'WIDGET_PRO',
-  'WIDGET_LITE',
-  'WIDGET_MAX',
-  'WIDGET_MINI',
+  "WIDGET_PRO",
+  "WIDGET_LITE",
+  "WIDGET_MAX",
+  "WIDGET_MINI",
 ];
 ```
 
@@ -950,13 +914,13 @@ export const PRODUCT_MODELS = [
 ```tsx
 export const MOCK_COMPONENTS: Component[] = [
   {
-    id: 'COMPONENT_1',
-    name: 'Component 1',
+    id: "COMPONENT_1",
+    name: "Component 1",
     coordinates: { x1: 100, y1: 50, x2: 200, y2: 150 },
   },
   {
-    id: 'COMPONENT_2',
-    name: 'Component 2',
+    id: "COMPONENT_2",
+    name: "Component 2",
     coordinates: { x1: 250, y1: 50, x2: 350, y2: 150 },
   },
 ];
@@ -967,13 +931,13 @@ export const MOCK_COMPONENTS: Component[] = [
 ```tsx
 export const MOCK_COMPONENTS: Component[] = [
   {
-    id: 'COMPONENT_1',
-    name: 'Front Panel',
+    id: "COMPONENT_1",
+    name: "Front Panel",
     coordinates: { x1: 100, y1: 50, x2: 200, y2: 150 },
   },
   {
-    id: 'COMPONENT_2',
-    name: 'Side Connector',
+    id: "COMPONENT_2",
+    name: "Side Connector",
     coordinates: { x1: 250, y1: 50, x2: 350, y2: 150 },
   },
 ];
@@ -992,18 +956,18 @@ export const MOCK_COMPONENTS: Component[] = [
 ```tsx
 export const MOCK_COMPONENTS: Component[] = [
   {
-    id: 'COMPONENT_1',
-    name: 'Front Panel',
+    id: "COMPONENT_1",
+    name: "Front Panel",
     coordinates: { x1: 100, y1: 50, x2: 200, y2: 150 },
   },
   {
-    id: 'COMPONENT_2',
-    name: 'Side Connector',
+    id: "COMPONENT_2",
+    name: "Side Connector",
     coordinates: { x1: 250, y1: 50, x2: 350, y2: 150 },
   },
   {
-    id: 'COMPONENT_3',
-    name: 'Back Cover',
+    id: "COMPONENT_3",
+    name: "Back Cover",
     coordinates: { x1: 100, y1: 200, x2: 200, y2: 300 },
   },
 ];
@@ -1020,21 +984,17 @@ export const MOCK_COMPONENTS: Component[] = [
 1. Find the `PRODUCTION_SHIFTS` array:
 
 ```tsx
-export const PRODUCTION_SHIFTS = [
-  'SHIFT_A',
-  'SHIFT_B',
-  'SHIFT_C',
-];
+export const PRODUCTION_SHIFTS = ["SHIFT_A", "SHIFT_B", "SHIFT_C"];
 ```
 
 2. Add a night shift:
 
 ```tsx
 export const PRODUCTION_SHIFTS = [
-  'SHIFT_A',
-  'SHIFT_B',
-  'SHIFT_C',
-  'NIGHT_SHIFT',
+  "SHIFT_A",
+  "SHIFT_B",
+  "SHIFT_C",
+  "NIGHT_SHIFT",
 ];
 ```
 
@@ -1146,17 +1106,13 @@ button: {
 1. Find this text element:
 
 ```tsx
-<Text style={styles.hint}>
-  Fill up all to proceed
-</Text>
+<Text style={styles.hint}>Fill up all to proceed</Text>
 ```
 
 2. Change it to:
 
 ```tsx
-<Text style={styles.hint}>
-  Please select all fields before proceeding
-</Text>
+<Text style={styles.hint}>Please select all fields before proceeding</Text>
 ```
 
 3. **Save** and check.
@@ -1166,6 +1122,7 @@ button: {
 ### Day 2 — Session 1 Recap
 
 You now understand:
+
 - Where dropdown data comes from (`constants/mock-data.ts`)
 - How to **add**, **edit**, and **remove** items in arrays
 - How React Context shares data between screens
@@ -1182,6 +1139,7 @@ You now understand:
 ### Product Screen Overview
 
 Open `app/product.tsx`. This screen:
+
 - Reads the selected product from context (`useInspection()`)
 - Displays the product image and a label
 - Has a "Next" button that goes to the Component screen
@@ -1189,6 +1147,7 @@ Open `app/product.tsx`. This screen:
 ### Component Screen Overview
 
 Open `app/component.tsx`. This screen:
+
 - Loops through components one at a time using `currentComponentIndex`
 - Shows the product image with a red box highlighting the component to inspect
 - Has a "Next" button that goes to the Camera screen
@@ -1196,6 +1155,7 @@ Open `app/component.tsx`. This screen:
 ### Camera Screen Overview
 
 Open `app/camera.tsx`. This screen:
+
 - Requests camera permission from the user
 - Shows a live camera preview with a **red guide box** overlay
 - Captures a photo, crops it to the guide box area, and sends it for analysis
@@ -1204,6 +1164,7 @@ Open `app/camera.tsx`. This screen:
 ### Result Screen Overview
 
 Open `app/result.tsx`. This screen:
+
 - Displays the captured component image
 - Shows the machine prediction (PASS or FAIL) with confidence percentage
 - Shows feedback buttons so the operator can confirm or override the AI result
@@ -1623,7 +1584,7 @@ export const Colors = {
 3. Change the `tintColorLight` variable at the top of the file:
 
 ```tsx
-const tintColorLight = '#1565C0';
+const tintColorLight = "#1565C0";
 ```
 
 4. **Save** — any screen that uses theme colors will now use blue instead of teal.
@@ -1637,14 +1598,17 @@ const tintColorLight = '#1565C0';
 Open `services/api.ts`. At the top of the file, you'll see:
 
 ```tsx
-const API_BASE_URL = 'https://synergrowth-python-api.onrender.com';
-const PREDICT_API_URL = 'https://deep-learning-celestica-senai.onrender.com/predict';
-const FINAL_API_URL = 'https://deep-learning-celestica-senai.onrender.com/final';
+const API_BASE_URL = "https://synergrowth-python-api.onrender.com";
+const PREDICT_API_URL =
+  "https://deep-learning-celestica-senai.onrender.com/predict";
+const FINAL_API_URL =
+  "https://deep-learning-celestica-senai.onrender.com/final";
 ```
 
 These are the backend server URLs hosted on [Render.com](https://render.com/).
 
 The app has two main API functions:
+
 - `predictImage()` — sends a photo to the AI model, gets back PASS/FAIL with a confidence score
 - `submitInspectionResult()` — sends the final inspection data (image + operator decision) to the server
 
@@ -1663,6 +1627,7 @@ When `DEMO_MODE` is `true` (as it is during this workshop), all API calls are **
 ### Day 2 — Session 2 Recap
 
 You now understand:
+
 - How each screen (Product, Component, Camera, Result) is structured
 - How the camera guide box and capture flow work
 - How to customize every screen's text, colors, and styles
@@ -1687,13 +1652,13 @@ The `Image` component works just like `Text` or `View` — it's a building block
 1. First, add `Image` to the import line at the top of the file. Find:
 
 ```tsx
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 ```
 
 2. Add `Image` to the list:
 
 ```tsx
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 ```
 
 3. Now add the logo image above the title. Find the `<Text style={styles.title}>` line and add an `Image` element above it:
@@ -1795,7 +1760,7 @@ In Expo Router, **every file in the `app/` folder automatically becomes a screen
 3. Paste the following code into the new file:
 
 ```tsx
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
 export default function AboutScreen() {
   return (
@@ -1803,7 +1768,7 @@ export default function AboutScreen() {
       <Text style={styles.title}>About This App</Text>
 
       <Text style={styles.description}>
-        This is an automated inspection system{'\n'}
+        This is an automated inspection system{"\n"}
         built with React Native and Expo.
       </Text>
 
@@ -1815,27 +1780,27 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    color: '#1565C0',
+    color: "#1565C0",
   },
   description: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
-    color: '#666666',
+    color: "#666666",
     lineHeight: 24,
   },
   version: {
     fontSize: 14,
-    color: '#999999',
+    color: "#999999",
   },
 });
 ```
@@ -1852,7 +1817,7 @@ Every new screen must also be registered in the navigation layout so the app kno
 2. Find the last `Stack.Screen` entry:
 
 ```tsx
-<Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+<Stack.Screen name="result" options={{ title: "Inspection Result" }} />
 ```
 
 3. Add a new line right below it for the About screen:
@@ -1878,7 +1843,7 @@ Now let's wire up the "About" button from Lab 43 so it navigates to the About sc
 
 ```tsx
 const handleEnter = () => {
-  router.push('/selection');
+  router.push("/selection");
 };
 ```
 
@@ -1886,11 +1851,11 @@ const handleEnter = () => {
 
 ```tsx
 const handleEnter = () => {
-  router.push('/selection');
+  router.push("/selection");
 };
 
 const handleAbout = () => {
-  router.push('/about');
+  router.push("/about");
 };
 ```
 
@@ -1982,7 +1947,7 @@ A "commit" is a save point. Each commit needs a short message describing what yo
 git commit -m "Add logo, about page, and custom styles"
 ```
 
-> **Tip:** Write messages that describe *what* you did. Good: `"Add about page with navigation"`. Bad: `"Changed some files"`.
+> **Tip:** Write messages that describe _what_ you did. Good: `"Add about page with navigation"`. Bad: `"Changed some files"`.
 
 #### Step 6: Connect to Your GitHub Repository
 
@@ -2009,15 +1974,15 @@ After the push completes, **refresh your GitHub repository page** — you should
 
 #### Git Commands Cheat Sheet
 
-| Command | What It Does |
-|---------|-------------|
-| `git status` | See which files have changed |
-| `git add .` | Stage all changes for commit |
-| `git add <file>` | Stage a specific file |
+| Command                   | What It Does                           |
+| ------------------------- | -------------------------------------- |
+| `git status`              | See which files have changed           |
+| `git add .`               | Stage all changes for commit           |
+| `git add <file>`          | Stage a specific file                  |
 | `git commit -m "message"` | Save staged changes with a description |
-| `git push` | Upload commits to GitHub |
-| `git pull` | Download latest changes from GitHub |
-| `git log --oneline` | View your commit history |
+| `git push`                | Upload commits to GitHub               |
+| `git pull`                | Download latest changes from GitHub    |
+| `git log --oneline`       | View your commit history               |
 
 #### Making More Changes Later
 
@@ -2036,6 +2001,7 @@ That's it — three commands to save your work forever!
 ### Day 2 — Session 3 Recap
 
 You now know how to:
+
 - Add an **image/logo** to any screen using the `Image` component
 - **Create a brand-new screen** by adding a file in the `app/` folder
 - **Register a new screen** in `app/_layout.tsx`
@@ -2049,168 +2015,177 @@ You now know how to:
 
 Use this table whenever you need to find where to change something:
 
-| I want to change... | Open this file |
-|---------------------|----------------|
-| App name, icon, splash screen | `app.json` |
-| Product models, lines, operators, shifts, stations | `constants/mock-data.ts` |
-| Component names and coordinates | `constants/mock-data.ts` |
-| Theme colors and fonts | `constants/theme.ts` |
-| Demo Mode on/off | `constants/config.ts` |
-| API server URLs | `services/api.ts` |
-| Welcome screen (home page) | `app/(tabs)/index.tsx` |
-| Selection screen (dropdowns) | `app/selection.tsx` |
-| Product screen | `app/product.tsx` |
-| Component inspection screen | `app/component.tsx` |
-| Camera screen | `app/camera.tsx` |
-| Result screen (PASS/FAIL) | `app/result.tsx` |
-| Screen titles in header bar | `app/_layout.tsx` |
-| About screen | `app/about.tsx` |
-| Navigation flow / add new screen | `app/_layout.tsx` + new file in `app/` |
-| Global state (shared data) | `services/inspection-context.tsx` |
-| Inspection point coordinates & count | `utils/inspection-points.ts` |
-| Camera guide box size | `app/camera.tsx` (`GUIDE_BOX_WIDTH_RATIO`) |
-| Summary screen (results list) | `app/summary.tsx` |
-| Server startup | `prediction_app_in_laptop_using_vscode.py` |
-| Server Python dependencies | `requirements.txt` (flask, tensorflow, pandas) |
-| AI model file | `ANDELI_DZ47_63_S02_C02.keras` |
-| Saved inspection images | `uploads/` folder on the laptop |
-| Inspection report (pass/fail counts) | `GET /report` on the server |
+| I want to change...                                | Open this file                                 |
+| -------------------------------------------------- | ---------------------------------------------- |
+| App name, icon, splash screen                      | `app.json`                                     |
+| Product models, lines, operators, shifts, stations | `constants/mock-data.ts`                       |
+| Component names and coordinates                    | `constants/mock-data.ts`                       |
+| Theme colors and fonts                             | `constants/theme.ts`                           |
+| Demo Mode on/off                                   | `constants/config.ts`                          |
+| API server URLs                                    | `services/api.ts`                              |
+| Welcome screen (home page)                         | `app/(tabs)/index.tsx`                         |
+| Selection screen (dropdowns)                       | `app/selection.tsx`                            |
+| Product screen                                     | `app/product.tsx`                              |
+| Component inspection screen                        | `app/component.tsx`                            |
+| Camera screen                                      | `app/camera.tsx`                               |
+| Result screen (PASS/FAIL)                          | `app/result.tsx`                               |
+| Screen titles in header bar                        | `app/_layout.tsx`                              |
+| About screen                                       | `app/about.tsx`                                |
+| Navigation flow / add new screen                   | `app/_layout.tsx` + new file in `app/`         |
+| Global state (shared data)                         | `services/inspection-context.tsx`              |
+| Inspection point coordinates & count               | `utils/inspection-points.ts`                   |
+| Camera guide box size                              | `app/camera.tsx` (`GUIDE_BOX_WIDTH_RATIO`)     |
+| Summary screen (results list)                      | `app/summary.tsx`                              |
+| Server startup                                     | `prediction_app_in_laptop_using_vscode.py`     |
+| Server Python dependencies                         | `requirements.txt` (flask, tensorflow, pandas) |
+| AI model file                                      | `ANDELI_DZ47_63_S02_C02.keras`                 |
+| Saved inspection images                            | `uploads/` folder on the laptop                |
+| Inspection report (pass/fail counts)               | `GET /report` on the server                    |
 
 ---
 
 ## Useful Links
 
-| Resource | URL |
-|----------|-----|
-| React Native — Official Docs | [reactnative.dev/docs](https://reactnative.dev/docs/getting-started) |
-| Expo — Official Docs | [docs.expo.dev](https://docs.expo.dev/) |
-| Expo Router — Navigation | [docs.expo.dev/router](https://docs.expo.dev/router/introduction/) |
-| TypeScript — Official Docs | [typescriptlang.org/docs](https://www.typescriptlang.org/docs/) |
-| React — Official Docs | [react.dev](https://react.dev/) |
-| Node.js — Download | [nodejs.org](https://nodejs.org/) |
-| Git — Download | [git-scm.com](https://git-scm.com/) |
-| GitHub — Create Account | [github.com](https://github.com/) |
-| VS Code — Download | [code.visualstudio.com](https://code.visualstudio.com/) |
-| Cursor — Download | [cursor.com](https://www.cursor.com/) |
-| Expo Go — Android | [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) |
-| Expo Go — iOS | [Apple App Store](https://apps.apple.com/app/expo-go/id982107779) |
-| HTML Color Codes | [htmlcolorcodes.com](https://htmlcolorcodes.com/) |
-| Python — Download | [python.org/downloads](https://www.python.org/downloads/) |
-| Flask — Official Docs | [flask.palletsprojects.com](https://flask.palletsprojects.com/) |
-| TensorFlow — Official Docs | [tensorflow.org](https://www.tensorflow.org/) |
+| Resource                     | URL                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------ |
+| React Native — Official Docs | [reactnative.dev/docs](https://reactnative.dev/docs/getting-started)                 |
+| Expo — Official Docs         | [docs.expo.dev](https://docs.expo.dev/)                                              |
+| Expo Router — Navigation     | [docs.expo.dev/router](https://docs.expo.dev/router/introduction/)                   |
+| TypeScript — Official Docs   | [typescriptlang.org/docs](https://www.typescriptlang.org/docs/)                      |
+| React — Official Docs        | [react.dev](https://react.dev/)                                                      |
+| Node.js — Download           | [nodejs.org](https://nodejs.org/)                                                    |
+| Git — Download               | [git-scm.com](https://git-scm.com/)                                                  |
+| GitHub — Create Account      | [github.com](https://github.com/)                                                    |
+| VS Code — Download           | [code.visualstudio.com](https://code.visualstudio.com/)                              |
+| Cursor — Download            | [cursor.com](https://www.cursor.com/)                                                |
+| Expo Go — Android            | [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) |
+| Expo Go — iOS                | [Apple App Store](https://apps.apple.com/app/expo-go/id982107779)                    |
+| HTML Color Codes             | [htmlcolorcodes.com](https://htmlcolorcodes.com/)                                    |
+| Python — Download            | [python.org/downloads](https://www.python.org/downloads/)                            |
+| Flask — Official Docs        | [flask.palletsprojects.com](https://flask.palletsprojects.com/)                      |
+| TensorFlow — Official Docs   | [tensorflow.org](https://www.tensorflow.org/)                                        |
 
 ---
 
 ## Lab Summary by Session
 
 ### Day 1 — Session 1 (Labs 1–7)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 1 | Welcome screen title text | `app/(tabs)/index.tsx` |
-| 2 | Title font size | `app/(tabs)/index.tsx` |
-| 3 | Title color | `app/(tabs)/index.tsx` |
-| 4 | Button background color | `app/(tabs)/index.tsx` |
-| 5 | Button text | `app/(tabs)/index.tsx` |
-| 6 | Button text size and font weight | `app/(tabs)/index.tsx` |
-| 7 | Screen background color | `app/(tabs)/index.tsx` |
+
+| Lab | What You Changed                 | File                   |
+| --- | -------------------------------- | ---------------------- |
+| 1   | Welcome screen title text        | `app/(tabs)/index.tsx` |
+| 2   | Title font size                  | `app/(tabs)/index.tsx` |
+| 3   | Title color                      | `app/(tabs)/index.tsx` |
+| 4   | Button background color          | `app/(tabs)/index.tsx` |
+| 5   | Button text                      | `app/(tabs)/index.tsx` |
+| 6   | Button text size and font weight | `app/(tabs)/index.tsx` |
+| 7   | Screen background color          | `app/(tabs)/index.tsx` |
 
 ### Day 1 — Session 2 (Labs 8–15)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 8 | Button full width | `app/(tabs)/index.tsx` |
-| 9 | Button rounded corners | `app/(tabs)/index.tsx` |
-| 10 | Added tagline text element | `app/(tabs)/index.tsx` |
-| 11 | Button border | `app/(tabs)/index.tsx` |
-| 12 | App display name | `app.json` |
-| 13 | Splash screen background color | `app.json` |
-| 14 | Selection screen header title | `app/_layout.tsx` |
-| 15 | Product screen header title | `app/_layout.tsx` |
+
+| Lab | What You Changed               | File                   |
+| --- | ------------------------------ | ---------------------- |
+| 8   | Button full width              | `app/(tabs)/index.tsx` |
+| 9   | Button rounded corners         | `app/(tabs)/index.tsx` |
+| 10  | Added tagline text element     | `app/(tabs)/index.tsx` |
+| 11  | Button border                  | `app/(tabs)/index.tsx` |
+| 12  | App display name               | `app.json`             |
+| 13  | Splash screen background color | `app.json`             |
+| 14  | Selection screen header title  | `app/_layout.tsx`      |
+| 15  | Product screen header title    | `app/_layout.tsx`      |
 
 ### Day 2 — Session 1 (Labs 16–26)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 16 | Added new production line | `constants/mock-data.ts` |
-| 17 | Added new operators | `constants/mock-data.ts` |
-| 18 | Removed a station | `constants/mock-data.ts` |
-| 19 | Renamed product models | `constants/mock-data.ts` |
-| 20 | Renamed components | `constants/mock-data.ts` |
-| 21 | Added a third component | `constants/mock-data.ts` |
-| 22 | Added a new shift | `constants/mock-data.ts` |
-| 23 | Dropdown background color | `app/selection.tsx` |
-| 24 | Dropdown label font size | `app/selection.tsx` |
-| 25 | Selection button color | `app/selection.tsx` |
-| 26 | Hint text wording | `app/selection.tsx` |
+
+| Lab | What You Changed          | File                     |
+| --- | ------------------------- | ------------------------ |
+| 16  | Added new production line | `constants/mock-data.ts` |
+| 17  | Added new operators       | `constants/mock-data.ts` |
+| 18  | Removed a station         | `constants/mock-data.ts` |
+| 19  | Renamed product models    | `constants/mock-data.ts` |
+| 20  | Renamed components        | `constants/mock-data.ts` |
+| 21  | Added a third component   | `constants/mock-data.ts` |
+| 22  | Added a new shift         | `constants/mock-data.ts` |
+| 23  | Dropdown background color | `app/selection.tsx`      |
+| 24  | Dropdown label font size  | `app/selection.tsx`      |
+| 25  | Selection button color    | `app/selection.tsx`      |
+| 26  | Hint text wording         | `app/selection.tsx`      |
 
 ### Day 2 — Session 2 (Labs 27–41)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 27 | Product label text | `app/product.tsx` |
-| 28 | Product label font size and color | `app/product.tsx` |
-| 29 | Product button color | `app/product.tsx` |
-| 30 | Product image size | `app/product.tsx` |
-| 31 | Component label style | `app/component.tsx` |
-| 32 | Component button color | `app/component.tsx` |
-| 33 | Camera guide box color | `app/camera.tsx` |
-| 34 | Camera guide box thickness | `app/camera.tsx` |
-| 35 | Camera capture button text | `app/camera.tsx` |
-| 36 | Camera loading text | `app/camera.tsx` |
-| 37 | Result text size | `app/result.tsx` |
-| 38 | Confidence text color and size | `app/result.tsx` |
-| 39 | Result image border color | `app/result.tsx` |
-| 40 | Feedback button colors (green/red) | `app/result.tsx` |
-| 41 | Theme tint color | `constants/theme.ts` |
+
+| Lab | What You Changed                   | File                 |
+| --- | ---------------------------------- | -------------------- |
+| 27  | Product label text                 | `app/product.tsx`    |
+| 28  | Product label font size and color  | `app/product.tsx`    |
+| 29  | Product button color               | `app/product.tsx`    |
+| 30  | Product image size                 | `app/product.tsx`    |
+| 31  | Component label style              | `app/component.tsx`  |
+| 32  | Component button color             | `app/component.tsx`  |
+| 33  | Camera guide box color             | `app/camera.tsx`     |
+| 34  | Camera guide box thickness         | `app/camera.tsx`     |
+| 35  | Camera capture button text         | `app/camera.tsx`     |
+| 36  | Camera loading text                | `app/camera.tsx`     |
+| 37  | Result text size                   | `app/result.tsx`     |
+| 38  | Confidence text color and size     | `app/result.tsx`     |
+| 39  | Result image border color          | `app/result.tsx`     |
+| 40  | Feedback button colors (green/red) | `app/result.tsx`     |
+| 41  | Theme tint color                   | `constants/theme.ts` |
 
 ### Day 2 — Session 3 (Labs 42–45 + Git)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 42 | Added logo image to Welcome screen | `app/(tabs)/index.tsx` |
-| 43 | Added a second "About" button | `app/(tabs)/index.tsx` |
-| 44 | Created a new About screen + registered in navigation | `app/about.tsx`, `app/_layout.tsx` |
-| 45 | Wired button to navigate to the About screen | `app/(tabs)/index.tsx` |
-| — | Saved work to GitHub (git add, commit, push) | Terminal |
+
+| Lab | What You Changed                                      | File                               |
+| --- | ----------------------------------------------------- | ---------------------------------- |
+| 42  | Added logo image to Welcome screen                    | `app/(tabs)/index.tsx`             |
+| 43  | Added a second "About" button                         | `app/(tabs)/index.tsx`             |
+| 44  | Created a new About screen + registered in navigation | `app/about.tsx`, `app/_layout.tsx` |
+| 45  | Wired button to navigate to the About screen          | `app/(tabs)/index.tsx`             |
+| —   | Saved work to GitHub (git add, commit, push)          | Terminal                           |
 
 ### Day 3 — Session 1 (Labs 46–51)
-| Lab | What You Did | File / Tool |
-|-----|-------------|-------------|
-| 46 | Installed Python on the laptop | Terminal |
-| 47 | First-time server setup (venv, pip install) | Terminal |
-| 48 | Started the Flask prediction server | `prediction_app_in_laptop_using_vscode.py` |
-| 49 | Found laptop IP address, verified from phone | Terminal / Phone browser |
-| 50 | Set `DEMO_MODE = false` and `API_BASE_URL` | `constants/config.ts` |
-| 51 | Tested full phone-to-server connection | End-to-end test |
+
+| Lab | What You Did                                 | File / Tool                                |
+| --- | -------------------------------------------- | ------------------------------------------ |
+| 46  | Installed Python on the laptop               | Terminal                                   |
+| 47  | First-time server setup (venv, pip install)  | Terminal                                   |
+| 48  | Started the Flask prediction server          | `prediction_app_in_laptop_using_vscode.py` |
+| 49  | Found laptop IP address, verified from phone | Terminal / Phone browser                   |
+| 50  | Set `DEMO_MODE = false` and `API_BASE_URL`   | `constants/config.ts`                      |
+| 51  | Tested full phone-to-server connection       | End-to-end test                            |
 
 ### Day 3 — Session 2 (Labs 52–58)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 52 | Product screen red box coordinates | `utils/inspection-points.ts` |
-| 53 | Camera guide box size | `app/camera.tsx` |
-| 54 | Camera guide box aspect ratio (square → rectangle) | `app/camera.tsx` |
-| 55 | Walkthrough of InspectionPoint data structure | `utils/inspection-points.ts` |
-| 56 | Added a third inspection point | `utils/inspection-points.ts` |
-| 57 | Reduced to a single inspection point | `utils/inspection-points.ts` |
-| 58 | Added five inspection points with custom coordinates | `utils/inspection-points.ts` |
+
+| Lab | What You Changed                                     | File                         |
+| --- | ---------------------------------------------------- | ---------------------------- |
+| 52  | Product screen red box coordinates                   | `utils/inspection-points.ts` |
+| 53  | Camera guide box size                                | `app/camera.tsx`             |
+| 54  | Camera guide box aspect ratio (square → rectangle)   | `app/camera.tsx`             |
+| 55  | Walkthrough of InspectionPoint data structure        | `utils/inspection-points.ts` |
+| 56  | Added a third inspection point                       | `utils/inspection-points.ts` |
+| 57  | Reduced to a single inspection point                 | `utils/inspection-points.ts` |
+| 58  | Added five inspection points with custom coordinates | `utils/inspection-points.ts` |
 
 ### Day 4 — Session 1 (Labs 59–65)
-| Lab | What You Did | File / Tool |
-|-----|-------------|-------------|
-| 59 | Inspected the uploads/ folder | Terminal / File Explorer |
-| 60 | Decoded filename metadata structure | `prediction_app_in_laptop_using_vscode.py` |
-| 61 | Walkthrough of /report endpoint | Browser (`GET /report`) |
-| 62 | Tested /report endpoint with curl | Terminal |
-| 63 | Tested /predict endpoint with curl | Terminal |
-| 64 | Analyzed inspection data using filenames | Terminal (PowerShell / bash) |
-| 65 | Used AI to analyze inspection data | ChatGPT / Claude prompt |
+
+| Lab | What You Did                             | File / Tool                                |
+| --- | ---------------------------------------- | ------------------------------------------ |
+| 59  | Inspected the uploads/ folder            | Terminal / File Explorer                   |
+| 60  | Decoded filename metadata structure      | `prediction_app_in_laptop_using_vscode.py` |
+| 61  | Walkthrough of /report endpoint          | Browser (`GET /report`)                    |
+| 62  | Tested /report endpoint with curl        | Terminal                                   |
+| 63  | Tested /predict endpoint with curl       | Terminal                                   |
+| 64  | Analyzed inspection data using filenames | Terminal (PowerShell / bash)               |
+| 65  | Used AI to analyze inspection data       | ChatGPT / Claude prompt                    |
 
 ### Day 4 — Session 2 (Labs 66–72)
-| Lab | What You Changed | File |
-|-----|-----------------|------|
-| 66 | Summary screen title text | `app/summary.tsx` |
-| 67 | Summary title style (size, color) | `app/summary.tsx` |
-| 68 | Done button color | `app/summary.tsx` |
-| 69 | Completion modal message | `app/summary.tsx` |
-| 70 | Return button text | `app/summary.tsx` |
-| 71 | Result card PASS/FAIL colors | `app/summary.tsx` |
-| 72 | Full end-to-end integration test | All files |
+
+| Lab | What You Changed                  | File              |
+| --- | --------------------------------- | ----------------- |
+| 66  | Summary screen title text         | `app/summary.tsx` |
+| 67  | Summary title style (size, color) | `app/summary.tsx` |
+| 68  | Done button color                 | `app/summary.tsx` |
+| 69  | Completion modal message          | `app/summary.tsx` |
+| 70  | Return button text                | `app/summary.tsx` |
+| 71  | Result card PASS/FAIL colors      | `app/summary.tsx` |
+| 72  | Full end-to-end integration test  | All files         |
 
 ---
 
@@ -2248,12 +2223,12 @@ deep_learning_celestica_senai_laptop/
 └── .venv/                                     ← Python virtual environment
 ```
 
-| File | Purpose |
-|------|---------|
+| File                                       | Purpose                                                         |
+| ------------------------------------------ | --------------------------------------------------------------- |
 | `prediction_app_in_laptop_using_vscode.py` | Flask app — receives images, runs AI model, returns predictions |
-| `requirements.txt` | Lists Python packages: `flask`, `tensorflow`, `pandas` |
-| `ANDELI_DZ47_63_S02_C02.keras` | The trained deep learning model (must be in the same folder) |
-| `uploads/` | Where the server saves every image it receives (auto-created) |
+| `requirements.txt`                         | Lists Python packages: `flask`, `tensorflow`, `pandas`          |
+| `ANDELI_DZ47_63_S02_C02.keras`             | The trained deep learning model (must be in the same folder)    |
+| `uploads/`                                 | Where the server saves every image it receives (auto-created)   |
 
 ### Clone the server repository (GitHub)
 
@@ -2320,11 +2295,13 @@ python -m venv .venv
 **Step C — Activate the virtual environment:**
 
 On **Windows**:
+
 ```bash
 .venv\Scripts\activate.bat
 ```
 
 On **macOS/Linux**:
+
 ```bash
 source .venv/bin/activate
 ```
@@ -2384,6 +2361,7 @@ You should see: **"Server is up! Model is pre-loaded."**
 The mobile app needs to know the laptop's IP address on the Wi-Fi network.
 
 **On Windows:**
+
 ```bash
 ipconfig
 ```
@@ -2391,11 +2369,13 @@ ipconfig
 Look for **Wireless LAN adapter Wi-Fi** → **IPv4 Address**. It looks like `192.168.x.x`.
 
 **On macOS:**
+
 ```bash
 ifconfig | grep "inet "
 ```
 
 **On Linux:**
+
 ```bash
 hostname -I
 ```
@@ -2412,6 +2392,7 @@ Write down this IP address — you will need it in the next lab.
 4. You should see: **"Server is up! Model is pre-loaded."**
 
 If you **cannot** reach the server:
+
 - Double-check both devices are on the same Wi-Fi.
 - Check if the laptop's firewall is blocking port 5000.
 - On Windows, you may need to allow Python through the firewall when prompted.
@@ -2495,6 +2476,7 @@ INFO:__main__:Saved: 20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unk
 ```
 
 > **Troubleshooting:**
+>
 > - "Network request failed" → Check IP address, same Wi-Fi, and firewall.
 > - "Prediction failed: 400" → The server did not receive the image file correctly.
 > - App still shows mock results → Make sure `DEMO_MODE = false` and you saved the file.
@@ -2504,6 +2486,7 @@ INFO:__main__:Saved: 20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unk
 ### Day 3 — Session 1 Recap
 
 You now understand:
+
 - How to set up the Python server (virtual environment, dependencies, model file)
 - How to start and stop the server
 - How to find your laptop's IP address
@@ -2523,10 +2506,10 @@ You now understand:
 
 The app has red boxes in **two places**, and they work differently:
 
-| Location | Purpose | Coordinate System | File |
-|----------|---------|-------------------|------|
-| Product screen | Highlights area to inspect on the product photo | **Normalized (0–1)** — relative to image size | `utils/inspection-points.ts` |
-| Camera screen | Guide box for the operator to align the camera | **Percentage of screen** — fixed centered square | `app/camera.tsx` |
+| Location       | Purpose                                         | Coordinate System                                | File                         |
+| -------------- | ----------------------------------------------- | ------------------------------------------------ | ---------------------------- |
+| Product screen | Highlights area to inspect on the product photo | **Normalized (0–1)** — relative to image size    | `utils/inspection-points.ts` |
+| Camera screen  | Guide box for the operator to align the camera  | **Percentage of screen** — fixed centered square | `app/camera.tsx`             |
 
 #### Product Screen Red Box (Normalized Coordinates)
 
@@ -2564,8 +2547,8 @@ On the Camera screen, the red box is a **fixed centered square** that takes up 7
 /** Hardcoded to 2 inspection points per product */
 export function generateInspectionPoints(): InspectionPoint[] {
   return [
-    { id: 'point-1', x: 0.15, y: 0.2, width: 0.3, height: 0.3 },
-    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+    { id: "point-1", x: 0.15, y: 0.2, width: 0.3, height: 0.3 },
+    { id: "point-2", x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
   ];
 }
 ```
@@ -2575,8 +2558,8 @@ export function generateInspectionPoints(): InspectionPoint[] {
 ```tsx
 export function generateInspectionPoints(): InspectionPoint[] {
   return [
-    { id: 'point-1', x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
-    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+    { id: "point-1", x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
+    { id: "point-2", x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
   ];
 }
 ```
@@ -2584,6 +2567,7 @@ export function generateInspectionPoints(): InspectionPoint[] {
 3. **Save** and navigate to the Product screen — the first red box is now in the top-right area and smaller.
 
 > **Experiment:** Try different values between 0 and 1. Remember:
+>
 > - `x` and `y` are the **top-left corner** of the box
 > - `width` and `height` are the **size** of the box
 > - Make sure `x + width ≤ 1` and `y + height ≤ 1`, or the box will overflow off the image
@@ -2658,15 +2642,16 @@ Before we add or remove inspection points, let's understand the data structure:
 
 ```tsx
 export interface InspectionPoint {
-  id: string;      // Unique identifier (e.g. 'point-1')
-  x: number;       // Left edge position (0 to 1)
-  y: number;       // Top edge position (0 to 1)
-  width: number;   // Box width (0 to 1)
-  height: number;  // Box height (0 to 1)
+  id: string; // Unique identifier (e.g. 'point-1')
+  x: number; // Left edge position (0 to 1)
+  y: number; // Top edge position (0 to 1)
+  width: number; // Box width (0 to 1)
+  height: number; // Box height (0 to 1)
 }
 ```
 
 Each inspection point represents **one area** on the product that needs to be inspected. The app loops through all points — for each point:
+
 1. The Product screen shows the product image with the red box highlighting that point
 2. The operator taps "Next" → Camera screen opens
 3. The operator takes a photo of that area
@@ -2689,9 +2674,9 @@ The number of inspection points is simply **the length of the array** returned b
 ```tsx
 export function generateInspectionPoints(): InspectionPoint[] {
   return [
-    { id: 'point-1', x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
-    { id: 'point-2', x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
-    { id: 'point-3', x: 0.1, y: 0.6, width: 0.35, height: 0.25 },
+    { id: "point-1", x: 0.6, y: 0.1, width: 0.25, height: 0.25 },
+    { id: "point-2", x: 0.55, y: 0.5, width: 0.3, height: 0.3 },
+    { id: "point-3", x: 0.1, y: 0.6, width: 0.35, height: 0.25 },
   ];
 }
 ```
@@ -2708,9 +2693,7 @@ export function generateInspectionPoints(): InspectionPoint[] {
 
 ```tsx
 export function generateInspectionPoints(): InspectionPoint[] {
-  return [
-    { id: 'point-1', x: 0.15, y: 0.2, width: 0.3, height: 0.3 },
-  ];
+  return [{ id: "point-1", x: 0.15, y: 0.2, width: 0.3, height: 0.3 }];
 }
 ```
 
@@ -2729,11 +2712,11 @@ This is a challenge lab — place 5 red boxes across different areas of the prod
 ```tsx
 export function generateInspectionPoints(): InspectionPoint[] {
   return [
-    { id: 'point-1', x: 0.05, y: 0.05, width: 0.2, height: 0.2 },
-    { id: 'point-2', x: 0.75, y: 0.05, width: 0.2, height: 0.2 },
-    { id: 'point-3', x: 0.35, y: 0.35, width: 0.3, height: 0.3 },
-    { id: 'point-4', x: 0.05, y: 0.7, width: 0.2, height: 0.25 },
-    { id: 'point-5', x: 0.7, y: 0.7, width: 0.25, height: 0.25 },
+    { id: "point-1", x: 0.05, y: 0.05, width: 0.2, height: 0.2 },
+    { id: "point-2", x: 0.75, y: 0.05, width: 0.2, height: 0.2 },
+    { id: "point-3", x: 0.35, y: 0.35, width: 0.3, height: 0.3 },
+    { id: "point-4", x: 0.05, y: 0.7, width: 0.2, height: 0.25 },
+    { id: "point-5", x: 0.7, y: 0.7, width: 0.25, height: 0.25 },
   ];
 }
 ```
@@ -2741,6 +2724,7 @@ export function generateInspectionPoints(): InspectionPoint[] {
 **Save** and test the full flow — you should need to capture 5 photos, one for each inspection point. The Product screen will show each red box in sequence.
 
 > **Visual map of the 5 points:**
+>
 > ```
 > ┌──────────────────────────┐
 > │ [1]              [2]     │
@@ -2756,6 +2740,7 @@ export function generateInspectionPoints(): InspectionPoint[] {
 ### Day 3 — Session 2 Recap
 
 You now understand:
+
 - The **two red box systems**: normalized coordinates on the Product screen, percentage-based guide box on the Camera screen
 - How to change red box **position** (x, y) and **size** (width, height) using values between 0 and 1
 - How to change the **camera guide box** size and aspect ratio
@@ -2768,11 +2753,193 @@ You now understand:
 
 > **Goal:** Understand how images are saved on the laptop server, how the filename contains rich metadata, and how to use the /report endpoint to extract insights from inspection data.
 
+### Suggested pacing (~4 hours)
+
+Use this as a flexible agenda. Adjust depth if your group moves faster or needs more debugging time.
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Opening & goals | 15 min | Why filenames-as-data matters; preview the JSON from `/report` |
+| Server file tour | 45–60 min | Walk `prediction_app_in_laptop_using_vscode.py` top-to-bottom (sections below) |
+| Hands-on: uploads & decode | 45 min | Labs 59–60: open `uploads/`, parse a filename together |
+| `/report` & curl | 45 min | Lab 61–62: browser + terminal; discuss edge cases (empty folder, bad names) |
+| Mobile ↔ server trace | 45–60 min | Trace `POST /predict` from `app/camera.tsx` → `services/api.ts` → Flask (section below) |
+| Labs 63–65 & extensions | 45–60 min | `curl` predict, PowerShell/grep, AI prompt; optional mini-challenge (below) |
+| Breaks & buffer | 30 min | Built into the day |
+
+**Instructor tip:** Live-code in the IDE: set a breakpoint or add a temporary `print(meta)` in `predict()` so learners see exactly what arrives from the phone.
+
+---
+
+### Code walkthrough: `prediction_app_in_laptop_using_vscode.py`
+
+The server is a single Flask file. Understanding its **order of execution** and **three routes** is enough to own the backend for the workshop.
+
+#### 1. Imports, TensorFlow threading, and Flask app
+
+At the top, TensorFlow is configured to use **one thread** for inter-op and intra-op work. On a laptop this avoids the model accidentally grabbing every CPU core and makes behavior more predictable during demos:
+
+```python
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
+app = Flask(__name__)
+```
+
+#### 2. Model load at startup (not per request)
+
+The `.keras` model path is resolved **next to the script file** (`Path(__file__).resolve().parent`). The model loads **once** when the process starts:
+
+```python
+model_path = current_directory / 'ANDELI_DZ47_63_S02_C02.keras'
+model = tf.keras.models.load_model(model_path)
+```
+
+**Why it matters:** First prediction after boot may still “feel” heavy while TF warms up; after that, each `/predict` only runs forward inference on one image.
+
+#### 3. `UPLOAD_DIR` and `_sanitize`
+
+```python
+UPLOAD_DIR = current_directory / 'uploads'
+```
+
+`_sanitize` strips characters that would break filenames (spaces, slashes, etc.) and caps length so operator names and IDs cannot create absurd paths:
+
+```python
+def _sanitize(s: str) -> str:
+    return re.sub(r'[^\w\-.]', '_', str(s or ''))[:50] or 'unknown'
+```
+
+**Workshop discussion:** If `product_model` were `WIDGET PRO` (with a space), the filename becomes `WIDGET_PRO`. That is why the reporting code uses **`parts[-2]`** for pass/fail — not “the 8th field” — because some meta fields can collapse to multiple underscores when sanitized.
+
+#### 4. `GET /` — health check
+
+Returns plain text so you can verify the process is alive without hitting the model:
+
+```python
+@app.route('/')
+def health():
+    return "Server is up! Model is pre-loaded.", 200
+```
+
+#### 5. `GET /report` — aggregate pass/fail from disk
+
+The handler:
+
+1. If `uploads/` does not exist → return zeros.
+2. Glob every `*.jpg`.
+3. Split the stem on `_`; treat **second-to-last** segment as the label (`pass` or `fail`).
+4. Return JSON `{ total, pass, fail }`.
+
+This design assumes every saved file follows the same naming convention as `POST /predict` (see below).
+
+#### 6. `POST /predict` — decode, infer, save, respond
+
+**Step A — Read the file**
+
+```python
+file = request.files['file']
+img_bytes = file.read()
+```
+
+The same bytes are later written to disk, so the saved file matches what was uploaded (before any tensor resize the model uses internally).
+
+**Step B — Preprocess for the model**
+
+```python
+image = tf.image.decode_image(img_bytes, channels=3, expand_animations=False)
+image = tf.image.resize(image, (288, 288))
+image = tf.cast(image, tf.float32)
+image = tf.expand_dims(image, axis=0)
+```
+
+The network expects a fixed input size (288×288) and a batch dimension.
+
+**Step C — Inference and label**
+
+```python
+raw_prediction = model(image, training=False).numpy()[0][0]
+label = "fail" if raw_prediction >= 0.5 else "pass"
+confidence = float(1 - raw_prediction) if label == "pass" else float(raw_prediction)
+```
+
+Walk through this slowly with the class:
+
+- The model outputs a **single scalar** `raw_prediction` (sigmoid-style: higher → more “fail-like” in this project).
+- Threshold **0.5** decides pass vs fail.
+- **Confidence** is defined as the model’s strength for the **chosen** label (pass → \(1 - \text{raw}\), fail → raw).
+
+**Step D — Save with metadata**
+
+Form fields from the client (`product_model`, `station_number`, etc.) are read with `request.form.get(k)`, sanitized, and concatenated with timestamp, label, and confidence into one underscore-separated filename, then `img_bytes` is written.
+
+**Step E — JSON response**
+
+```python
+return jsonify({"prediction": label, "confidence": confidence})
+```
+
+The mobile app maps this into its own types (including multiplying confidence by 100 for display in some screens — see Session 2 trace).
+
+#### 7. `if __name__ == '__main__'` — bind to all interfaces
+
+```python
+app.run(host='0.0.0.0', port=5000, debug=False)
+```
+
+`0.0.0.0` is what allows a phone on the same Wi‑Fi to use `http://<laptop-ip>:5000`.
+
+---
+
+### Code walkthrough: Phone → `POST /predict`
+
+Tracing the path once as a group fills most of an hour and connects Days 3–4.
+
+#### 1. Where is the server URL?
+
+**File:** `constants/config.ts`
+
+- `API_BASE_URL` — must be the laptop’s IP and port (e.g. `http://192.168.1.50:5000`).
+- `DEMO_MODE` — when `true`, `predictImage` never calls the network (useful for UI-only practice; no files in `uploads/`).
+
+#### 2. Building the multipart request
+
+**File:** `services/api.ts` — function `predictImage`
+
+- Creates a `FormData` and appends **`file`** with the **captured** (cropped, compressed) inspection image URI.
+- For each metadata field, appends the same **keys** the server expects: `product_model`, `station_number`, `production_line`, `production_shift`, `operator`, `device_id`.
+
+**Align with Python:** Those keys match `meta_keys` in `predict()` when building the filename.
+
+#### 3. When is `predictImage` called?
+
+**File:** `app/camera.tsx` — inside `handleTakePicture`
+
+After `takePictureAsync`, the photo may be cropped to match the on-screen guide (`cropToGuideBox`), then compressed. The call passes `inspectionData` fields into `predictImage` as metadata so every save in `uploads/` carries station, line, shift, and operator.
+
+#### 4. Mapping the JSON response for the UI
+
+Still in `services/api.ts`, the real server returns `prediction` and `confidence` (0–1). The client normalizes to what screens expect:
+
+- `confidence` is scaled: `(raw.confidence ?? raw.score) * 100` for display as a percentage in several places.
+- `justification` is **filled in on the client** from short template strings when using the real API (the Flask handler does not return a justification field today).
+
+**Advanced note:** `predictImage` accepts a first argument for the reference product image URI; the current Flask endpoint only consumes **`file`** (the capture). The reference image is part of the app’s API shape for flexibility / demos. The model in this workshop is trained on the capture alone.
+
+---
+
+### Optional mini-challenge (Session 1 extension)
+
+If you finish early, try one of these as a pair exercise:
+
+1. **Extend `/report`** — Return pass/fail counts **per operator** by parsing each filename (hint: operator is the segment before `device_id` in the current naming scheme — draw the index map on a whiteboard).
+2. **Safety guard** — What should `/report` do if someone drops a random `.jpg` in `uploads/` that does not end with `_pass_0.xx` or `_fail_0.xx`? Sketch improved parsing or filtering.
+
 ---
 
 ### Where Are the Images Saved?
 
 Every time the mobile app sends a photo to `POST /predict`, the server does two things:
+
 1. Runs the AI model to get a PASS/FAIL prediction
 2. **Saves the original image** to the `uploads/` folder with metadata baked into the filename
 
@@ -2810,23 +2977,24 @@ dir
 Every saved image has a structured filename. Let's break it down:
 
 **Example filename:**
+
 ```
 20260316_143022_WIDGET_PRO_STATION_1_LINE_A_SHIFT_A_ALI_unknown_pass_0.95.jpg
 ```
 
 The filename is built from parts separated by underscores. The **last two parts** (before `.jpg`) are always the **prediction label** and **confidence**:
 
-| Part | Meaning | Example |
-|------|---------|---------|
-| Timestamp | When the photo was taken | `20260316_143022` (2026-03-16 at 14:30:22) |
-| Product Model | Which product was inspected | `WIDGET_PRO` |
-| Station Number | Which station | `STATION_1` |
-| Production Line | Which line | `LINE_A` |
-| Production Shift | Which shift | `SHIFT_A` |
-| Operator | Who did the inspection | `ALI` |
-| Device ID | Which phone/device | `unknown` |
-| **Prediction** | AI result | `pass` or `fail` |
-| **Confidence** | How sure the AI is | `0.95` (95%) |
+| Part             | Meaning                     | Example                                    |
+| ---------------- | --------------------------- | ------------------------------------------ |
+| Timestamp        | When the photo was taken    | `20260316_143022` (2026-03-16 at 14:30:22) |
+| Product Model    | Which product was inspected | `WIDGET_PRO`                               |
+| Station Number   | Which station               | `STATION_1`                                |
+| Production Line  | Which line                  | `LINE_A`                                   |
+| Production Shift | Which shift                 | `SHIFT_A`                                  |
+| Operator         | Who did the inspection      | `ALI`                                      |
+| Device ID        | Which phone/device          | `unknown`                                  |
+| **Prediction**   | AI result                   | `pass` or `fail`                           |
+| **Confidence**   | How sure the AI is          | `0.95` (95%)                               |
 
 Here is the code from `prediction_app_in_laptop_using_vscode.py` that builds the filename:
 
@@ -2901,6 +3069,7 @@ def report():
 ```
 
 The logic:
+
 1. List all `.jpg` files in `uploads/`
 2. Split each filename by `_`
 3. The **second-to-last** part is always the label (`pass` or `fail`)
@@ -2954,11 +3123,13 @@ Since all metadata is encoded in the filename, you can extract insights by parsi
 **Count failures by operator (using terminal):**
 
 On **Windows PowerShell**:
+
 ```powershell
 Get-ChildItem uploads/*.jpg | Where-Object { $_.Name -match '_fail_' } | ForEach-Object { $_.Name }
 ```
 
 On **macOS/Linux**:
+
 ```bash
 ls uploads/ | grep '_fail_'
 ```
@@ -2966,6 +3137,7 @@ ls uploads/ | grep '_fail_'
 **Count inspections per shift:**
 
 On **Windows PowerShell**:
+
 ```powershell
 Get-ChildItem uploads/*.jpg | ForEach-Object { $_.Name } | Select-String -Pattern 'SHIFT_[ABC]' -AllMatches | ForEach-Object { $_.Matches.Value } | Group-Object | Select-Object Name, Count
 ```
@@ -2998,11 +3170,13 @@ Please analyze this data and tell me:
 To get the list of filenames:
 
 On **Windows**:
+
 ```bash
 dir uploads /b
 ```
 
 On **macOS/Linux**:
+
 ```bash
 ls uploads/
 ```
@@ -3016,6 +3190,11 @@ Copy the output and paste it into the AI prompt.
 ### Day 4 — Session 1 Recap
 
 You now understand:
+
+- The **pacing** options for a full-day server deep dive (model load, routes, inference, save, report)
+- How **`prediction_app_in_laptop_using_vscode.py`** is structured: threading config, model path, `_sanitize`, `/`, `/report`, `/predict`, and `0.0.0.0` binding
+- Why **label and confidence** in the filename are always the **last two** segments before `.jpg`
+- How the **mobile app** builds `FormData` (`services/api.ts`) and how **`app/camera.tsx`** supplies metadata that becomes part of the filename
 - The `uploads/` folder stores every image the server receives
 - Each filename is a self-documenting record with timestamp, product, station, line, shift, operator, device, prediction, and confidence
 - The `GET /report` endpoint counts pass/fail totals by parsing filenames
@@ -3028,6 +3207,104 @@ You now understand:
 # Day 4 — Session 2: Inspection Summary & End-to-End Flow
 
 > **Goal:** Understand the final Summary screen, walk through the complete inspection cycle, customize the summary, and test the full end-to-end flow from Welcome to Done.
+
+### Suggested pacing (~4 hours)
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Navigation & provider | 30–40 min | `app/_layout.tsx` stack + `InspectionProvider` — where global state lives |
+| Context deep dive | 45–60 min | `services/inspection-context.tsx`: types, `advanceToNextPoint`, `reset` |
+| Camera → Summary trace | 45–60 min | `app/camera.tsx` `handleNext` line-by-line; relation to `app/product.tsx` |
+| Summary screen | 45 min | `app/summary.tsx` structure, guard `useEffect`, modal, styles |
+| Labs 66–72 | 60–90 min | UI tweaks + full E2E test; compare phone results with `/report` |
+| Buffer / demos / Q&A | 30–45 min | DEMO_MODE, `result.tsx` route, troubleshooting |
+
+---
+
+### Code walkthrough: Navigation stack (`app/_layout.tsx`)
+
+The workshop flow uses **Expo Router** with a **Stack** above the tabbed welcome area.
+
+```tsx
+<InspectionProvider>
+  <ThemeProvider value={DefaultTheme}>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="selection" options={{ title: 'Select Details' }} />
+      <Stack.Screen name="product" options={{ title: 'Product View' }} />
+      <Stack.Screen name="camera" options={{ title: 'Camera', headerShown: false }} />
+      <Stack.Screen name="result" options={{ title: 'Inspection Result' }} />
+      <Stack.Screen name="summary" options={{ title: 'Inspection Summary' }} />
+      ...
+    </Stack>
+  </ThemeProvider>
+</InspectionProvider>
+```
+
+**Teaching points:**
+
+1. **`InspectionProvider` wraps the entire tree** — any screen can call `useInspection()` because it is above the `Stack`.
+2. **Order of screens** is not “wizard order”; it is just registration. Actual navigation is driven by `router.push`, `router.replace`, etc., from each screen.
+3. **`(tabs)`** is the Welcome / entry tab group (Session 1–2 of the workshop). `router.replace('/(tabs)')` is used after **Done** on Summary to return to a clean entry.
+
+---
+
+### Code walkthrough: Global inspection state (`services/inspection-context.tsx`)
+
+This file is the **single source of truth** for the multi-point inspection.
+
+#### Types
+
+- **`InspectionData`** — One object per “job”: product model, image id, line, station, shift, operator, device id. Set on the Selection screen.
+- **`InspectionResult`** — One object per **completed capture**: local `imageUri`, `PASS`/`FAIL`, `confidence`, `justification`.
+
+#### State variables
+
+| State | Role |
+| ----- | ---- |
+| `inspectionData` | Who/what is being inspected (metadata for the server filename) |
+| `inspectionPoints` | List of normalized rectangles for red boxes (from `generateInspectionPoints`) |
+| `inspectionResults` | Append-only list of each point’s AI outcome |
+| `currentPointIndex` | Which point the operator is on (0-based) |
+
+#### Key functions
+
+- **`addInspectionResult`** — `setInspectionResults((prev) => [...prev, result])` — preserves order: result index matches point order when you always advance sequentially.
+- **`advanceToNextPoint`** — Increments `currentPointIndex` and returns **`true`** if there is another point (`nextIndex < inspectionPoints.length`), else **`false`**.
+- **`reset`** — Clears data, points, results, and index — used when the operator finishes the job and returns to Welcome.
+
+**Whiteboard exercise:** Draw `currentPointIndex` as a cursor moving along `inspectionPoints`. When it reaches the end, the next “Next” after a capture should go to **Summary**, not Product.
+
+---
+
+### Code walkthrough: Camera handoff (`app/camera.tsx` → Summary)
+
+Focus on **`handleNext`** (called after a successful capture and analysis when the user taps **Next**).
+
+1. **Guard** — Requires `capturedPhotoUri` and `analysisResult`.
+2. **`addInspectionResult({ ... })`** — Pushes the current photo and model outcome into context.
+3. **`const hasMorePoints = advanceToNextPoint()`** — Moves the cursor; capture the boolean.
+4. **Clear local camera state** — `setCapturedPhotoUri(null)`, `setAnalysisResult(null)`.
+5. **Navigate:**
+   - If `hasMorePoints` → `router.replace('/product')` so the operator sees the **next** red box.
+   - Else → `router.replace('/summary')` to review **all** results.
+
+**Connection to Product screen:** `app/product.tsx` reads `currentPointIndex` and `inspectionPoints[currentPointIndex]` to position the red overlay. It does not increment the index — the Camera screen does when moving forward.
+
+---
+
+### Code walkthrough: Summary screen structure (`app/summary.tsx`)
+
+Read the file in four layers:
+
+1. **Hooks** — `useInspection()` for `inspectionResults` and `reset`. Local `useState` for `showCompleteModal`.
+2. **Guard effect** — `useEffect` with `[inspectionResults.length]`: if the array is empty, `router.replace('/(tabs)')`. That avoids showing an empty summary if someone deep-links or state was cleared.
+3. **Main UI** — `ScrollView` maps `inspectionResults` to cards (thumbnail + point label + PASS/FAIL + confidence + optional justification). **Done** sets the modal visible.
+4. **Modal** — **Return** calls `handleReturn`: hide modal, `reset()`, `router.replace('/(tabs)')`.
+
+**Display detail:** PASS/FAIL styling uses conditional styles (`passText` / `failText`). Confidence uses `toFixed(2)` after a floor trick to avoid floating noise in the UI.
+
+**Note on `app/result.tsx`:** The stack also registers a **Result** screen used in some flows (params via URL). The main workshop path uses **in-camera** result state then **Summary** for multiple points. Mention `result.tsx` if learners browse the repo so they are not confused by two “result-like” UIs.
 
 ---
 
@@ -3080,37 +3357,51 @@ The Summary screen displays all inspection results in a scrollable list. Each re
 4. **Confidence** — how confident the AI is (e.g., 95.00%)
 5. **Justification** — a short text explanation
 
-Here is the key rendering code:
+#### How data gets here (data flow recap)
+
+Nothing on the Summary screen calls the server. It only **reads** `inspectionResults` from context. Each entry was appended in **`app/camera.tsx`** when the operator tapped **Next** after a successful prediction. That design keeps the Summary simple and fast (offline-capable UI except during capture).
+
+#### List rendering and keys
+
+The list is a `.map` over `inspectionResults`. The workshop code uses `key={index}` because results are appended in order and not reordered. If you later add “delete row” or drag-sort, you would switch to a stable id per result.
+
+#### Confidence display
+
+The template uses `(Math.floor(item.confidence * 100) / 100).toFixed(2)` so the UI shows two decimal places without long floating-point tails. Remember: after `predictImage` in `services/api.ts`, confidence is already on a **0–100** scale for the real API path; `DEMO_MODE` also returns values in that range.
+
+Here is the key rendering code (as in the repo):
 
 ```tsx
-{inspectionResults.map((item, index) => (
-  <View key={index} style={styles.resultCard}>
-    <Image
-      source={{ uri: item.imageUri }}
-      style={styles.thumbnail}
-      resizeMode="cover"
-    />
-    <View style={styles.resultInfo}>
-      <Text style={styles.pointLabel}>Point {index + 1}</Text>
-      <Text
-        style={[
-          styles.resultText,
-          item.result === 'PASS' ? styles.passText : styles.failText,
-        ]}
-      >
-        {item.result}
-      </Text>
-      <Text style={styles.confidenceText}>
-        Confidence: {(Math.floor(item.confidence * 100) / 100).toFixed(2)}%
-      </Text>
-      {item.justification ? (
-        <Text style={styles.justificationText} numberOfLines={2}>
-          {item.justification}
+{
+  inspectionResults.map((item, index) => (
+    <View key={index} style={styles.resultCard}>
+      <Image
+        source={{ uri: item.imageUri }}
+        style={styles.thumbnail}
+        resizeMode="cover"
+      />
+      <View style={styles.resultInfo}>
+        <Text style={styles.pointLabel}>Point {index + 1}</Text>
+        <Text
+          style={[
+            styles.resultText,
+            item.result === 'PASS' ? styles.passText : styles.failText,
+          ]}
+        >
+          {item.result}
         </Text>
-      ) : null}
+        <Text style={styles.confidenceText}>
+          Confidence: {(Math.floor(item.confidence * 100) / 100).toFixed(2)}%
+        </Text>
+        {item.justification ? (
+          <Text style={styles.justificationText} numberOfLines={2}>
+            {item.justification}
+          </Text>
+        ) : null}
+      </View>
     </View>
-  </View>
-))}
+  ))
+}
 ```
 
 The `inspectionResults` array comes from the global state (`inspection-context.tsx`). Each time the Camera screen gets a result from the server, it adds an entry:
@@ -3118,11 +3409,21 @@ The `inspectionResults` array comes from the global state (`inspection-context.t
 ```tsx
 addInspectionResult({
   imageUri: capturedPhotoUri,
-  result: analysisResult.result,      // 'PASS' or 'FAIL'
+  result: analysisResult.result, // 'PASS' or 'FAIL'
   confidence: analysisResult.confidence,
   justification: analysisResult.justification,
 });
 ```
+
+#### Styles worth pointing out in class
+
+Open `StyleSheet.create` at the bottom of `summary.tsx`:
+
+- **`resultCard`** — `flexDirection: 'row'` lays thumbnail left, text right; `'#F5F5F5'` separates cards from the white page.
+- **`thumbnail`** — fixed 80×80; `resizeMode="cover"` crops to fill the square (consistent grid look).
+- **`modalOverlay`** — semi-transparent black; **`modalContent`** — 80% width card for the completion message.
+
+Learners doing Labs 66–71 are editing these same objects — encourage them to predict the visual change before saving (e.g. “if we only change `passText`, what stays the same?”).
 
 ---
 
@@ -3130,21 +3431,38 @@ addInspectionResult({
 
 When the operator taps **Done**:
 
-1. A modal appears with the message: *"All inspections have been completed. Test completed. Data saved."*
-2. The operator taps **Return**.
-3. The app calls `reset()` which clears all state:
+1. **Local modal state** — `setShowCompleteModal(true)` runs first; the screen does not navigate yet, so the list is still visible behind the dimmer.
+2. A modal appears with the message: _"All inspections have been completed. Test completed. Data saved."_
+3. The operator taps **Return**.
+4. **`handleReturn`** runs: hide modal, then **`reset()`** on context, then **`router.replace('/(tabs)')`**.
+
+`reset()` clears all inspection-related state:
 
 ```tsx
 const reset = () => {
-  setInspectionData(null);       // Clears selected product/station/etc.
-  setInspectionPoints([]);        // Clears the inspection points
-  setInspectionResults([]);       // Clears all results
-  setCurrentPointIndex(0);        // Resets the point counter
+  setInspectionData(null); // Clears selected product/station/etc.
+  setInspectionPoints([]); // Clears the inspection points
+  setInspectionResults([]); // Clears all results
+  setCurrentPointIndex(0); // Resets the point counter
 };
 ```
 
-4. The app navigates to the Welcome screen using `router.replace('/(tabs)')`.
-5. The operator can start a brand-new inspection cycle.
+5. The Welcome / tabs screen appears; the next operator can start a brand-new inspection cycle.
+
+**Compare:** `result.tsx` also has a Done / modal / `reset` pattern for alternate flows — useful to contrast in Q&A (same outcome: context cleared + `replace('/(tabs)')`).
+
+---
+
+### Trace-along exercise (~25 minutes)
+
+In pairs, with one phone or simulator and the IDE open:
+
+1. Set a **breakpoint** or add a **temporary** `console.log` in `addInspectionResult` (context) and in `handleNext` (camera).
+2. Run one **two-point** inspection.
+3. Confirm the **order** of logs: first capture → first `addInspectionResult` → navigate to Product → second capture → second `addInspectionResult` → navigate to Summary.
+4. On the laptop, open **`uploads/`** and confirm **two** new files whose timestamps match the session.
+
+This ties Session 2 UI state to Session 1 server artifacts.
 
 ---
 
@@ -3265,10 +3583,7 @@ doneButton: {
 1. Find:
 
 ```tsx
-<TouchableOpacity
-  style={styles.returnButton}
-  onPress={handleReturn}
->
+<TouchableOpacity style={styles.returnButton} onPress={handleReturn}>
   <Text style={styles.returnButtonText}>Return</Text>
 </TouchableOpacity>
 ```
@@ -3276,10 +3591,7 @@ doneButton: {
 2. Change the text:
 
 ```tsx
-<TouchableOpacity
-  style={styles.returnButton}
-  onPress={handleReturn}
->
+<TouchableOpacity style={styles.returnButton} onPress={handleReturn}>
   <Text style={styles.returnButtonText}>Start New Inspection</Text>
 </TouchableOpacity>
 ```
@@ -3329,12 +3641,13 @@ This is the final integration test. Complete the entire flow:
 5. Wait for the AI prediction → See PASS or FAIL with confidence → Tap **Next**
 6. **Product Screen** → See the red box on inspection point 2 → Tap **Next**
 7. **Camera Screen** → Take another picture → Get result → Tap **Next**
-8. *(Repeat for all remaining inspection points)*
+8. _(Repeat for all remaining inspection points)_
 9. **Summary Screen** → Review all results with thumbnails, PASS/FAIL, confidence
 10. Tap **Done** → See the completion modal
-11. Tap **Start New Inspection** → Back to Welcome screen, ready for next product
+11. Tap **Return** (or **Start New Inspection** if you completed Lab 70) → Back to Welcome screen, ready for next product
 
 **Meanwhile, on the laptop:**
+
 - Check the server terminal for log entries
 - Open the `uploads/` folder — you should see new `.jpg` files
 - Visit `http://192.168.x.x:5000/report` in a browser — totals should match
@@ -3346,10 +3659,17 @@ This is the final integration test. Complete the entire flow:
 ### Day 4 — Session 2 Recap
 
 You now understand:
+
+- **Suggested pacing** for a 4-hour session mixing lecture, trace-alongs, and labs
+- How **`app/_layout.tsx`** registers the stack and wraps the app in **`InspectionProvider`**
+- **`inspection-context.tsx`**: `InspectionData`, `InspectionResult`, `addInspectionResult`, `advanceToNextPoint`, and `reset`
+- How **`app/camera.tsx` `handleNext`** decides between **Product** (more points) and **Summary** (done)
+- How **`app/summary.tsx`** guards empty results, renders the list, and completes with modal + `reset` + `replace('/(tabs)')`
 - The complete inspection flow from Welcome to Done and back
-- How the Summary screen renders all inspection results from the shared state
+- How the Summary screen renders all inspection results from the shared state (no extra fetch)
 - How the "Done" → modal → "Return" flow works, including state reset
 - How to customize the Summary screen (title, colors, button text, modal message)
+- How to run a **trace-along** exercise tying context logs to new files in `uploads/`
 - How to verify the full pipeline end-to-end: mobile app → server → uploads → report
 
 ---
