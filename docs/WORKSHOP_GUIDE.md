@@ -1,6 +1,6 @@
 # Synergrowth Inspection App — Participant Workshop Guide
 
-> **4-Day Hands-On Workshop**
+> **6-Day Hands-On Workshop**
 > This guide is your single source of truth. Follow it screen-by-screen, lab-by-lab.
 > Every lab is a small, safe change — nothing will break your app.
 
@@ -48,13 +48,14 @@
 2. **Context** — What do I have?
    > _Select all, copy, paste into AI_
 
-### Server Connection (Day 3–4)
+### Server + AI Connection (Day 5–6)
 
-1. **Server** — `python prediction_app_in_laptop_using_vscode.py` (runs AI model)
-2. **Config** — `constants/config.ts` → set `DEMO_MODE = false` and `API_BASE_URL`
-3. **Inspection Points** — `utils/inspection-points.ts` → add/remove/move red boxes
-4. **Uploads** — `uploads/` folder on laptop (images saved with metadata filenames)
-5. **Report** — `GET /report` → returns `{ total, pass, fail }`
+1. **Product Catalog** — `app/products.tsx` + `services/product-catalog.ts`
+2. **Reference Photos** — each inspection point stores one approved photo
+3. **Mobile Config** — `constants/config.ts` → `DEMO_MODE = false`, `API_BASE_URL`
+4. **Backend API** — `synergrowth-python-api/api/index.py` → `POST /analyze`
+5. **OpenRouter Key** — store in backend `.env` locally and Vercel Environment Variables in production
+6. **Important** — never put `OPENROUTER_API_KEY` inside the mobile app
 
 ---
 
@@ -71,6 +72,10 @@
 - [Day 3 — Session 2: Customizing Red Boxes & Inspection Points](#day-3--session-2-customizing-red-boxes--inspection-points)
 - [Day 4 — Session 1: Server Files & Report Endpoint](#day-4--session-1-server-files--report-endpoint)
 - [Day 4 — Session 2: Inspection Summary & End-to-End Flow](#day-4--session-2-inspection-summary--end-to-end-flow)
+- [Day 5 — Session 1: Product Catalog CRUD](#day-5--session-1-product-catalog-crud)
+- [Day 5 — Session 2: Inspection Point CRUD & Reference Photos](#day-5--session-2-inspection-point-crud--reference-photos)
+- [Day 6 — Session 1: OpenRouter Backend & Key Storage](#day-6--session-1-openrouter-backend--key-storage)
+- [Day 6 — Session 2: Connect Mobile App to API & Verify](#day-6--session-2-connect-mobile-app-to-api--verify)
 - [Quick Reference Cheat Sheet](#quick-reference-cheat-sheet)
 
 ---
@@ -2022,9 +2027,14 @@ Use this table whenever you need to find where to change something:
 | Component names and coordinates                    | `constants/mock-data.ts`                       |
 | Theme colors and fonts                             | `constants/theme.ts`                           |
 | Demo Mode on/off                                   | `constants/config.ts`                          |
-| API server URLs                                    | `services/api.ts`                              |
+| API server URLs                                    | `constants/config.ts`                          |
 | Welcome screen (home page)                         | `app/(tabs)/index.tsx`                         |
 | Selection screen (dropdowns)                       | `app/selection.tsx`                            |
+| Product catalog list                               | `app/products.tsx`                             |
+| Product create/edit form                           | `app/product-form.tsx`                         |
+| Inspection point list                              | `app/points-list.tsx`                          |
+| Inspection point form + reference photo            | `app/point-form.tsx`                           |
+| Local product catalog persistence                  | `services/product-catalog.ts`                  |
 | Product screen                                     | `app/product.tsx`                              |
 | Component inspection screen                        | `app/component.tsx`                            |
 | Camera screen                                      | `app/camera.tsx`                               |
@@ -2041,6 +2051,10 @@ Use this table whenever you need to find where to change something:
 | AI model file                                      | `ANDELI_DZ47_63_S02_C02.keras`                 |
 | Saved inspection images                            | `uploads/` folder on the laptop                |
 | Inspection report (pass/fail counts)               | `GET /report` on the server                    |
+| OpenRouter backend route                           | `synergrowth-python-api/api/index.py`          |
+| OpenRouter local key                               | `synergrowth-python-api/.env`                  |
+| OpenRouter production key                          | Vercel -> Settings -> Environment Variables    |
+| Mobile to OpenRouter analysis call                 | `services/api.ts` -> `POST /analyze`           |
 
 ---
 
@@ -2064,6 +2078,9 @@ Use this table whenever you need to find where to change something:
 | Python — Download            | [python.org/downloads](https://www.python.org/downloads/)                            |
 | Flask — Official Docs        | [flask.palletsprojects.com](https://flask.palletsprojects.com/)                      |
 | TensorFlow — Official Docs   | [tensorflow.org](https://www.tensorflow.org/)                                        |
+| FastAPI — Official Docs      | [fastapi.tiangolo.com](https://fastapi.tiangolo.com/)                                |
+| OpenRouter — API Keys        | [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys)                   |
+| Vercel — Environment Vars    | [vercel.com/docs/projects/environment-variables](https://vercel.com/docs/projects/environment-variables) |
 
 ---
 
@@ -2186,6 +2203,58 @@ Use this table whenever you need to find where to change something:
 | 70  | Return button text                | `app/summary.tsx` |
 | 71  | Result card PASS/FAIL colors      | `app/summary.tsx` |
 | 72  | Full end-to-end integration test  | All files         |
+
+### Day 5 — Session 1 (Labs 73–80)
+
+| Lab | What You Changed / Learned                       | File / Screen                      |
+| --- | ------------------------------------------------ | ---------------------------------- |
+| 73  | Opened the product management flow               | `app/(tabs)/index.tsx`             |
+| 74  | Created a new product record                     | `app/product-form.tsx`             |
+| 75  | Read how products are loaded and refreshed       | `app/products.tsx`                 |
+| 76  | Edited an existing product                       | `app/product-form.tsx`             |
+| 77  | Deleted a product and its point photos           | `services/product-catalog.ts`      |
+| 78  | Traced local storage with AsyncStorage           | `services/product-catalog.ts`      |
+| 79  | Changed product catalog labels/styles            | `app/products.tsx`                 |
+| 80  | Tested create, edit, delete, restart persistence | Phone / Expo Go                    |
+
+### Day 5 — Session 2 (Labs 81–88)
+
+| Lab | What You Changed / Learned                      | File / Screen                      |
+| --- | ----------------------------------------------- | ---------------------------------- |
+| 81  | Opened the inspection point list                | `app/points-list.tsx`              |
+| 82  | Added a point name and expected specs           | `app/point-form.tsx`               |
+| 83  | Added a required reference photo                | `app/point-form.tsx`               |
+| 84  | Learned how photos are copied into app storage  | `services/product-catalog.ts`      |
+| 85  | Edited an inspection point and replaced a photo | `app/point-form.tsx`               |
+| 86  | Deleted a point and cleaned up its image file   | `app/points-list.tsx`              |
+| 87  | Started an inspection from dynamic products     | `app/selection.tsx`                |
+| 88  | Verified reference photo appears during capture | `app/product.tsx`, `app/camera.tsx` |
+
+### Day 6 — Session 1 (Labs 89–96)
+
+| Lab | What You Did / Learned                         | File / Tool                         |
+| --- | ---------------------------------------------- | ----------------------------------- |
+| 89  | Opened the FastAPI backend project             | `synergrowth-python-api/`           |
+| 90  | Created a local `.env` from `.env.example`     | `.env`, `.env.example`              |
+| 91  | Stored `OPENROUTER_API_KEY` on the backend     | `.env`                              |
+| 92  | Selected an OpenRouter vision model            | `OPENROUTER_MODEL`                  |
+| 93  | Walked through the `/analyze` route            | `api/index.py`                      |
+| 94  | Understood reference vs captured image payload | `api/index.py`                      |
+| 95  | Tested the backend health endpoint             | Browser / curl                      |
+| 96  | Tested `/analyze` with two images              | curl / Postman                      |
+
+### Day 6 — Session 2 (Labs 97–104)
+
+| Lab | What You Changed / Learned                          | File / Tool                         |
+| --- | --------------------------------------------------- | ----------------------------------- |
+| 97  | Set the mobile app to real API mode                 | `constants/config.ts`               |
+| 98  | Pointed `API_BASE_URL` at the FastAPI/Vercel server | `constants/config.ts`               |
+| 99  | Traced the mobile multipart request                 | `services/api.ts`                   |
+| 100 | Connected captured photo + reference photo          | `app/camera.tsx`                    |
+| 101 | Verified metadata fields sent to the API            | `services/api.ts`                   |
+| 102 | Stored production keys in Vercel                    | Vercel Environment Variables        |
+| 103 | Ran a full OpenRouter-powered inspection            | Phone / Expo Go                     |
+| 104 | Troubleshot common API and key errors               | Backend logs / mobile alerts        |
 
 ---
 
@@ -3674,4 +3743,1189 @@ You now understand:
 
 ---
 
-> **Congratulations!** You have completed a 4-day, 72-lab hands-on workshop. You built, customized, and connected a full AI-powered factory inspection system — a React Native mobile app capturing photos, a Flask + TensorFlow server running predictions, and a file-based reporting system. You can now confidently modify the UI, configure inspection points, set up the server, and analyze inspection data on your own.
+> **Checkpoint:** You have completed the original 4-day, 72-lab workshop. Days 5–6 extend the app into a configurable product catalog and an OpenRouter-powered reference-photo inspection API.
+
+---
+
+# Day 5 — Session 1: Product Catalog CRUD
+
+> **Goal:** Replace hardcoded product choices with a local product catalog that operators can create, edit, delete, and reuse across app launches.
+
+### Suggested pacing (~4 hours)
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Feature overview | 20 min | Why product CRUD matters for real factories |
+| Screen tour | 35–45 min | `products`, `product-form`, `selection` |
+| Data model walkthrough | 45 min | `ProductRecord`, `InspectionPointRecord`, IDs, timestamps |
+| Labs 73–77 | 75–90 min | Create, edit, delete products |
+| Persistence deep dive | 35–45 min | AsyncStorage and app document files |
+| Labs 78–80 | 45–60 min | Restart test, style changes, QA checklist |
+| Buffer / Q&A | 20–30 min | Common mistakes and recovery |
+
+---
+
+### Why Product CRUD?
+
+Earlier workshop days used fixed product names from `constants/mock-data.ts`. That is good for learning UI, but a real inspection app needs operators or supervisors to manage the product catalog without changing source code.
+
+Day 5 introduces **CRUD**:
+
+| Letter | Meaning | In this app |
+| ------ | ------- | ----------- |
+| C | Create | Add a new product |
+| R | Read | Load and display saved products |
+| U | Update | Rename an existing product |
+| D | Delete | Remove a product and its inspection points |
+
+The product catalog is stored locally on the phone using AsyncStorage. Reference photos are stored as files in the app's document directory.
+
+---
+
+### Product Catalog Screen Map
+
+```
+Welcome Screen
+  |
+  | Tap "Manage products"
+  v
+Products Screen
+  |-- Add product -> Product Form
+  |-- Tap product -> Product Form (edit)
+  |-- Points -> Inspection Points List
+  |-- Delete -> Confirmation -> Remove product
+```
+
+Key files:
+
+| File | Purpose |
+| ---- | ------- |
+| `app/products.tsx` | Lists saved products, refreshes on focus, deletes products |
+| `app/product-form.tsx` | Creates or edits one product |
+| `app/selection.tsx` | Uses saved products in the operator workflow |
+| `services/product-catalog.ts` | Loads, saves, updates, deletes product records |
+
+---
+
+### Data Model Walkthrough
+
+**File:** `services/product-catalog.ts`
+
+The product catalog has two main types:
+
+```tsx
+export interface InspectionPointRecord {
+  id: string;
+  name: string;
+  referenceImageUri: string;
+  specNotes?: string;
+}
+
+export interface ProductRecord {
+  id: string;
+  name: string;
+  inspectionPoints: InspectionPointRecord[];
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+Important ideas:
+
+1. A **product** can have many inspection points.
+2. Each **inspection point** has its own reference image.
+3. Product IDs and point IDs are generated in code.
+4. `createdAt` and `updatedAt` help track when a product was made or changed.
+5. The whole product array is saved under one AsyncStorage key: `@synergrowth_products_v1`.
+
+---
+
+### Lab 73: Open the Product Management Flow
+
+1. Start the app:
+
+```bash
+npx expo start
+```
+
+2. Open the app in Expo Go.
+3. On the Welcome screen, tap **Manage products**.
+4. You should see the Products screen.
+
+If there are no products yet, the empty message appears:
+
+```tsx
+No products yet. Tap Add product.
+```
+
+**File to inspect:** `app/products.tsx`
+
+Find:
+
+```tsx
+ListEmptyComponent={
+  <Text style={styles.empty}>No products yet. Tap Add product.</Text>
+}
+```
+
+---
+
+### Lab 74: Create a New Product
+
+1. On the Products screen, tap **Add product**.
+2. Enter a product name, for example:
+
+```text
+Breaker Panel SKU-123
+```
+
+3. Tap **Create & add points**.
+4. The app should take you to the Inspection Points screen for that product.
+
+**Code walkthrough:** `app/product-form.tsx`
+
+When creating a product, the app builds a new record:
+
+```tsx
+record = {
+  id: createProductId(),
+  name: trimmed,
+  inspectionPoints: [],
+  createdAt: now,
+  updatedAt: now,
+};
+```
+
+Then it saves:
+
+```tsx
+await upsertProduct(record);
+```
+
+---
+
+### Lab 75: Read How Products Load and Refresh
+
+**File:** `app/products.tsx`
+
+The screen loads products every time it becomes active:
+
+```tsx
+useFocusEffect(
+  useCallback(() => {
+    void refresh();
+  }, [refresh])
+);
+```
+
+That is important because you can leave the screen, create or edit something, then come back and see the latest data.
+
+The `refresh` function calls:
+
+```tsx
+setProducts(await loadProducts());
+```
+
+And `loadProducts()` reads from AsyncStorage:
+
+```tsx
+const raw = await AsyncStorage.getItem(STORAGE_KEY);
+```
+
+---
+
+### Lab 76: Edit an Existing Product
+
+1. Go back to the Products screen.
+2. Tap the product card, not the **Points** button.
+3. Change the product name.
+4. Tap **Save & manage points**.
+5. Return to Products and confirm the card title changed.
+
+**Code walkthrough:** `app/product-form.tsx`
+
+Edit mode is detected from the URL parameter:
+
+```tsx
+const { id } = useLocalSearchParams<{ id?: string }>();
+const isEdit = Boolean(id);
+```
+
+If editing, the app preserves existing inspection points:
+
+```tsx
+record = {
+  ...existing,
+  name: trimmed,
+  updatedAt: now,
+};
+```
+
+---
+
+### Lab 77: Delete a Product
+
+1. On the Products screen, tap **Delete** on a product card.
+2. Confirm the alert.
+3. The product disappears from the list.
+
+Deleting a product also deletes the reference photo files for all its inspection points.
+
+**File:** `services/product-catalog.ts`
+
+```tsx
+export async function deleteProduct(id: string): Promise<void> {
+  const product = await getProduct(id);
+  if (!product) return;
+  for (const pt of product.inspectionPoints) {
+    await deleteFileIfInCatalog(pt.referenceImageUri);
+  }
+  const products = (await loadProducts()).filter((p) => p.id !== id);
+  await saveProducts(products);
+}
+```
+
+This avoids leaving unused image files in app storage after a product is removed.
+
+---
+
+### Lab 78: Understand Local Storage
+
+**File:** `services/product-catalog.ts`
+
+Products are saved as JSON:
+
+```tsx
+export async function saveProducts(products: ProductRecord[]): Promise<void> {
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+}
+```
+
+When the app reloads, JSON is parsed back into an array:
+
+```tsx
+const parsed = JSON.parse(raw) as ProductRecord[];
+return Array.isArray(parsed) ? parsed : [];
+```
+
+**Key insight:** This is local storage on the phone. It is not shared across phones. If two phones need the same catalog, a future version would sync products to a backend database.
+
+---
+
+### Lab 79: Change Product Catalog Labels or Styles
+
+**File:** `app/products.tsx`
+
+Try one small UI customization.
+
+Change:
+
+```tsx
+<Text style={styles.title}>Products</Text>
+```
+
+To:
+
+```tsx
+<Text style={styles.title}>Product Catalog</Text>
+```
+
+Or change the card background:
+
+```tsx
+card: {
+  backgroundColor: '#F5F5F5',
+  borderRadius: 8,
+  marginBottom: 12,
+  overflow: 'hidden',
+},
+```
+
+To:
+
+```tsx
+card: {
+  backgroundColor: '#EEF5FF',
+  borderRadius: 8,
+  marginBottom: 12,
+  overflow: 'hidden',
+},
+```
+
+---
+
+### Lab 80: Test Product Persistence
+
+This lab verifies CRUD works after reload.
+
+1. Create two products.
+2. Edit one product name.
+3. Delete the other product.
+4. Close Expo Go completely.
+5. Reopen the app.
+6. Go to **Manage products**.
+
+Expected result:
+
+- The edited product is still there.
+- The deleted product is gone.
+- The product count and names match your last changes.
+
+---
+
+### Day 5 — Session 1 Recap
+
+You now understand:
+
+- What CRUD means in a mobile app
+- How the Products screen lists local product records
+- How `product-form.tsx` creates and edits products
+- How `services/product-catalog.ts` stores product data with AsyncStorage
+- Why deleting a product also cleans up its reference image files
+- How the Selection screen can use dynamic products instead of hardcoded names
+
+---
+
+# Day 5 — Session 2: Inspection Point CRUD & Reference Photos
+
+> **Goal:** Add, edit, delete inspection points for each product, attach required reference photos, and use those reference photos during inspection capture.
+
+### Suggested pacing (~4 hours)
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Inspection point concept | 20 min | Product -> many points -> one reference photo each |
+| Point list tour | 35 min | `points-list.tsx` |
+| Point form tour | 45–60 min | Name, expected specs, reference photo |
+| Labs 81–86 | 90 min | Add, edit, replace photo, delete point |
+| Capture flow trace | 45 min | `selection` -> `product` -> `camera` |
+| Labs 87–88 | 45–60 min | Start session and verify reference photo appears |
+| Buffer / Q&A | 20–30 min | Photo permissions and validation |
+
+---
+
+### Inspection Point Data Flow
+
+```
+Product
+  |
+  | has many
+  v
+Inspection Points
+  |
+  | each has
+  v
+Reference Photo + Expected Specs
+  |
+  | used during
+  v
+Camera Capture and API Analysis
+```
+
+An inspection point answers:
+
+1. **What area should the operator inspect?**
+2. **What reference photo should the captured photo match?**
+3. **What specs or markings should the AI pay attention to?**
+
+---
+
+### Lab 81: Open the Inspection Point List
+
+1. Go to **Manage products**.
+2. Create or select a product.
+3. Tap **Points**.
+
+You should see the Inspection Points screen.
+
+**File:** `app/points-list.tsx`
+
+The list shows the point name and whether a reference photo exists:
+
+```tsx
+{item.referenceImageUri ? 'Reference photo set' : 'No reference photo'}
+```
+
+---
+
+### Lab 82: Add a Point Name and Expected Specs
+
+1. Tap **Add inspection point**.
+2. Enter a point name:
+
+```text
+Main rating label
+```
+
+3. Enter expected specs:
+
+```text
+Must show 40A, 230V, CE mark, and matching part number.
+```
+
+The expected specs are optional, but they are useful because they are sent to the AI during Day 6.
+
+**File:** `app/point-form.tsx`
+
+```tsx
+<TextInput
+  style={[styles.input, styles.multiline]}
+  value={specNotes}
+  onChangeText={setSpecNotes}
+  placeholder="Free text for expected markings..."
+  multiline
+/>
+```
+
+---
+
+### Lab 83: Add a Required Reference Photo
+
+1. On the point form, tap **Add reference photo**.
+2. Choose camera or photo library.
+3. Select a clear approved reference image.
+4. Confirm that a preview appears.
+5. Tap **Save**.
+
+The app requires a reference photo before saving:
+
+```tsx
+if (!referenceImageUri) {
+  Alert.alert('Validation', 'Pick a reference photo for this point.');
+  return;
+}
+```
+
+---
+
+### Lab 84: Understand Reference Photo Storage
+
+When you pick a photo, the original URI may point to a temporary location. The app copies it into persistent app storage:
+
+```tsx
+const uri = await copyImageToPersistent(picked);
+```
+
+**File:** `services/product-catalog.ts`
+
+```tsx
+export async function copyImageToPersistent(sourceUri: string): Promise<string> {
+  await ensureImagesDir();
+  const catalogDir = getCatalogImagesDir();
+  const base = sourceUri.split('/').pop() ?? 'img.jpg';
+  const ext =
+    base.includes('.') ? base.split('.').pop()?.split('?')[0] ?? 'jpg' : 'jpg';
+  const dest = `${catalogDir}${generateId()}.${ext}`;
+  await FileSystem.copyAsync({ from: sourceUri, to: dest });
+  return dest;
+}
+```
+
+**Key insight:** The app saves the reference photo URI, not the image bytes inside AsyncStorage. AsyncStorage stores metadata; the file system stores image files.
+
+---
+
+### Lab 85: Edit a Point and Replace Its Photo
+
+1. Open an existing point.
+2. Change the point name or expected specs.
+3. Tap **Change reference photo**.
+4. Pick a new image.
+5. Tap **Save**.
+
+When replacing the photo, the old catalog image is deleted:
+
+```tsx
+if (referenceImageUri) {
+  await deleteFileIfInCatalog(referenceImageUri);
+}
+setReferenceImageUri(uri);
+```
+
+This keeps local storage clean.
+
+---
+
+### Lab 86: Delete an Inspection Point
+
+1. Return to the Inspection Points list.
+2. Tap **Delete** on a point.
+3. Confirm the alert.
+
+The app removes the point from the product:
+
+```tsx
+inspectionPoints: p.inspectionPoints.filter((x) => x.id !== pointId),
+```
+
+If the point had a reference image, it is also deleted:
+
+```tsx
+if (removed?.referenceImageUri) {
+  await deleteFileIfInCatalog(removed.referenceImageUri);
+}
+```
+
+---
+
+### Lab 87: Start Inspection from Dynamic Products
+
+1. Return to the main inspection flow.
+2. Open the Selection screen.
+3. Tap the Product dropdown.
+4. Choose the product you created.
+
+**File:** `app/selection.tsx`
+
+The selection screen loads products from the catalog:
+
+```tsx
+const list = await loadProducts();
+setProducts(list);
+```
+
+Before starting, it validates:
+
+1. A product is selected.
+2. The product still exists.
+3. The product has at least one inspection point.
+4. Every inspection point has a reference photo.
+
+This prevents the operator from starting an incomplete inspection.
+
+---
+
+### Lab 88: Verify Reference Photo in Product and Camera Screens
+
+Run one inspection after adding a product and point.
+
+On the Product screen, you should see:
+
+- The current inspection point number
+- The point name
+- The expected specs, if provided
+- The reference photo
+
+On the Camera screen, you should see a small reference panel above the live camera.
+
+**File:** `app/camera.tsx`
+
+The reference panel uses the active point:
+
+```tsx
+<ReferenceCaptureBar point={point} variant="live" />
+```
+
+When the operator captures a photo, the app sends both:
+
+1. The compressed reference image
+2. The compressed captured image
+
+That is what Day 6's OpenRouter backend compares.
+
+---
+
+### Day 5 — Session 2 Recap
+
+You now understand:
+
+- How inspection points belong to products
+- Why every inspection point needs a reference photo
+- How expected specs help guide both operators and AI
+- How reference photos are copied into app storage
+- How point deletion and photo replacement clean up old image files
+- How the Selection, Product, and Camera screens use dynamic catalog data
+
+---
+
+# Day 6 — Session 1: OpenRouter Backend & Key Storage
+
+> **Goal:** Set up the FastAPI backend that compares reference photos against captured photos using OpenRouter vision models, and store API keys safely on the backend.
+
+### Suggested pacing (~4 hours)
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Architecture overview | 25 min | Mobile app -> FastAPI -> OpenRouter |
+| Backend project tour | 35–45 min | `synergrowth-python-api/` structure |
+| Key storage | 45 min | `.env`, `.env.example`, Vercel env vars |
+| OpenRouter route walkthrough | 60 min | `/health`, `/analyze`, image payloads |
+| Labs 89–96 | 90 min | Local run, health check, curl test |
+| Buffer / Q&A | 20–30 min | Model choice, threshold, common errors |
+
+---
+
+### Architecture
+
+```
+Mobile App
+  |
+  | POST /analyze
+  | product_image + captured_photo + metadata
+  v
+FastAPI Backend
+  |
+  | OpenAI-compatible request
+  | with OpenRouter key from environment
+  v
+OpenRouter Vision Model
+  |
+  | JSON: matching_rate, confidence, explanation
+  v
+FastAPI Backend
+  |
+  | JSON: pass/fail response
+  v
+Mobile App
+```
+
+The mobile app does **not** talk to OpenRouter directly. It talks to your backend. The backend owns the secret key.
+
+---
+
+### Important: Where to Store the OpenRouter Key
+
+Never store `OPENROUTER_API_KEY` in the React Native mobile app.
+
+Why?
+
+- Mobile app code can be extracted from the app bundle.
+- Anyone with the key could spend your OpenRouter credits.
+- A leaked key must be revoked and replaced.
+
+Correct places:
+
+| Environment | Store key here |
+| ----------- | -------------- |
+| Local backend dev | `synergrowth-python-api/.env` |
+| Vercel production | Vercel -> Project -> Settings -> Environment Variables |
+
+Wrong places:
+
+- `constants/config.ts`
+- `services/api.ts`
+- Any file inside the mobile app repo
+- Screenshots or workshop slides that will be shared publicly
+
+---
+
+### Backend Project Structure
+
+The OpenRouter backend lives in a separate repo:
+
+```text
+synergrowth-python-api/
+├── api/
+│   └── index.py          # FastAPI app and routes
+├── main.py               # Re-exports app for local uvicorn
+├── requirements.txt      # Python dependencies
+├── .env.example          # Template for local environment variables
+├── vercel.json           # Vercel routing config
+└── README.md
+```
+
+Key files:
+
+| File | Purpose |
+| ---- | ------- |
+| `api/index.py` | Main FastAPI app, `/health`, `/analyze`, OpenRouter call |
+| `.env.example` | Shows required environment variable names |
+| `.env` | Your real local secret values; do not commit |
+| `requirements.txt` | FastAPI, OpenAI client, dotenv, multipart support |
+| `vercel.json` | Sends Vercel traffic to the API handler |
+
+---
+
+### Lab 89: Open the Backend Project
+
+Open a terminal in the backend folder:
+
+```bash
+cd synergrowth-python-api
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+If your instructor uses a virtual environment, create and activate it first:
+
+```bash
+python -m venv .venv
+```
+
+On Windows:
+
+```bash
+.venv\Scripts\activate.bat
+```
+
+On macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+### Lab 90: Create Local `.env`
+
+Copy the example file:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Open `.env`. It should look like:
+
+```env
+OPENROUTER_API_KEY=your-openrouter-key-here
+OPENROUTER_MODEL=openai/gpt-4o-mini
+MATCHING_THRESHOLD=90
+```
+
+---
+
+### Lab 91: Store `OPENROUTER_API_KEY`
+
+1. Go to [OpenRouter API Keys](https://openrouter.ai/settings/keys).
+2. Create or copy an API key.
+3. Paste it into `.env`:
+
+```env
+OPENROUTER_API_KEY=sk-or-v1-...
+```
+
+4. Save the file.
+
+**Security checklist:**
+
+- Do not paste the real key into chat.
+- Do not commit `.env`.
+- Do not put the key in the mobile app.
+- If a key leaks, revoke it in OpenRouter and create a new one.
+
+---
+
+### Lab 92: Choose the OpenRouter Model
+
+The default model is:
+
+```env
+OPENROUTER_MODEL=openai/gpt-4o-mini
+```
+
+For workshop testing, use a vision-capable model. Your instructor may provide a model ID.
+
+The backend reads it here:
+
+```python
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+```
+
+---
+
+### Lab 93: Walk Through `/analyze`
+
+**File:** `api/index.py`
+
+The route accepts two required image files:
+
+```python
+@app.post("/analyze")
+async def analyze(
+    product_image: UploadFile = File(...),
+    captured_photo: UploadFile = File(...),
+    product_model: str | None = Form(None),
+    inspection_point: str | None = Form(None),
+    expected_specs: str | None = Form(None),
+    ...
+):
+```
+
+Names matter:
+
+| Form field | Meaning |
+| ---------- | ------- |
+| `product_image` | Approved reference photo |
+| `captured_photo` | New photo captured by the operator |
+| `product_model` | Product name |
+| `inspection_point` | Point name, e.g. "Main rating label" |
+| `expected_specs` | Text notes from the point form |
+
+The mobile app must send these exact field names.
+
+---
+
+### Lab 94: Understand Reference vs Captured Photo
+
+The backend converts each uploaded image into a data URL:
+
+```python
+ref_url = _data_url(ref_bytes, product_image)
+cap_url = _data_url(cap_bytes, captured_photo)
+```
+
+Then it sends both images to OpenRouter:
+
+```python
+{"type": "image_url", "image_url": {"url": ref_url}},
+{"type": "image_url", "image_url": {"url": cap_url}},
+```
+
+The prompt tells the model:
+
+```text
+Image 1 = REFERENCE (gold standard). Image 2 = CAPTURED (candidate).
+```
+
+That order is important.
+
+---
+
+### Lab 95: Run the Backend and Test Health
+
+Start local FastAPI:
+
+```bash
+uvicorn main:app --reload
+```
+
+The API runs at:
+
+```text
+http://127.0.0.1:8000
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+---
+
+### Lab 96: Test `/analyze` with Two Images
+
+Use two image files: one approved reference and one captured test photo.
+
+```bash
+curl -s -X POST "http://127.0.0.1:8000/analyze" \
+  -F "product_image=@/path/to/reference.jpg" \
+  -F "captured_photo=@/path/to/captured.jpg" \
+  -F "product_model=Breaker Panel SKU-123" \
+  -F "inspection_point=Main rating label" \
+  -F "expected_specs=Must show 40A, 230V, CE mark"
+```
+
+Expected response shape:
+
+```json
+{
+  "prediction": "pass",
+  "confidence": 94,
+  "matching_rate": 96,
+  "explanation": "All critical rating text matches.",
+  "justification": "All critical rating text matches.",
+  "score": 0.96
+}
+```
+
+The backend decides pass/fail using:
+
+```python
+prediction = "pass" if matching_rate >= MATCHING_THRESHOLD else "fail"
+```
+
+With `MATCHING_THRESHOLD=90`, anything below 90 becomes `fail`.
+
+---
+
+### Day 6 — Session 1 Recap
+
+You now understand:
+
+- Why OpenRouter is called from the backend, not directly from the app
+- How to store `OPENROUTER_API_KEY` in `.env` locally
+- How to store production keys in Vercel Environment Variables
+- How `/analyze` receives `product_image`, `captured_photo`, and metadata
+- How expected specs influence the AI comparison
+- How `matching_rate` and `MATCHING_THRESHOLD` become pass/fail
+
+---
+
+# Day 6 — Session 2: Connect Mobile App to API & Verify
+
+> **Goal:** Point the mobile app at the OpenRouter FastAPI backend, confirm `services/api.ts` sends the right multipart payload, and run a full reference-photo inspection.
+
+### Suggested pacing (~4 hours)
+
+| Block | Time | Focus |
+| ----- | ---- | ----- |
+| Mobile config | 30 min | `DEMO_MODE`, `API_BASE_URL` |
+| API service walkthrough | 45–60 min | `compressImage`, `predictImage`, `FormData` |
+| Camera integration | 45 min | Reference photo + captured photo + metadata |
+| Labs 97–101 | 75–90 min | Configure and trace the request |
+| Production key storage | 35–45 min | Vercel env vars |
+| Labs 102–104 | 45–60 min | End-to-end test and troubleshooting |
+| Buffer / Q&A | 20–30 min | Network and model issues |
+
+---
+
+### Mobile-to-API Flow
+
+```
+Selection Screen
+  | selects product and metadata
+  v
+Product Screen
+  | shows reference photo and expected specs
+  v
+Camera Screen
+  | captures operator photo
+  | compresses reference + captured photo
+  v
+services/api.ts
+  | POST /analyze
+  v
+FastAPI + OpenRouter
+  | returns pass/fail + explanation
+  v
+Camera Preview and Summary
+```
+
+---
+
+### Lab 97: Turn Off Demo Mode
+
+**File:** `constants/config.ts`
+
+Set:
+
+```tsx
+export const DEMO_MODE = false;
+```
+
+When `DEMO_MODE` is `true`, the app fakes a prediction locally and never calls the backend. For Day 6 testing, it must be `false`.
+
+---
+
+### Lab 98: Set `API_BASE_URL`
+
+For the deployed Vercel API:
+
+```tsx
+export const API_BASE_URL = "https://synergrowth-python-api.vercel.app";
+```
+
+For local backend testing from a phone, do not use `localhost`. Your phone's `localhost` is the phone, not your laptop.
+
+Use your laptop IP and start uvicorn on all interfaces:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Then set:
+
+```tsx
+export const API_BASE_URL = "http://192.168.x.x:8000";
+```
+
+Replace `192.168.x.x` with your laptop's Wi-Fi IP.
+
+---
+
+### Lab 99: Trace the Multipart Request
+
+**File:** `services/api.ts`
+
+The app builds:
+
+```tsx
+const ANALYZE_API_URL = `${API_BASE_URL}/analyze`;
+```
+
+Then it appends both images:
+
+```tsx
+formData.append('product_image', {
+  uri: referenceImageUri,
+  type: 'image/jpeg',
+  name: 'reference.jpg',
+} as any);
+
+formData.append('captured_photo', {
+  uri: capturedImageUri,
+  type: 'image/jpeg',
+  name: 'captured.jpg',
+} as any);
+```
+
+These names match the FastAPI route from Day 6 Session 1:
+
+- `product_image`
+- `captured_photo`
+
+---
+
+### Lab 100: Connect Reference Photo + Captured Photo
+
+**File:** `app/camera.tsx`
+
+After capture, the app compresses both images:
+
+```tsx
+const compressedReference = await compressImage(activePoint.referenceImageUri);
+const compressedCaptured = await compressImage(croppedUri);
+```
+
+Then it calls:
+
+```tsx
+const response = await predictImage(
+  compressedReference,
+  compressedCaptured,
+  {
+    product_model: inspectionData.product_model,
+    production_line: inspectionData.production_line,
+    station_number: inspectionData.station_number,
+    production_shift: inspectionData.production_shift,
+    operator: inspectionData.operator,
+    device_id: inspectionData.device_id,
+    inspection_point: activePoint.name,
+    expected_specs: activePoint.specNotes,
+  },
+);
+```
+
+This is the bridge between Day 5 catalog data and Day 6 AI analysis.
+
+---
+
+### Lab 101: Verify Metadata Sent to the API
+
+**File:** `services/api.ts`
+
+Metadata is optional, but very useful:
+
+```tsx
+if (metadata.inspection_point)
+  formData.append('inspection_point', metadata.inspection_point);
+if (metadata.expected_specs)
+  formData.append('expected_specs', metadata.expected_specs);
+```
+
+The backend includes those fields in the model prompt:
+
+```python
+f"inspection_point={inspection_point}" if inspection_point else None,
+f"expected_specs={expected_specs}" if expected_specs else None,
+```
+
+This helps the AI focus on the exact label, screw, marking, or area being inspected.
+
+---
+
+### Lab 102: Store Production Keys in Vercel
+
+If using the Vercel deployment:
+
+1. Open the Vercel dashboard.
+2. Select the `synergrowth-python-api` project.
+3. Go to **Settings -> Environment Variables**.
+4. Add:
+
+```text
+OPENROUTER_API_KEY
+OPENROUTER_MODEL
+MATCHING_THRESHOLD
+```
+
+5. Redeploy the project.
+
+Important:
+
+- Vercel environment variable changes do not affect an already deployed serverless function until redeploy.
+- Keep `.env` for local development only.
+- Keep production secrets in the deployment platform.
+
+---
+
+### Lab 103: Run a Full OpenRouter-Powered Inspection
+
+1. Confirm backend health:
+
+```text
+https://synergrowth-python-api.vercel.app/health
+```
+
+2. Confirm mobile config:
+
+```tsx
+export const DEMO_MODE = false;
+export const API_BASE_URL = "https://synergrowth-python-api.vercel.app";
+```
+
+3. In the app, create a product.
+4. Add at least one inspection point with:
+   - Point name
+   - Expected specs
+   - Reference photo
+5. Start an inspection from the Selection screen.
+6. Capture a photo.
+7. Wait for analysis.
+
+Expected result:
+
+- The Camera preview shows PASS or FAIL.
+- Confidence is shown as a percentage.
+- The explanation mentions matched specs or concrete differences.
+- The Summary screen includes the result after tapping **Next**.
+
+---
+
+### Lab 104: Troubleshoot Common Errors
+
+| Symptom | Likely cause | Fix |
+| ------- | ------------ | --- |
+| App still returns fake results | `DEMO_MODE` is `true` | Set `DEMO_MODE = false` |
+| `Network request failed` | Wrong `API_BASE_URL`, phone not on same network, backend stopped | Check URL, Wi-Fi, server logs |
+| Backend says `OPENROUTER_API_KEY is not configured` | Missing backend environment variable | Add key to `.env` or Vercel env vars, restart/redeploy |
+| HTTP 422 from `/analyze` | Missing required form field | Verify `product_image` and `captured_photo` names |
+| HTTP 500 `Image analysis failed` | OpenRouter key/model/quota issue | Check backend logs and OpenRouter dashboard |
+| Result seems too strict or too lenient | Threshold/model prompt needs tuning | Adjust `MATCHING_THRESHOLD` or model choice |
+
+---
+
+### Day 6 — Session 2 Recap
+
+You now understand:
+
+- How to connect the mobile app to the deployed or local FastAPI backend
+- Why `DEMO_MODE = false` is required for real API calls
+- Why a phone cannot use `localhost` to reach a laptop server
+- How `services/api.ts` sends both reference and captured images to `/analyze`
+- How `app/camera.tsx` passes product, inspection point, and expected specs metadata
+- How to store production OpenRouter keys in Vercel
+- How to run and troubleshoot a full OpenRouter-powered inspection
+
+---
+
+> **Congratulations!** You have completed a 6-day, 104-lab hands-on workshop. You built, customized, and connected a full AI-powered factory inspection system: a React Native mobile app, dynamic product and inspection point CRUD, persistent reference photos, a FastAPI backend, secure OpenRouter key storage, and a reference-vs-captured-photo AI analysis flow.
