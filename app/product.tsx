@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
 
 export default function ProductScreen() {
   const { inspectionData, inspectionPoints, currentPointIndex } = useInspection();
-  const [imageLayout, setImageLayout] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!inspectionData) {
@@ -27,13 +26,7 @@ export default function ProductScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View
-          style={styles.imageContainer}
-          onLayout={(e) => {
-            const { width, height } = e.nativeEvent.layout;
-            setImageLayout({ width, height });
-          }}
-        >
+        <View style={styles.imageContainer}>
           {inspectionData.product_image_uri ? (
             <Image
               source={{ uri: inspectionData.product_image_uri }}
@@ -49,19 +42,6 @@ export default function ProductScreen() {
                 </Text>
               </Text>
             </View>
-          )}
-          {currentPoint && imageLayout.width > 0 && (
-            <View
-              style={[
-                styles.redBox,
-                {
-                  left: currentPoint.x * imageLayout.width,
-                  top: currentPoint.y * imageLayout.height,
-                  width: currentPoint.width * imageLayout.width,
-                  height: currentPoint.height * imageLayout.height,
-                },
-              ]}
-            />
           )}
         </View>
         <Text style={styles.pointLabel}>
@@ -98,7 +78,6 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 400,
     marginBottom: 12,
-    position: 'relative',
   },
   productImage: {
     width: '100%',
@@ -121,12 +100,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 13,
     color: '#666',
-  },
-  redBox: {
-    position: 'absolute',
-    borderWidth: 3,
-    borderColor: '#FF0000',
-    backgroundColor: 'transparent',
   },
   pointLabel: {
     fontSize: 18,

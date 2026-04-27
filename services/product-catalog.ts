@@ -17,11 +17,6 @@ function getCatalogImagesDir(): string {
 export interface InspectionPointRecord {
   id: string;
   name: string;
-  /** Normalized overlay on product overview (0–1) */
-  x: number;
-  y: number;
-  width: number;
-  height: number;
   /** Copied into app document directory */
   referenceImageUri: string;
   specNotes?: string;
@@ -145,10 +140,6 @@ export function defaultInspectionPoint(
   return {
     id: createInspectionPointId(),
     name: partial?.name ?? 'Inspection point',
-    x: partial?.x ?? 0.15,
-    y: partial?.y ?? 0.2,
-    width: partial?.width ?? 0.3,
-    height: partial?.height ?? 0.3,
     referenceImageUri: partial?.referenceImageUri ?? '',
     specNotes: partial?.specNotes,
   };
