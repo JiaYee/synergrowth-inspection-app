@@ -16,6 +16,13 @@ export default function WelcomeScreen() {
         <TouchableOpacity style={styles.button} onPress={handleEnter}>
           <Text style={styles.buttonText}>Enter</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => router.push('/products')}
+        >
+          <Text style={styles.secondaryButtonText}>Manage products</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -54,5 +61,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
+  },
+  secondaryButton: {
+    marginTop: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+  },
+  secondaryButtonText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });

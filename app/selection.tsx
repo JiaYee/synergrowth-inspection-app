@@ -1,16 +1,23 @@
-import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView, Modal, View, Text } from 'react-native';
-import { router } from 'expo-router';
+import { useCallback, useState } from 'react';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  View,
+  Text,
+  Alert,
+} from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
 import * as Device from 'expo-device';
 import {
-  PRODUCT_MODELS,
-  PRODUCT_MODEL_IMAGES,
   PRODUCTION_LINES,
   STATION_NUMBERS,
   PRODUCTION_SHIFTS,
   OPERATORS,
 } from '@/constants/mock-data';
+import { getProduct, loadProducts, type ProductRecord } from '@/services/product-catalog';
 
 interface DropdownProps {
   label: string;
@@ -25,16 +32,11 @@ function Dropdown({ label, value, options, onSelect }: DropdownProps) {
   return (
     <View style={styles.dropdownContainer}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity
-        style={styles.dropdown}
-        onPress={() => setIsOpen(true)}
-      >
-        <Text style={styles.dropdownText}>
-          {value || `Select ${label}`}
-        </Text>
+      <TouchableOpacity style={styles.dropdown} onPress={() => setIsOpen(true)}>
+        <Text style={styles.dropdownText}>{value || `Select ${label}`}</Text>
         <Text style={styles.dropdownArrow}>▼</Text>
       </TouchableOpacity>
-      
+
       <Modal
         visible={isOpen}
         transparent
@@ -43,9 +45,7 @@ function Dropdown({ label, value, options, onSelect }: DropdownProps) {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              Select {label}
-            </Text>
+            <Text style={styles.modalTitle}>Select {label}</Text>
             <ScrollView>
               {options.map((option) => (
                 <TouchableOpacity
@@ -73,44 +73,175 @@ function Dropdown({ label, value, options, onSelect }: DropdownProps) {
   );
 }
 
+function ProductPicker({
+  products,
+  selectedId,
+  onSelect,
+}: {
+  products: ProductRecord[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selected = products.find((p) => p.id === selectedId);
+  const label = selected?.name ?? '';
+
+  return (
+    <View style={styles.dropdownContainer}>
+      <Text style={styles.label}>Product</Text>
+      <TouchableOpacity style={styles.dropdown} onPress={() => setIsOpen(true)}>
+        <Text style={styles.dropdownText}>{label || 'Select product'}</Text>
+        <Text style={styles.dropdownArrow}>▼</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select product</Text>
+            <ScrollView>
+              {products.map((p) => (
+                <TouchableOpacity
+                  key={p.id}
+                  style={styles.option}
+                  onPress={() => {
+                    onSelect(p.id);
+                    setIsOpen(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>{p.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsOpen(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
 export default function SelectionScreen() {
-  const { setInspectionData } = useInspection();
-  const [productModel, setProductModel] = useState('');
+  const { startInspectionSession } = useInspection();
+  const [products, setProducts] = useState<ProductRecord[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState('');
   const [productionLine, setProductionLine] = useState('');
   const [stationNumber, setStationNumber] = useState('');
   const [productionShift, setProductionShift] = useState('');
   const [operator, setOperator] = useState('');
 
-  const handleEnter = () => {
-    if (!productModel || !productionLine || !stationNumber || !productionShift || !operator) {
-      alert('Please fill up all fields to proceed');
+  const refreshProducts = useCallback(async () => {
+    const list = await loadProducts();
+    setProducts(list);
+    setSelectedProductId((prev) => {
+      if (prev && list.some((p) => p.id === prev)) return prev;
+      return '';
+    });
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshProducts();
+    }, [refreshProducts])
+  );
+
+  const handleEnter = async () => {
+    if (
+      !selectedProductId ||
+      !productionLine ||
+      !stationNumber ||
+      !productionShift ||
+      !operator
+    ) {
+      Alert.alert('Required', 'Please fill all fields to proceed.');
       return;
     }
 
-    const deviceId = Device.modelName || 'mobile_phone_1';
-    
-    setInspectionData({
-      product_model: productModel,
-      product_image: PRODUCT_MODEL_IMAGES[productModel],
-      production_line: productionLine,
-      station_number: stationNumber,
-      production_shift: productionShift,
-      operator: operator,
-      device_id: deviceId,
-    });
-    
+    const product = await getProduct(selectedProductId);
+    if (!product) {
+      Alert.alert('Error', 'Selected product no longer exists.');
+      void refreshProducts();
+      return;
+    }
+    if (product.inspectionPoints.length === 0) {
+      Alert.alert(
+        'No inspection points',
+        'Add at least one inspection point with a reference photo.',
+        [
+          { text: 'OK' },
+          {
+            text: 'Manage',
+            onPress: () =>
+              router.push({
+                pathname: '/points-list',
+                params: { productId: product.id },
+              }),
+          },
+        ]
+      );
+      return;
+    }
+    const missingRef = product.inspectionPoints.filter(
+      (pt) => !pt.referenceImageUri?.trim()
+    );
+    if (missingRef.length > 0) {
+      Alert.alert(
+        'Missing reference photos',
+        'Every inspection point must have a reference photo.'
+      );
+      return;
+    }
+
+    const deviceId = Device.modelName ?? 'mobile_phone_1';
+
+    startInspectionSession(
+      {
+        product_id: product.id,
+        product_model: product.name,
+        product_image_uri: product.productImageUri,
+        production_line: productionLine,
+        station_number: stationNumber,
+        production_shift: productionShift,
+        operator,
+        device_id: deviceId,
+      },
+      product.inspectionPoints
+    );
+
     router.push('/product');
   };
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Dropdown
-          label="Product Model"
-          value={productModel}
-          options={PRODUCT_MODELS}
-          onSelect={setProductModel}
+        {products.length === 0 ? (
+          <Text style={styles.warn}>
+            No products yet. Create a product and inspection points first.
+          </Text>
+        ) : null}
+
+        <ProductPicker
+          products={products}
+          selectedId={selectedProductId}
+          onSelect={setSelectedProductId}
         />
+
+        <TouchableOpacity
+          style={styles.linkBtn}
+          onPress={() => router.push('/products')}
+        >
+          <Text style={styles.linkText}>Manage products &amp; reference photos</Text>
+        </TouchableOpacity>
+
         <Dropdown
           label="Production Line"
           value={productionLine}
@@ -136,11 +267,9 @@ export default function SelectionScreen() {
           onSelect={setOperator}
         />
 
-        <Text style={styles.hint}>
-          Fill up all to proceed
-        </Text>
+        <Text style={styles.hint}>Fill all fields to start inspection</Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleEnter}>
+        <TouchableOpacity style={styles.button} onPress={() => void handleEnter()}>
           <Text style={styles.buttonText}>Enter</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -156,6 +285,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
     paddingTop: 40,
+  },
+  warn: {
+    color: '#B8860B',
+    marginBottom: 16,
+    fontSize: 14,
+  },
+  linkBtn: {
+    marginBottom: 20,
+  },
+  linkText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   dropdownContainer: {
     marginBottom: 20,

@@ -39,14 +39,16 @@ export default function SummaryScreen() {
       >
         <Text style={styles.title}>Inspection Summary</Text>
         {inspectionResults.map((item, index) => (
-          <View key={index} style={styles.resultCard}>
+          <View key={`${item.pointId}-${index}`} style={styles.resultCard}>
             <Image
               source={{ uri: item.imageUri }}
               style={styles.thumbnail}
               resizeMode="cover"
             />
             <View style={styles.resultInfo}>
-              <Text style={styles.pointLabel}>Point {index + 1}</Text>
+              <Text style={styles.pointLabel}>
+                {item.pointName || `Point ${index + 1}`}
+              </Text>
               <Text
                 style={[
                   styles.resultText,
@@ -56,10 +58,10 @@ export default function SummaryScreen() {
                 {item.result}
               </Text>
               <Text style={styles.confidenceText}>
-                Confidence: {(Math.floor(item.confidence * 100) / 100).toFixed(2)}%
+                Confidence: {Number(item.confidence).toFixed(1)}%
               </Text>
               {item.justification ? (
-                <Text style={styles.justificationText} numberOfLines={2}>
+                <Text style={styles.justificationText} numberOfLines={4}>
                   {item.justification}
                 </Text>
               ) : null}

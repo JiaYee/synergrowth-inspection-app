@@ -1,4 +1,4 @@
 export const DEMO_MODE = false;
 
-/** API base URL: local Flask server (replace with your laptop IP on same network) */
-export const API_BASE_URL = "http://10.58.76.168:5000";
+/** Production API (Vercel). Paths like `/analyze` are appended in services/api.ts */
+export const API_BASE_URL = "https://synergrowth-python-api.vercel.app";

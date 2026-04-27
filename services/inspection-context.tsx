@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import {
-  generateInspectionPoints,
-  type InspectionPoint,
-} from '@/utils/inspection-points';
+import type { InspectionPointRecord } from '@/services/product-catalog';
 
 export interface InspectionData {
+  product_id: string;
   product_model: string;
-  product_image: number;
+  product_image_uri?: string;
   production_line: string;
   station_number: string;
   production_shift: string;
@@ -15,8 +13,11 @@ export interface InspectionData {
 }
 
 export interface InspectionResult {
+  pointId: string;
+  pointName: string;
   imageUri: string;
   result: 'PASS' | 'FAIL';
+  /** 0–100 */
   confidence: number;
   justification: string;
 }
@@ -24,12 +25,17 @@ export interface InspectionResult {
 interface InspectionContextType {
   inspectionData: InspectionData | null;
   setInspectionData: (data: InspectionData) => void;
-  inspectionPoints: InspectionPoint[];
-  setInspectionPoints: (points: InspectionPoint[]) => void;
+  inspectionPoints: InspectionPointRecord[];
+  setInspectionPoints: (points: InspectionPointRecord[]) => void;
   inspectionResults: InspectionResult[];
   addInspectionResult: (result: InspectionResult) => void;
   currentPointIndex: number;
   advanceToNextPoint: () => boolean;
+  /** Clears session state and loads a new product inspection run */
+  startInspectionSession: (
+    data: InspectionData,
+    points: InspectionPointRecord[]
+  ) => void;
   reset: () => void;
 }
 
@@ -40,9 +46,9 @@ const InspectionContext = createContext<InspectionContextType | undefined>(
 export function InspectionProvider({ children }: { children: ReactNode }) {
   const [inspectionData, setInspectionData] =
     useState<InspectionData | null>(null);
-  const [inspectionPoints, setInspectionPoints] = useState<InspectionPoint[]>(
-    []
-  );
+  const [inspectionPoints, setInspectionPoints] = useState<
+    InspectionPointRecord[]
+  >([]);
   const [inspectionResults, setInspectionResults] = useState<
     InspectionResult[]
   >([]);
@@ -65,6 +71,16 @@ export function InspectionProvider({ children }: { children: ReactNode }) {
     setCurrentPointIndex(0);
   };
 
+  const startInspectionSession = (
+    data: InspectionData,
+    points: InspectionPointRecord[]
+  ) => {
+    setInspectionData(data);
+    setInspectionPoints(points);
+    setInspectionResults([]);
+    setCurrentPointIndex(0);
+  };
+
   return (
     <InspectionContext.Provider
       value={{
@@ -76,6 +92,7 @@ export function InspectionProvider({ children }: { children: ReactNode }) {
         addInspectionResult,
         currentPointIndex,
         advanceToNextPoint,
+        startInspectionSession,
         reset,
       }}
     >

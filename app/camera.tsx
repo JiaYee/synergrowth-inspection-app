@@ -1,6 +1,5 @@
 import { compressImage, predictImage } from "@/services/api";
 import { useInspection } from "@/services/inspection-context";
-import { Asset } from "expo-asset";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
 import { useFocusEffect } from "@react-navigation/native";
@@ -78,7 +77,7 @@ async function cropToGuideBox(
 }
 
 export default function CameraScreen() {
-  const [facing, setFacing] = useState<CameraType>("back");
+  const facing: CameraType = "back";
   const [permission, requestPermission] = useCameraPermissions();
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUri, setCapturedPhotoUri] = useState<string | null>(null);
@@ -94,6 +93,8 @@ export default function CameraScreen() {
   });
   const {
     inspectionData,
+    inspectionPoints,
+    currentPointIndex,
     addInspectionResult,
     advanceToNextPoint,
   } = useInspection();
@@ -125,6 +126,15 @@ export default function CameraScreen() {
 
   const handleTakePicture = async () => {
     if (!cameraRef.current || !inspectionData) {
+      return;
+    }
+
+    const point = inspectionPoints[currentPointIndex];
+    if (!point?.referenceImageUri?.trim()) {
+      Alert.alert(
+        "Missing reference",
+        "This inspection point has no reference photo. Add one in Manage products.",
+      );
       return;
     }
 
@@ -161,21 +171,23 @@ export default function CameraScreen() {
       // Show preview immediately
       setCapturedPhotoUri(croppedUri);
 
-      // Immediately send to API for analysis
-      const productAsset = Asset.fromModule(inspectionData.product_image);
-      await productAsset.downloadAsync();
-      const productImageUri = productAsset.localUri ?? productAsset.uri;
-      const compressedProduct = await compressImage(productImageUri);
+      const compressedReference = await compressImage(point.referenceImageUri);
       const compressedCaptured = await compressImage(croppedUri);
 
-      const response = await predictImage(compressedProduct, compressedCaptured, {
-        product_model: inspectionData.product_model,
-        production_line: inspectionData.production_line,
-        station_number: inspectionData.station_number,
-        production_shift: inspectionData.production_shift,
-        operator: inspectionData.operator,
-        device_id: inspectionData.device_id,
-      });
+      const response = await predictImage(
+        compressedReference,
+        compressedCaptured,
+        {
+          product_model: inspectionData.product_model,
+          production_line: inspectionData.production_line,
+          station_number: inspectionData.station_number,
+          production_shift: inspectionData.production_shift,
+          operator: inspectionData.operator,
+          device_id: inspectionData.device_id,
+          inspection_point: point.name,
+          expected_specs: point.specNotes,
+        },
+      );
 
       const machineResult = response.prediction.toUpperCase() as "PASS" | "FAIL";
 
@@ -201,7 +213,10 @@ export default function CameraScreen() {
   const handleNext = () => {
     if (!capturedPhotoUri || !analysisResult) return;
 
+    const pt = inspectionPoints[currentPointIndex];
     addInspectionResult({
+      pointId: pt?.id ?? `idx-${currentPointIndex}`,
+      pointName: pt?.name ?? `Point ${currentPointIndex + 1}`,
       imageUri: capturedPhotoUri,
       result: analysisResult.result,
       confidence: analysisResult.confidence,
@@ -251,10 +266,10 @@ export default function CameraScreen() {
                 </Text>
                 <Text style={styles.confidenceText}>
                   Confidence:{" "}
-                  {(Math.floor(analysisResult.confidence * 100) / 100).toFixed(2)}%
+                  {Number(analysisResult.confidence).toFixed(1)}%
                 </Text>
                 {analysisResult.justification ? (
-                  <Text style={styles.justificationText} numberOfLines={2}>
+                  <Text style={styles.justificationText} numberOfLines={6}>
                     {analysisResult.justification}
                   </Text>
                 ) : null}

@@ -11,6 +11,10 @@ export default function RootLayout() {
       <ThemeProvider value={DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="products" options={{ title: 'Products' }} />
+          <Stack.Screen name="product-form" options={{ title: 'Product' }} />
+          <Stack.Screen name="points-list" options={{ title: 'Inspection points' }} />
+          <Stack.Screen name="point-form" options={{ title: 'Inspection point' }} />
           <Stack.Screen name="selection" options={{ title: 'Select Details' }} />
           <Stack.Screen name="product" options={{ title: 'Product View' }} />
           <Stack.Screen name="camera" options={{ title: 'Camera', headerShown: false }} />

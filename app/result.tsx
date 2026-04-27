@@ -45,7 +45,7 @@ export default function ResultScreen() {
           Result: {machineResult}
         </Text>
         <Text style={styles.confidenceText}>
-          Confidence: {(Math.floor(confidence * 100) / 100).toFixed(2)}%
+          Confidence: {Number(confidence).toFixed(1)}%
         </Text>
         {justification ? (
           <Text style={styles.justificationText}>{justification}</Text>

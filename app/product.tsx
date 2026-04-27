@@ -2,15 +2,9 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
-import { generateInspectionPoints } from '@/utils/inspection-points';
 
 export default function ProductScreen() {
-  const {
-    inspectionData,
-    inspectionPoints,
-    setInspectionPoints,
-    currentPointIndex,
-  } = useInspection();
+  const { inspectionData, inspectionPoints, currentPointIndex } = useInspection();
   const [imageLayout, setImageLayout] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -18,12 +12,6 @@ export default function ProductScreen() {
       router.replace('/');
     }
   }, [inspectionData]);
-
-  useEffect(() => {
-    if (inspectionPoints.length === 0) {
-      setInspectionPoints(generateInspectionPoints());
-    }
-  }, [inspectionPoints.length, setInspectionPoints]);
 
   const handleNext = () => {
     router.push('/camera');
@@ -46,11 +34,22 @@ export default function ProductScreen() {
             setImageLayout({ width, height });
           }}
         >
-          <Image
-            source={inspectionData.product_image}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
+          {inspectionData.product_image_uri ? (
+            <Image
+              source={{ uri: inspectionData.product_image_uri }}
+              style={styles.productImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={[styles.productImage, styles.placeholder]}>
+              <Text style={styles.placeholderText}>
+                No overview image{'\n'}
+                <Text style={styles.placeholderSub}>
+                  Reference for this step comes from the inspection point photo.
+                </Text>
+              </Text>
+            </View>
+          )}
           {currentPoint && imageLayout.width > 0 && (
             <View
               style={[
@@ -68,6 +67,9 @@ export default function ProductScreen() {
         <Text style={styles.pointLabel}>
           Inspection Point {currentPointIndex + 1} of {totalPoints}
         </Text>
+        {currentPoint ? (
+          <Text style={styles.pointName}>{currentPoint.name}</Text>
+        ) : null}
         <Text style={styles.label}>Product to Inspect</Text>
 
         <TouchableOpacity style={styles.button} onPress={handleNext}>
@@ -103,6 +105,23 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 8,
   },
+  placeholder: {
+    backgroundColor: '#F0F0F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  placeholderText: {
+    textAlign: 'center',
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  placeholderSub: {
+    fontWeight: '400',
+    fontSize: 13,
+    color: '#666',
+  },
   redBox: {
     position: 'absolute',
     borderWidth: 3,
@@ -112,8 +131,13 @@ const styles = StyleSheet.create({
   pointLabel: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 4,
     color: '#000000',
+  },
+  pointName: {
+    fontSize: 15,
+    color: '#444',
+    marginBottom: 8,
   },
   label: {
     fontSize: 24,
