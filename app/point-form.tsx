@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import {
   copyImageToPersistent,
@@ -19,6 +18,7 @@ import {
   upsertProduct,
   type InspectionPointRecord,
 } from '@/services/product-catalog';
+import { pickImageFromCameraOrLibrary } from '@/utils/pick-image';
 
 export default function PointFormScreen() {
   const { productId, pointId } = useLocalSearchParams<{
@@ -68,17 +68,9 @@ export default function PointFormScreen() {
   );
 
   const pickReference = async () => {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
-      Alert.alert('Permission', 'Photo library access is needed.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.9,
-    });
-    if (result.canceled || !result.assets[0]?.uri) return;
-    const uri = await copyImageToPersistent(result.assets[0].uri);
+    const picked = await pickImageFromCameraOrLibrary();
+    if (!picked) return;
+    const uri = await copyImageToPersistent(picked);
     if (referenceImageUri) {
       await deleteFileIfInCatalog(referenceImageUri);
     }
@@ -178,7 +170,7 @@ export default function PointFormScreen() {
       ) : null}
       <TouchableOpacity style={styles.btn} onPress={pickReference}>
         <Text style={styles.btnText}>
-          {referenceImageUri ? 'Change reference photo' : 'Pick reference photo'}
+          {referenceImageUri ? 'Change reference photo' : 'Add reference photo'}
         </Text>
       </TouchableOpacity>
 

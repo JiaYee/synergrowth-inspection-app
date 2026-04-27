@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import {
   copyImageToPersistent,
@@ -20,6 +19,7 @@ import {
   upsertProduct,
   type ProductRecord,
 } from '@/services/product-catalog';
+import { pickImageFromCameraOrLibrary } from '@/utils/pick-image';
 
 export default function ProductFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -52,17 +52,9 @@ export default function ProductFormScreen() {
   );
 
   const pickOverview = async () => {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
-      Alert.alert('Permission', 'Photo library access is needed.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.9,
-    });
-    if (result.canceled || !result.assets[0]?.uri) return;
-    const uri = await copyImageToPersistent(result.assets[0].uri);
+    const picked = await pickImageFromCameraOrLibrary();
+    if (!picked) return;
+    const uri = await copyImageToPersistent(picked);
     if (productImageUri) {
       await deleteFileIfInCatalog(productImageUri);
     }
@@ -159,7 +151,7 @@ export default function ProductFormScreen() {
       ) : null}
       <TouchableOpacity style={styles.btn} onPress={pickOverview}>
         <Text style={styles.btnText}>
-          {productImageUri ? 'Change overview image' : 'Pick overview image'}
+          {productImageUri ? 'Change overview image' : 'Add overview image'}
         </Text>
       </TouchableOpacity>
 
