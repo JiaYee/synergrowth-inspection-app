@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import {
   Alert,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,22 +10,18 @@ import {
 } from 'react-native';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import {
-  copyImageToPersistent,
   createProductId,
-  deleteFileIfInCatalog,
   deleteProduct,
   getProduct,
   upsertProduct,
   type ProductRecord,
 } from '@/services/product-catalog';
-import { pickImageFromCameraOrLibrary } from '@/utils/pick-image';
 
 export default function ProductFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEdit = Boolean(id);
 
   const [name, setName] = useState('');
-  const [productImageUri, setProductImageUri] = useState<string | undefined>();
   const [loading, setLoading] = useState(isEdit);
 
   const load = useCallback(async () => {
@@ -41,7 +36,6 @@ export default function ProductFormScreen() {
       return;
     }
     setName(p.name);
-    setProductImageUri(p.productImageUri);
     setLoading(false);
   }, [id]);
 
@@ -50,16 +44,6 @@ export default function ProductFormScreen() {
       void load();
     }, [load])
   );
-
-  const pickOverview = async () => {
-    const picked = await pickImageFromCameraOrLibrary();
-    if (!picked) return;
-    const uri = await copyImageToPersistent(picked);
-    if (productImageUri) {
-      await deleteFileIfInCatalog(productImageUri);
-    }
-    setProductImageUri(uri);
-  };
 
   const save = async () => {
     const trimmed = name.trim();
@@ -78,14 +62,12 @@ export default function ProductFormScreen() {
       record = {
         ...existing,
         name: trimmed,
-        productImageUri,
         updatedAt: now,
       };
     } else {
       record = {
         id: createProductId(),
         name: trimmed,
-        productImageUri,
         inspectionPoints: [],
         createdAt: now,
         updatedAt: now,
@@ -138,22 +120,9 @@ export default function ProductFormScreen() {
         placeholderTextColor="#999"
       />
 
-      <Text style={styles.label}>Product overview image (optional)</Text>
       <Text style={styles.hint}>
-        Used on the product screen with inspection area overlay.
+        Add inspection points next; each point has its own reference photo used when capturing and analyzing.
       </Text>
-      {productImageUri ? (
-        <Image
-          source={{ uri: productImageUri }}
-          style={styles.preview}
-          resizeMode="contain"
-        />
-      ) : null}
-      <TouchableOpacity style={styles.btn} onPress={pickOverview}>
-        <Text style={styles.btnText}>
-          {productImageUri ? 'Change overview image' : 'Add overview image'}
-        </Text>
-      </TouchableOpacity>
 
       <TouchableOpacity style={styles.primaryBtn} onPress={() => void save()}>
         <Text style={styles.primaryBtnText}>
@@ -195,7 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginTop: 12,
   },
-  hint: { fontSize: 13, color: '#666', marginBottom: 8 },
+  hint: { fontSize: 13, color: '#666', marginBottom: 16, marginTop: 8 },
   input: {
     borderWidth: 1,
     borderColor: '#CCC',
@@ -204,26 +173,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
   },
-  preview: {
-    width: '100%',
-    height: 180,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  btn: {
-    backgroundColor: '#000',
-    padding: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  btnText: { color: '#FFF', fontWeight: '600' },
   primaryBtn: {
     backgroundColor: '#000',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 8,
   },
   primaryBtnText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
   secondaryBtn: { padding: 14, alignItems: 'center', marginTop: 8 },

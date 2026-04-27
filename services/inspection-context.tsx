@@ -4,7 +4,6 @@ import type { InspectionPointRecord } from '@/services/product-catalog';
 export interface InspectionData {
   product_id: string;
   product_model: string;
-  product_image_uri?: string;
   production_line: string;
   station_number: string;
   production_shift: string;

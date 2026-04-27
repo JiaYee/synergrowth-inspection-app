@@ -4,7 +4,7 @@ import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -107,6 +107,12 @@ export default function CameraScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    if (!inspectionData) {
+      router.replace("/(tabs)");
+    }
+  }, [inspectionData]);
+
   if (!permission) {
     return <View />;
   }
@@ -129,8 +135,8 @@ export default function CameraScreen() {
       return;
     }
 
-    const point = inspectionPoints[currentPointIndex];
-    if (!point?.referenceImageUri?.trim()) {
+    const activePoint = inspectionPoints[currentPointIndex];
+    if (!activePoint?.referenceImageUri?.trim()) {
       Alert.alert(
         "Missing reference",
         "This inspection point has no reference photo. Add one in Manage products.",
@@ -171,7 +177,7 @@ export default function CameraScreen() {
       // Show preview immediately
       setCapturedPhotoUri(croppedUri);
 
-      const compressedReference = await compressImage(point.referenceImageUri);
+      const compressedReference = await compressImage(activePoint.referenceImageUri);
       const compressedCaptured = await compressImage(croppedUri);
 
       const response = await predictImage(
@@ -184,8 +190,8 @@ export default function CameraScreen() {
           production_shift: inspectionData.production_shift,
           operator: inspectionData.operator,
           device_id: inspectionData.device_id,
-          inspection_point: point.name,
-          expected_specs: point.specNotes,
+          inspection_point: activePoint.name,
+          expected_specs: activePoint.specNotes,
         },
       );
 
@@ -234,10 +240,27 @@ export default function CameraScreen() {
     }
   };
 
+  const point = inspectionPoints[currentPointIndex];
+
   // Photo preview screen - show result at bottom, above Retake/Next
   if (capturedPhotoUri) {
     return (
       <View style={styles.container}>
+        {point?.referenceImageUri ? (
+          <View style={styles.referenceBar}>
+            <Image
+              source={{ uri: point.referenceImageUri }}
+              style={styles.refThumb}
+              resizeMode="cover"
+            />
+            <View style={styles.refTextWrap}>
+              <Text style={styles.refKicker}>Reference</Text>
+              <Text style={styles.refName} numberOfLines={2}>
+                {point.name}
+              </Text>
+            </View>
+          </View>
+        ) : null}
         <Image
           source={{ uri: capturedPhotoUri }}
           style={styles.previewImage}
@@ -302,9 +325,32 @@ export default function CameraScreen() {
     );
   }
 
+  if (!inspectionData) {
+    return (
+      <View style={styles.permissionContainer}>
+        <Text style={styles.message}>No inspection session.</Text>
+      </View>
+    );
+  }
+
   // Live camera view
   return (
     <View style={styles.container}>
+      {point?.referenceImageUri ? (
+        <View style={styles.referenceBar}>
+          <Image
+            source={{ uri: point.referenceImageUri }}
+            style={styles.refThumb}
+            resizeMode="cover"
+          />
+          <View style={styles.refTextWrap}>
+            <Text style={styles.refKicker}>Capture to match this reference</Text>
+            <Text style={styles.refName} numberOfLines={2}>
+              {point.name}
+            </Text>
+          </View>
+        </View>
+      ) : null}
       <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
         {/* Centering guide overlay - red border */}
         <View
@@ -343,6 +389,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000000",
+  },
+  referenceBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: "#1a1a1a",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#333",
+    gap: 12,
+  },
+  refThumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 6,
+    backgroundColor: "#333",
+  },
+  refTextWrap: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  refKicker: {
+    color: "#aaa",
+    fontSize: 11,
+    marginBottom: 2,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  refName: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
   permissionContainer: {
     flex: 1,
@@ -392,7 +470,6 @@ const styles = StyleSheet.create({
   previewImage: {
     flex: 1,
     width: "100%",
-    height: "100%",
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,

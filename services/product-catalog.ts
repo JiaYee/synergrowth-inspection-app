@@ -25,8 +25,6 @@ export interface InspectionPointRecord {
 export interface ProductRecord {
   id: string;
   name: string;
-  /** Optional product overview image (file URI) */
-  productImageUri?: string;
   inspectionPoints: InspectionPointRecord[];
   createdAt: string;
   updatedAt: string;
@@ -124,9 +122,6 @@ export async function upsertProduct(product: ProductRecord): Promise<void> {
 export async function deleteProduct(id: string): Promise<void> {
   const product = await getProduct(id);
   if (!product) return;
-  if (product.productImageUri) {
-    await deleteFileIfInCatalog(product.productImageUri);
-  }
   for (const pt of product.inspectionPoints) {
     await deleteFileIfInCatalog(pt.referenceImageUri);
   }

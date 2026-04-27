@@ -207,7 +207,6 @@ export default function SelectionScreen() {
       {
         product_id: product.id,
         product_model: product.name,
-        product_image_uri: product.productImageUri,
         production_line: productionLine,
         station_number: stationNumber,
         production_shift: productionShift,
