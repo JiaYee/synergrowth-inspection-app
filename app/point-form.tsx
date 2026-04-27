@@ -149,7 +149,7 @@ export default function PointFormScreen() {
 
       <Text style={styles.label}>Expected specs / notes (optional)</Text>
       <Text style={styles.hint}>
-        Helps the AI focus on critical text (e.g. &quot;Must read 40A&quot;).
+        Shown to the operator before capture. Also sent to the AI (e.g. &quot;Must read 40A&quot;).
       </Text>
       <TextInput
         style={[styles.input, styles.multiline]}

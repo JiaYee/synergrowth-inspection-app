@@ -1,5 +1,6 @@
 import { compressImage, predictImage } from "@/services/api";
 import { useInspection } from "@/services/inspection-context";
+import type { InspectionPointRecord } from "@/services/product-catalog";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { manipulateAsync } from "expo-image-manipulator";
 import { useFocusEffect } from "@react-navigation/native";
@@ -74,6 +75,42 @@ async function cropToGuideBox(
   ]);
 
   return result.uri;
+}
+
+function ReferenceCaptureBar({
+  point,
+  variant,
+}: {
+  point: InspectionPointRecord | undefined;
+  variant: "live" | "preview";
+}) {
+  if (!point?.referenceImageUri?.trim()) return null;
+  const spec = point.specNotes?.trim();
+
+  return (
+    <View style={styles.referenceBar}>
+      <View style={styles.referenceBarTop}>
+        <Image
+          source={{ uri: point.referenceImageUri }}
+          style={styles.refThumb}
+          resizeMode="cover"
+        />
+        <View style={styles.refTextWrap}>
+          <Text style={styles.refKicker}>
+            {variant === "live"
+              ? "Capture to match this reference"
+              : "Reference"}
+          </Text>
+          <Text style={styles.refName} numberOfLines={3}>
+            {point.name}
+          </Text>
+        </View>
+      </View>
+      {spec ? (
+        <Text style={styles.refSpec}>{spec}</Text>
+      ) : null}
+    </View>
+  );
 }
 
 export default function CameraScreen() {
@@ -246,21 +283,7 @@ export default function CameraScreen() {
   if (capturedPhotoUri) {
     return (
       <View style={styles.container}>
-        {point?.referenceImageUri ? (
-          <View style={styles.referenceBar}>
-            <Image
-              source={{ uri: point.referenceImageUri }}
-              style={styles.refThumb}
-              resizeMode="cover"
-            />
-            <View style={styles.refTextWrap}>
-              <Text style={styles.refKicker}>Reference</Text>
-              <Text style={styles.refName} numberOfLines={2}>
-                {point.name}
-              </Text>
-            </View>
-          </View>
-        ) : null}
+        <ReferenceCaptureBar point={point} variant="preview" />
         <Image
           source={{ uri: capturedPhotoUri }}
           style={styles.previewImage}
@@ -336,21 +359,7 @@ export default function CameraScreen() {
   // Live camera view
   return (
     <View style={styles.container}>
-      {point?.referenceImageUri ? (
-        <View style={styles.referenceBar}>
-          <Image
-            source={{ uri: point.referenceImageUri }}
-            style={styles.refThumb}
-            resizeMode="cover"
-          />
-          <View style={styles.refTextWrap}>
-            <Text style={styles.refKicker}>Capture to match this reference</Text>
-            <Text style={styles.refName} numberOfLines={2}>
-              {point.name}
-            </Text>
-          </View>
-        </View>
-      ) : null}
+      <ReferenceCaptureBar point={point} variant="live" />
       <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
         {/* Centering guide overlay - red border */}
         <View
@@ -391,13 +400,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
   },
   referenceBar: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     backgroundColor: "#1a1a1a",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#333",
+  },
+  referenceBarTop: {
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 12,
   },
   refThumb: {
@@ -409,6 +421,16 @@ const styles = StyleSheet.create({
   refTextWrap: {
     flex: 1,
     justifyContent: "center",
+    minWidth: 0,
+  },
+  refSpec: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#333",
+    color: "#ddd",
+    fontSize: 13,
+    lineHeight: 19,
   },
   refKicker: {
     color: "#aaa",

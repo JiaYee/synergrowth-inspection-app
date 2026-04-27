@@ -1,5 +1,12 @@
 import { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, Image, View, Text } from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  View,
+  Text,
+  ScrollView,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useInspection } from '@/services/inspection-context';
 
@@ -23,15 +30,27 @@ export default function ProductScreen() {
   const currentPoint = inspectionPoints[currentPointIndex];
   const totalPoints = inspectionPoints.length;
   const refUri = currentPoint?.referenceImageUri?.trim();
+  const specNotes = currentPoint?.specNotes?.trim();
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.pointLabel}>
           Inspection point {currentPointIndex + 1} of {totalPoints}
         </Text>
         {currentPoint ? (
           <Text style={styles.pointName}>{currentPoint.name}</Text>
+        ) : null}
+
+        {specNotes ? (
+          <View style={styles.specBox}>
+            <Text style={styles.specLabel}>What to expect</Text>
+            <Text style={styles.specBody}>{specNotes}</Text>
+          </View>
         ) : null}
 
         <Text style={styles.referenceHeading}>Reference — match this when you capture</Text>
@@ -61,7 +80,7 @@ export default function ProductScreen() {
         >
           <Text style={styles.buttonText}>Next (open camera)</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -70,15 +89,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+  scroll: { flex: 1 },
+  scrollContent: {
     padding: 20,
+    paddingBottom: 32,
+    alignItems: 'center',
+    flexGrow: 1,
   },
   pointLabel: {
     fontSize: 16,
@@ -92,6 +109,29 @@ const styles = StyleSheet.create({
     color: '#000',
     marginBottom: 12,
     textAlign: 'center',
+  },
+  specBox: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 14,
+    borderLeftWidth: 4,
+    borderLeftColor: '#000',
+  },
+  specLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  specBody: {
+    fontSize: 15,
+    color: '#111',
+    lineHeight: 22,
   },
   referenceHeading: {
     fontSize: 14,
