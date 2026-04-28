@@ -3791,6 +3791,7 @@ Welcome Screen
   | Tap "Manage products"
   v
 Passcode Prompt
+  |-- Cancel -> Welcome Screen
   |
   | Enter 1234
   v
@@ -3864,6 +3865,8 @@ npx expo start
 5. You should see the Products screen.
 
 You can also reach the same protected screen from the Selection screen by tapping **Manage products & reference photos**.
+
+If you tap **Cancel** on the passcode prompt, the app returns to the Welcome screen.
 
 If there are no products yet, the empty message appears:
 
