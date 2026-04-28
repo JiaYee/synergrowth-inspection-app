@@ -2210,6 +2210,8 @@ Use this table whenever you need to find where to change something:
 | Lab | What You Changed / Learned                       | File / Screen                      |
 | --- | ------------------------------------------------ | ---------------------------------- |
 | 73  | Opened the passcode-protected product management flow | `app/(tabs)/index.tsx`             |
+| 73A | Tested wrong passcode and Cancel behavior        | Phone / Expo Go                    |
+| 73B | Read and changed the hardcoded manage passcode   | `app/products.tsx`                 |
 | 74  | Created a new product record                     | `app/product-form.tsx`             |
 | 75  | Read how passcode unlock and product refresh work | `app/products.tsx`                 |
 | 76  | Edited an existing product                       | `app/product-form.tsx`             |
@@ -3883,6 +3885,102 @@ ListEmptyComponent={
   <Text style={styles.empty}>No products yet. Tap Add product.</Text>
 }
 ```
+
+---
+
+### Lab 73A: Test Wrong Passcode and Cancel Behavior
+
+This lab checks the two paths before a supervisor enters the correct passcode.
+
+1. From the Welcome screen, tap **Manage products**.
+2. Enter a wrong numeric passcode, for example:
+
+```text
+9999
+```
+
+3. Tap **Unlock**.
+4. Confirm the app shows:
+
+```text
+Incorrect passcode.
+```
+
+5. Tap **Cancel**.
+6. Confirm the app returns to the Welcome screen.
+
+**Code walkthrough:** `app/products.tsx`
+
+The wrong passcode path sets an error message and clears the input:
+
+```tsx
+setPasscodeError("Incorrect passcode.");
+setPasscode("");
+```
+
+The Cancel button clears the prompt state and returns to the Welcome screen:
+
+```tsx
+const cancelPasscode = () => {
+  setPasscode("");
+  setPasscodeError("");
+  router.replace("/");
+};
+```
+
+`router.replace("/")` sends the user back to the app's root route, which is the Welcome screen.
+
+---
+
+### Lab 73B: Understand and Change the Manage Passcode
+
+The current workshop passcode is hardcoded in `app/products.tsx`:
+
+```tsx
+const MANAGE_PRODUCTS_PASSCODE = "1234";
+```
+
+To change it:
+
+1. Open `app/products.tsx`.
+2. Find `MANAGE_PRODUCTS_PASSCODE`.
+3. Change the value to another number-only code, for example:
+
+```tsx
+const MANAGE_PRODUCTS_PASSCODE = "2468";
+```
+
+4. Save the file.
+5. Open **Manage products** again.
+6. Confirm `1234` no longer unlocks the screen.
+7. Confirm `2468` unlocks the screen.
+
+The unlock check compares what the user typed with the hardcoded passcode:
+
+```tsx
+if (passcode === MANAGE_PRODUCTS_PASSCODE) {
+  setPasscode("");
+  setPasscodeError("");
+  setIsUnlocked(true);
+  void refresh();
+  return;
+}
+```
+
+The input is numeric-only in two ways. First, the phone shows a number keypad:
+
+```tsx
+keyboardType="number-pad"
+inputMode="numeric"
+```
+
+Second, the app removes any non-number characters before saving the input:
+
+```tsx
+setPasscode(value.replace(/\D/g, ""));
+```
+
+> **Workshop note:** This is a simple local gate for training and demos. For a production app, supervisor access should normally be handled by real authentication or a backend-managed role system.
 
 ---
 
