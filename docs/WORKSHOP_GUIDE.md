@@ -51,11 +51,12 @@
 ### Server + AI Connection (Day 5–6)
 
 1. **Product Catalog** — `app/products.tsx` + `services/product-catalog.ts`
-2. **Reference Photos** — each inspection point stores one approved photo
-3. **Mobile Config** — `constants/config.ts` → `DEMO_MODE = false`, `API_BASE_URL`
-4. **Backend API** — `synergrowth-python-api/api/index.py` → `POST /analyze`
-5. **OpenRouter Key** — store in backend `.env` locally and Vercel Environment Variables in production
-6. **Important** — never put `OPENROUTER_API_KEY` inside the mobile app
+2. **Manage Passcode** — product management prompts for numeric passcode `1234`
+3. **Reference Photos** — each inspection point stores one approved photo
+4. **Mobile Config** — `constants/config.ts` → `DEMO_MODE = false`, `API_BASE_URL`
+5. **Backend API** — `synergrowth-python-api/api/index.py` → `POST /analyze`
+6. **OpenRouter Key** — store in backend `.env` locally and Vercel Environment Variables in production
+7. **Important** — never put `OPENROUTER_API_KEY` inside the mobile app
 
 ---
 
@@ -2208,9 +2209,9 @@ Use this table whenever you need to find where to change something:
 
 | Lab | What You Changed / Learned                       | File / Screen                      |
 | --- | ------------------------------------------------ | ---------------------------------- |
-| 73  | Opened the product management flow               | `app/(tabs)/index.tsx`             |
+| 73  | Opened the passcode-protected product management flow | `app/(tabs)/index.tsx`             |
 | 74  | Created a new product record                     | `app/product-form.tsx`             |
-| 75  | Read how products are loaded and refreshed       | `app/products.tsx`                 |
+| 75  | Read how passcode unlock and product refresh work | `app/products.tsx`                 |
 | 76  | Edited an existing product                       | `app/product-form.tsx`             |
 | 77  | Deleted a product and its point photos           | `services/product-catalog.ts`      |
 | 78  | Traced local storage with AsyncStorage           | `services/product-catalog.ts`      |
@@ -3789,6 +3790,10 @@ Welcome Screen
   |
   | Tap "Manage products"
   v
+Passcode Prompt
+  |
+  | Enter 1234
+  v
 Products Screen
   |-- Add product -> Product Form
   |-- Tap product -> Product Form (edit)
@@ -3800,7 +3805,7 @@ Key files:
 
 | File | Purpose |
 | ---- | ------- |
-| `app/products.tsx` | Lists saved products, refreshes on focus, deletes products |
+| `app/products.tsx` | Prompts for the manage passcode, lists saved products, refreshes on focus, deletes products |
 | `app/product-form.tsx` | Creates or edits one product |
 | `app/selection.tsx` | Uses saved products in the operator workflow |
 | `services/product-catalog.ts` | Loads, saves, updates, deletes product records |
@@ -3850,7 +3855,15 @@ npx expo start
 
 2. Open the app in Expo Go.
 3. On the Welcome screen, tap **Manage products**.
-4. You should see the Products screen.
+4. When prompted, enter the numeric passcode:
+
+```text
+1234
+```
+
+5. You should see the Products screen.
+
+You can also reach the same protected screen from the Selection screen by tapping **Manage products & reference photos**.
 
 If there are no products yet, the empty message appears:
 
@@ -3908,17 +3921,18 @@ await upsertProduct(record);
 
 **File:** `app/products.tsx`
 
-The screen loads products every time it becomes active:
+After the passcode is accepted, the screen loads products every time it becomes active:
 
 ```tsx
 useFocusEffect(
   useCallback(() => {
+    if (!isUnlocked) return;
     void refresh();
-  }, [refresh])
+  }, [isUnlocked, refresh])
 );
 ```
 
-That is important because you can leave the screen, create or edit something, then come back and see the latest data.
+That is important because the screen waits until the passcode is correct, then refreshes when you leave the screen, create or edit something, and come back to see the latest data.
 
 The `refresh` function calls:
 
@@ -4063,7 +4077,7 @@ This lab verifies CRUD works after reload.
 3. Delete the other product.
 4. Close Expo Go completely.
 5. Reopen the app.
-6. Go to **Manage products**.
+6. Go to **Manage products** and enter passcode `1234`.
 
 Expected result:
 
@@ -4079,6 +4093,7 @@ You now understand:
 
 - What CRUD means in a mobile app
 - How the Products screen lists local product records
+- How the manage products screen is protected by a simple numeric passcode
 - How `product-form.tsx` creates and edits products
 - How `services/product-catalog.ts` stores product data with AsyncStorage
 - Why deleting a product also cleans up its reference image files
@@ -4132,7 +4147,7 @@ An inspection point answers:
 
 ### Lab 81: Open the Inspection Point List
 
-1. Go to **Manage products**.
+1. Go to **Manage products** and enter passcode `1234`.
 2. Create or select a product.
 3. Tap **Points**.
 

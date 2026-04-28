@@ -2,8 +2,10 @@ import { useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
+  Modal,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,8 +16,13 @@ import {
   type ProductRecord,
 } from '@/services/product-catalog';
 
+const MANAGE_PRODUCTS_PASSCODE = '1234';
+
 export default function ProductsScreen() {
   const [products, setProducts] = useState<ProductRecord[]>([]);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState('');
 
   const refresh = useCallback(async () => {
     setProducts(await loadProducts());
@@ -23,9 +30,29 @@ export default function ProductsScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      if (!isUnlocked) return;
       void refresh();
-    }, [refresh])
+    }, [isUnlocked, refresh])
   );
+
+  const submitPasscode = () => {
+    if (passcode === MANAGE_PRODUCTS_PASSCODE) {
+      setPasscode('');
+      setPasscodeError('');
+      setIsUnlocked(true);
+      void refresh();
+      return;
+    }
+
+    setPasscodeError('Incorrect passcode.');
+    setPasscode('');
+  };
+
+  const cancelPasscode = () => {
+    setPasscode('');
+    setPasscodeError('');
+    router.replace('/selection');
+  };
 
   const confirmDelete = (p: ProductRecord) => {
     Alert.alert(
@@ -47,6 +74,47 @@ export default function ProductsScreen() {
 
   return (
     <View style={styles.container}>
+      <Modal
+        visible={!isUnlocked}
+        transparent
+        animationType="fade"
+        onRequestClose={cancelPasscode}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.passcodeModal}>
+            <Text style={styles.modalTitle}>Manage products</Text>
+            <Text style={styles.modalMessage}>
+              Enter the numeric passcode to manage products and reference photos.
+            </Text>
+            <TextInput
+              style={styles.passcodeInput}
+              value={passcode}
+              onChangeText={(value) => {
+                setPasscode(value.replace(/\D/g, ''));
+                if (passcodeError) setPasscodeError('');
+              }}
+              placeholder="Passcode"
+              placeholderTextColor="#999"
+              secureTextEntry
+              keyboardType="number-pad"
+              inputMode="numeric"
+              autoCapitalize="none"
+              autoCorrect={false}
+              onSubmitEditing={submitPasscode}
+            />
+            {passcodeError ? (
+              <Text style={styles.passcodeError}>{passcodeError}</Text>
+            ) : null}
+            <TouchableOpacity style={styles.primaryBtn} onPress={submitPasscode}>
+              <Text style={styles.primaryBtnText}>Unlock</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={cancelPasscode}>
+              <Text style={styles.secondaryBtnText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Text style={styles.title}>Products</Text>
       <Text style={styles.subtitle}>
         Create products and add inspection points with reference photos.
@@ -205,5 +273,44 @@ const styles = StyleSheet.create({
   secondaryBtnText: {
     color: '#333',
     fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  passcodeModal: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 20,
+  },
+  modalTitle: {
+    color: '#000',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  modalMessage: {
+    color: '#666',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  passcodeInput: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 8,
+    padding: 14,
+    fontSize: 16,
+    color: '#000',
+    marginBottom: 8,
+  },
+  passcodeError: {
+    color: '#DC143C',
+    fontSize: 13,
+    marginBottom: 8,
   },
 });
