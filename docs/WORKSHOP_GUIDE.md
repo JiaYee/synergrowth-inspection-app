@@ -2233,31 +2233,39 @@ Use this table whenever you need to find where to change something:
 | 87  | Started an inspection from dynamic products     | `app/selection.tsx`                |
 | 88  | Verified reference photo appears during capture | `app/product.tsx`, `app/camera.tsx` |
 
-### Day 6 — Session 1 (Labs 89–96)
+### Day 6 — Session 1 (Labs 89–100)
 
-| Lab | What You Did / Learned                         | File / Tool                         |
-| --- | ---------------------------------------------- | ----------------------------------- |
-| 89  | Opened the FastAPI backend project             | `synergrowth-python-api/`           |
-| 90  | Created a local `.env` from `.env.example`     | `.env`, `.env.example`              |
-| 91  | Stored `OPENROUTER_API_KEY` on the backend     | `.env`                              |
-| 92  | Selected an OpenRouter vision model            | `OPENROUTER_MODEL`                  |
-| 93  | Walked through the `/analyze` route            | `api/index.py`                      |
-| 94  | Understood reference vs captured image payload | `api/index.py`                      |
-| 95  | Tested the backend health endpoint             | Browser / curl                      |
-| 96  | Tested `/analyze` with two images              | curl / Postman                      |
+| Lab | What You Did / Learned                              | File / Tool                         |
+| --- | --------------------------------------------------- | ----------------------------------- |
+| 89  | Opened and prepared the FastAPI backend project     | `synergrowth-python-api/`           |
+| 90  | Created a local `.env` from `.env.example`          | `.env`, `.env.example`              |
+| 91  | Stored `OPENROUTER_API_KEY` on the backend          | `.env`                              |
+| 92  | Selected an OpenRouter vision model                 | `OPENROUTER_MODEL`                  |
+| 93  | Walked through the `/health` and `/analyze` routes  | `api/index.py`                      |
+| 94  | Understood reference vs captured image payload      | `api/index.py`                      |
+| 95  | Started FastAPI locally and tested `/health`        | Browser / curl                      |
+| 96  | Opened FastAPI docs and inspected multipart fields  | `/docs`                             |
+| 97  | Practiced reading missing-key and server errors     | Backend logs                        |
+| 98  | Tested `/analyze` with two images                   | curl / Postman                      |
+| 99  | Interpreted `matching_rate`, `confidence`, and JSON | API response                        |
+| 100 | Tuned `MATCHING_THRESHOLD` safely                   | `.env`, backend restart             |
 
-### Day 6 — Session 2 (Labs 97–104)
+### Day 6 — Session 2 (Labs 101–112)
 
 | Lab | What You Changed / Learned                          | File / Tool                         |
 | --- | --------------------------------------------------- | ----------------------------------- |
-| 97  | Set the mobile app to real API mode                 | `constants/config.ts`               |
-| 98  | Pointed `API_BASE_URL` at the FastAPI/Vercel server | `constants/config.ts`               |
-| 99  | Traced the mobile multipart request                 | `services/api.ts`                   |
-| 100 | Connected captured photo + reference photo          | `app/camera.tsx`                    |
-| 101 | Verified metadata fields sent to the API            | `services/api.ts`                   |
-| 102 | Stored production keys in Vercel                    | Vercel Environment Variables        |
-| 103 | Ran a full OpenRouter-powered inspection            | Phone / Expo Go                     |
-| 104 | Troubleshot common API and key errors               | Backend logs / mobile alerts        |
+| 101 | Set the mobile app to real API mode                 | `constants/config.ts`               |
+| 102 | Pointed `API_BASE_URL` at the FastAPI/Vercel server | `constants/config.ts`               |
+| 103 | Traced the mobile multipart request                 | `services/api.ts`                   |
+| 104 | Verified image compression before upload            | `services/api.ts`                   |
+| 105 | Connected captured photo + reference photo          | `app/camera.tsx`                    |
+| 106 | Verified metadata fields sent to the API            | `services/api.ts`                   |
+| 107 | Tested local backend access from a phone            | Wi-Fi IP / Expo Go                  |
+| 108 | Stored production keys in Vercel                    | Vercel Environment Variables        |
+| 109 | Redeployed and verified production health           | Vercel / `/health`                  |
+| 110 | Ran a full OpenRouter-powered inspection            | Phone / Expo Go                     |
+| 111 | Compared one PASS and one FAIL scenario             | Reference/captured photos           |
+| 112 | Troubleshot common API and key errors               | Backend logs / mobile alerts        |
 
 ---
 
@@ -4466,7 +4474,7 @@ You now understand:
 | Backend project tour | 35–45 min | `synergrowth-python-api/` structure |
 | Key storage | 45 min | `.env`, `.env.example`, Vercel env vars |
 | OpenRouter route walkthrough | 60 min | `/health`, `/analyze`, image payloads |
-| Labs 89–96 | 90 min | Local run, health check, curl test |
+| Labs 89–100 | 100–120 min | Local run, docs, curl test, threshold tuning |
 | Buffer / Q&A | 20–30 min | Model choice, threshold, common errors |
 
 ---
@@ -4497,6 +4505,25 @@ Mobile App
 
 The mobile app does **not** talk to OpenRouter directly. It talks to your backend. The backend owns the secret key.
 
+Think of Day 6 as the moment where the app stops being only a mobile UI and becomes a full system:
+
+1. The phone captures the inspection photo.
+2. The app sends the approved reference photo and the captured photo to FastAPI.
+3. FastAPI adds job metadata and calls OpenRouter.
+4. OpenRouter returns a structured score.
+5. FastAPI converts that score into `pass` or `fail`.
+6. The mobile app shows the result to the operator.
+
+This separation matters because each layer has a clear job:
+
+| Layer | Responsibility |
+| ----- | -------------- |
+| Mobile app | Capture photos, collect inspection metadata, show result |
+| FastAPI backend | Protect API keys, validate/upload images, call AI provider |
+| OpenRouter model | Compare image content and return structured analysis |
+
+If something fails during Day 6, first ask which layer failed: phone, backend, or OpenRouter.
+
 ---
 
 ### Important: Where to Store the OpenRouter Key
@@ -4515,6 +4542,17 @@ Correct places:
 | ----------- | -------------- |
 | Local backend dev | `synergrowth-python-api/.env` |
 | Vercel production | Vercel -> Project -> Settings -> Environment Variables |
+
+The backend reads these values when it starts:
+
+| Variable | Required? | Meaning |
+| -------- | --------- | ------- |
+| `OPENROUTER_API_KEY` | Yes | Secret key used to call OpenRouter |
+| `OPENROUTER_MODEL` | Yes | Vision-capable model ID |
+| `MATCHING_THRESHOLD` | Yes | Minimum `matching_rate` needed for PASS |
+| `OPENROUTER_BASE_URL` | Optional | Defaults to `https://openrouter.ai/api/v1` |
+| `OPENROUTER_HTTP_REFERER` | Optional | Site URL sent to OpenRouter rankings |
+| `OPENROUTER_APP_TITLE` | Optional | App title sent as an OpenRouter header |
 
 Wrong places:
 
@@ -4536,7 +4574,9 @@ synergrowth-python-api/
 ├── main.py               # Re-exports app for local uvicorn
 ├── requirements.txt      # Python dependencies
 ├── .env.example          # Template for local environment variables
+├── .gitignore            # Keeps .env and caches out of Git
 ├── vercel.json           # Vercel routing config
+├── Procfile              # Optional deployment entrypoint
 └── README.md
 ```
 
@@ -4547,12 +4587,13 @@ Key files:
 | `api/index.py` | Main FastAPI app, `/health`, `/analyze`, OpenRouter call |
 | `.env.example` | Shows required environment variable names |
 | `.env` | Your real local secret values; do not commit |
+| `.gitignore` | Confirms `.env` stays out of Git |
 | `requirements.txt` | FastAPI, OpenAI client, dotenv, multipart support |
 | `vercel.json` | Sends Vercel traffic to the API handler |
 
 ---
 
-### Lab 89: Open the Backend Project
+### Lab 89: Open and Prepare the Backend Project
 
 Open a terminal in the backend folder:
 
@@ -4560,22 +4601,34 @@ Open a terminal in the backend folder:
 cd synergrowth-python-api
 ```
 
-Install dependencies:
+Confirm Python is available:
 
 ```bash
-pip install -r requirements.txt
+python --version
 ```
 
-If your instructor uses a virtual environment, create and activate it first:
+If `python` is not recognized on Windows, try:
+
+```powershell
+py --version
+```
+
+Create a virtual environment so the backend dependencies stay separate from other Python projects:
 
 ```bash
 python -m venv .venv
 ```
 
-On Windows:
+On Windows Command Prompt:
 
 ```bash
 .venv\Scripts\activate.bat
+```
+
+On Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
 ```
 
 On macOS/Linux:
@@ -4584,11 +4637,31 @@ On macOS/Linux:
 source .venv/bin/activate
 ```
 
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+The important packages are:
+
+| Package | Why it is needed |
+| ------- | ---------------- |
+| `fastapi` | Defines `/health` and `/analyze` |
+| `uvicorn` | Runs FastAPI locally |
+| `python-multipart` | Lets FastAPI read uploaded image files |
+| `openai` | Calls OpenRouter through the OpenAI-compatible API |
+| `python-dotenv` | Loads local `.env` values |
+
+**Checkpoint:** after installation, there should be no import errors when the server starts in Lab 95.
+
 ---
 
 ### Lab 90: Create Local `.env`
 
-Copy the example file:
+The repo includes a safe template named `.env.example`. Copy it to a real local `.env` file.
+
+On macOS/Linux:
 
 ```bash
 cp .env.example .env
@@ -4608,6 +4681,16 @@ OPENROUTER_MODEL=openai/gpt-4o-mini
 MATCHING_THRESHOLD=90
 ```
 
+Also open `.gitignore` and confirm secrets are ignored:
+
+```text
+.env
+.env.*
+!.env.example
+```
+
+This means the real `.env` stays local, while `.env.example` remains safe to commit because it contains placeholder values.
+
 ---
 
 ### Lab 91: Store `OPENROUTER_API_KEY`
@@ -4621,13 +4704,17 @@ OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
 4. Save the file.
+5. Close and reopen the terminal only if your environment variables do not seem to reload.
 
 **Security checklist:**
 
 - Do not paste the real key into chat.
 - Do not commit `.env`.
 - Do not put the key in the mobile app.
+- Do not share screenshots that reveal the key.
 - If a key leaks, revoke it in OpenRouter and create a new one.
+
+**Key insight:** the mobile app only needs the backend URL. The backend is the only place that needs the OpenRouter secret.
 
 ---
 
@@ -4647,13 +4734,34 @@ The backend reads it here:
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
 ```
 
+When choosing a model, check three things:
+
+| Question | Why it matters |
+| -------- | -------------- |
+| Does the model accept images? | `/analyze` sends two image inputs |
+| Is it available in your OpenRouter account? | Some models require credits or provider access |
+| Is it fast enough for a live demo? | Operators should not wait too long after capture |
+
+If `/analyze` returns `Image analysis failed`, one possible cause is an invalid or unavailable model ID. Check the backend terminal logs before changing code.
+
 ---
 
-### Lab 93: Walk Through `/analyze`
+### Lab 93: Walk Through `/health` and `/analyze`
 
 **File:** `api/index.py`
 
-The route accepts two required image files:
+The health route is intentionally simple:
+
+```python
+@app.get("/health")
+def healthcheck():
+    logger.info("GET /health")
+    return {"status": "healthy"}
+```
+
+Use `/health` to answer one question: "Is the backend running and reachable?"
+
+The analysis route accepts two required image files:
 
 ```python
 @app.post("/analyze")
@@ -4669,21 +4777,33 @@ async def analyze(
 
 Names matter:
 
-| Form field | Meaning |
-| ---------- | ------- |
-| `product_image` | Approved reference photo |
-| `captured_photo` | New photo captured by the operator |
-| `product_model` | Product name |
-| `inspection_point` | Point name, e.g. "Main rating label" |
-| `expected_specs` | Text notes from the point form |
+| Form field | Required? | Meaning |
+| ---------- | --------- | ------- |
+| `product_image` | Yes | Approved reference photo |
+| `captured_photo` | Yes | New photo captured by the operator |
+| `product_model` | No | Product name |
+| `inspection_point` | No | Point name, e.g. "Main rating label" |
+| `expected_specs` | No | Text notes from the point form |
+| `production_line` | No | Line selected on the Selection screen |
+| `station_number` | No | Station selected on the Selection screen |
+| `production_shift` | No | Shift selected on the Selection screen |
+| `operator` | No | Operator selected on the Selection screen |
+| `device_id` | No | Device selected on the Selection screen |
 
-The mobile app must send these exact field names.
+The mobile app must send the exact required names: `product_image` and `captured_photo`.
 
 ---
 
 ### Lab 94: Understand Reference vs Captured Photo
 
-The backend converts each uploaded image into a data URL:
+The backend reads both uploaded files:
+
+```python
+ref_bytes = await product_image.read()
+cap_bytes = await captured_photo.read()
+```
+
+Then it converts each uploaded image into a data URL:
 
 ```python
 ref_url = _data_url(ref_bytes, product_image)
@@ -4703,7 +4823,15 @@ The prompt tells the model:
 Image 1 = REFERENCE (gold standard). Image 2 = CAPTURED (candidate).
 ```
 
-That order is important.
+That order is important. If the order is reversed, the model may describe the wrong image as the approved reference.
+
+The prompt also tells the model to prioritize specification text before visual similarity:
+
+```text
+Visual similarity alone must NOT yield a high matching_rate if any critical spec text disagrees.
+```
+
+This is important for factory inspection. A label that looks similar but says `400A` instead of `40A` should fail.
 
 ---
 
@@ -4735,11 +4863,96 @@ Expected response:
 }
 ```
 
+You can also test from a terminal:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Expected server log:
+
+```text
+GET /health
+```
+
+**Checkpoint:** if `/health` fails, fix backend startup before testing the mobile app. The mobile app cannot call a backend that is not running.
+
 ---
 
-### Lab 96: Test `/analyze` with Two Images
+### Lab 96: Open FastAPI Docs and Inspect Multipart Fields
+
+FastAPI automatically creates API documentation.
+
+Open:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Expand:
+
+```text
+POST /analyze
+```
+
+You should see:
+
+- `product_image` as a required file field
+- `captured_photo` as a required file field
+- Metadata fields as optional form fields
+
+Try this check:
+
+1. Click **Try it out**.
+2. Notice which fields are required.
+3. Do not submit yet unless you have two image files ready.
+
+**Key insight:** `/docs` is a fast way to confirm what the backend expects before debugging the mobile app.
+
+---
+
+### Lab 97: Practice Reading Missing-Key and Server Errors
+
+This lab teaches you how backend failures look.
+
+Temporarily remove only the value of `OPENROUTER_API_KEY` in `.env`:
+
+```env
+OPENROUTER_API_KEY=
+```
+
+Restart the backend, then call `/analyze` with two test images. Expected response:
+
+```json
+{
+  "detail": "OPENROUTER_API_KEY is not configured"
+}
+```
+
+Now restore the key:
+
+```env
+OPENROUTER_API_KEY=sk-or-v1-...
+```
+
+Restart the backend again.
+
+**Why this lab matters:** when the mobile app shows a generic analysis error, the backend usually has the real reason. Read the backend terminal first.
+
+---
+
+### Lab 98: Test `/analyze` with Two Images
 
 Use two image files: one approved reference and one captured test photo.
+
+Good test photos:
+
+- Use the same product area for both images.
+- Keep labels readable.
+- Avoid glare and heavy blur.
+- Include one "should pass" pair and one "should fail" pair if time allows.
+
+On macOS/Linux:
 
 ```bash
 curl -s -X POST "http://127.0.0.1:8000/analyze" \
@@ -4747,6 +4960,17 @@ curl -s -X POST "http://127.0.0.1:8000/analyze" \
   -F "captured_photo=@/path/to/captured.jpg" \
   -F "product_model=Breaker Panel SKU-123" \
   -F "inspection_point=Main rating label" \
+  -F "expected_specs=Must show 40A, 230V, CE mark"
+```
+
+On Windows PowerShell:
+
+```powershell
+curl.exe -s -X POST "http://127.0.0.1:8000/analyze" `
+  -F "product_image=@C:\path\to\reference.jpg" `
+  -F "captured_photo=@C:\path\to\captured.jpg" `
+  -F "product_model=Breaker Panel SKU-123" `
+  -F "inspection_point=Main rating label" `
   -F "expected_specs=Must show 40A, 230V, CE mark"
 ```
 
@@ -4763,6 +4987,49 @@ Expected response shape:
 }
 ```
 
+If you get HTTP 422, the request reached FastAPI but the form field names are wrong or a required file is missing.
+
+---
+
+### Lab 99: Interpret the Analysis Response
+
+The backend asks the model to return three main values:
+
+```text
+matching_rate: number 0-100
+confidence: number 0-100
+explanation: one or two sentences
+```
+
+Then the backend adds compatibility fields for the mobile app:
+
+```python
+result = {
+    "prediction": prediction,
+    "confidence": confidence,
+    "matching_rate": matching_rate,
+    "explanation": explanation,
+    "justification": explanation,
+    "score": score,
+}
+```
+
+Read the fields this way:
+
+| Field | How to read it |
+| ----- | -------------- |
+| `prediction` | Final app decision: `pass` or `fail` |
+| `matching_rate` | How closely the captured photo matches required specs |
+| `confidence` | How sure the model is about its decision |
+| `explanation` | Human-readable reason to show or log |
+| `score` | `matching_rate` divided by 100 |
+
+**Important distinction:** a low `confidence` means the model is unsure. A low `matching_rate` means it found mismatch risk. Both are useful, but they are not the same thing.
+
+---
+
+### Lab 100: Tune `MATCHING_THRESHOLD` Safely
+
 The backend decides pass/fail using:
 
 ```python
@@ -4770,6 +5037,35 @@ prediction = "pass" if matching_rate >= MATCHING_THRESHOLD else "fail"
 ```
 
 With `MATCHING_THRESHOLD=90`, anything below 90 becomes `fail`.
+
+Try this controlled experiment:
+
+1. Use the same two images from Lab 98.
+2. Set a strict threshold:
+
+```env
+MATCHING_THRESHOLD=95
+```
+
+3. Restart the backend.
+4. Run the same `/analyze` request.
+5. Set a more lenient threshold:
+
+```env
+MATCHING_THRESHOLD=80
+```
+
+6. Restart and test again.
+
+Use this table to discuss tradeoffs:
+
+| Threshold | Behavior |
+| --------- | -------- |
+| 95 | Fewer false passes, more false fails |
+| 90 | Good starting point for strict inspection demos |
+| 80 | More forgiving, but may pass weak matches |
+
+For production, threshold tuning should use a labeled set of real pass/fail inspection photos, not only one demo pair.
 
 ---
 
@@ -4779,10 +5075,12 @@ You now understand:
 
 - Why OpenRouter is called from the backend, not directly from the app
 - How to store `OPENROUTER_API_KEY` in `.env` locally
-- How to store production keys in Vercel Environment Variables
+- How `.gitignore` keeps local secrets out of Git
+- How `/health` proves the backend is reachable
+- How `/docs` exposes the required multipart fields
 - How `/analyze` receives `product_image`, `captured_photo`, and metadata
 - How expected specs influence the AI comparison
-- How `matching_rate` and `MATCHING_THRESHOLD` become pass/fail
+- How `matching_rate`, `confidence`, and `MATCHING_THRESHOLD` become pass/fail
 
 ---
 
@@ -4790,16 +5088,16 @@ You now understand:
 
 > **Goal:** Point the mobile app at the OpenRouter FastAPI backend, confirm `services/api.ts` sends the right multipart payload, and run a full reference-photo inspection.
 
-### Suggested pacing (~4 hours)
+### Suggested pacing (~4–5 hours)
 
 | Block | Time | Focus |
 | ----- | ---- | ----- |
 | Mobile config | 30 min | `DEMO_MODE`, `API_BASE_URL` |
 | API service walkthrough | 45–60 min | `compressImage`, `predictImage`, `FormData` |
 | Camera integration | 45 min | Reference photo + captured photo + metadata |
-| Labs 97–101 | 75–90 min | Configure and trace the request |
+| Labs 101–106 | 90–110 min | Configure, trace request, verify image payload |
 | Production key storage | 35–45 min | Vercel env vars |
-| Labs 102–104 | 45–60 min | End-to-end test and troubleshooting |
+| Labs 107–112 | 75–90 min | Phone network test, production health, pass/fail trials |
 | Buffer / Q&A | 20–30 min | Network and model issues |
 
 ---
@@ -4826,9 +5124,18 @@ FastAPI + OpenRouter
 Camera Preview and Summary
 ```
 
+During this session, use the backend logs and the mobile console together:
+
+| If you need to know... | Look here |
+| ---------------------- | --------- |
+| Did the phone call the correct URL? | Expo logs from `services/api.ts` |
+| Did FastAPI receive the request? | Backend terminal or Vercel logs |
+| Did OpenRouter reject the request? | Backend error logs |
+| Did the app parse the result? | Camera preview and Expo logs |
+
 ---
 
-### Lab 97: Turn Off Demo Mode
+### Lab 101: Turn Off Demo Mode
 
 **File:** `constants/config.ts`
 
@@ -4840,9 +5147,24 @@ export const DEMO_MODE = false;
 
 When `DEMO_MODE` is `true`, the app fakes a prediction locally and never calls the backend. For Day 6 testing, it must be `false`.
 
+You can confirm demo mode is off by checking the app logs after a capture. In demo mode, `services/api.ts` prints:
+
+```text
+[DEMO] predictImage mocked:
+```
+
+In real API mode, it prints:
+
+```text
+[API] POST /analyze
+[API] URL: ...
+```
+
+**Checkpoint:** if you never see `[API] POST /analyze`, the app is not calling the backend yet.
+
 ---
 
-### Lab 98: Set `API_BASE_URL`
+### Lab 102: Set `API_BASE_URL`
 
 For the deployed Vercel API:
 
@@ -4866,9 +5188,20 @@ export const API_BASE_URL = "http://192.168.x.x:8000";
 
 Replace `192.168.x.x` with your laptop's Wi-Fi IP.
 
+Use the right base URL for the environment:
+
+| Scenario | Example `API_BASE_URL` |
+| -------- | ---------------------- |
+| Phone calling deployed Vercel API | `https://synergrowth-python-api.vercel.app` |
+| Android emulator calling laptop backend | `http://10.0.2.2:8000` |
+| iOS simulator calling laptop backend | `http://127.0.0.1:8000` |
+| Physical phone calling laptop backend | `http://192.168.x.x:8000` |
+
+**Important:** do not include `/analyze` in `API_BASE_URL`. The service appends it automatically.
+
 ---
 
-### Lab 99: Trace the Multipart Request
+### Lab 103: Trace the Multipart Request
 
 **File:** `services/api.ts`
 
@@ -4899,9 +5232,58 @@ These names match the FastAPI route from Day 6 Session 1:
 - `product_image`
 - `captured_photo`
 
+Then the app sends the request:
+
+```tsx
+const response = await fetch(ANALYZE_API_URL, {
+  method: 'POST',
+  body: formData,
+});
+```
+
+Notice there is no manual `Content-Type` header. React Native creates the multipart boundary automatically. Adding your own `Content-Type: multipart/form-data` can break uploads because the boundary may be missing.
+
 ---
 
-### Lab 100: Connect Reference Photo + Captured Photo
+### Lab 104: Verify Image Compression Before Upload
+
+**File:** `services/api.ts`
+
+Before uploading, the app compresses images:
+
+```tsx
+const MAX_RESIZE = 800;
+const COMPRESS_QUALITY = 0.7;
+```
+
+```tsx
+export async function compressImage(uri: string): Promise<string> {
+  const result = await manipulateAsync(
+    uri,
+    [{ resize: { width: MAX_RESIZE, height: MAX_RESIZE } }],
+    { compress: COMPRESS_QUALITY, format: SaveFormat.JPEG }
+  );
+  return result.uri;
+}
+```
+
+Why this matters:
+
+- Smaller images upload faster on factory Wi-Fi.
+- OpenRouter requests are less likely to hit payload limits.
+- The model still gets enough detail for labels and markings if the image is clear.
+
+Try this observation:
+
+1. Capture a photo in the app.
+2. Watch the app stay on "Analyzing..." while compression and upload happen.
+3. If the network is slow, keep the product label centered and avoid repeated taps.
+
+**Discussion:** compression helps speed, but too much compression can make small text unreadable. For label inspections, clear framing matters more than high resolution.
+
+---
+
+### Lab 105: Connect Reference Photo + Captured Photo
 
 **File:** `app/camera.tsx`
 
@@ -4933,9 +5315,29 @@ const response = await predictImage(
 
 This is the bridge between Day 5 catalog data and Day 6 AI analysis.
 
+The active inspection point comes from the inspection context:
+
+```tsx
+const activePoint = inspectionPoints[currentPointIndex];
+```
+
+Before calling the API, the camera screen checks that the point has a reference photo:
+
+```tsx
+if (!activePoint?.referenceImageUri?.trim()) {
+  Alert.alert(
+    "Missing reference",
+    "This inspection point has no reference photo. Add one in Manage products.",
+  );
+  return;
+}
+```
+
+**Checkpoint:** if a point has no reference photo, the app should stop before making an API request.
+
 ---
 
-### Lab 101: Verify Metadata Sent to the API
+### Lab 106: Verify Metadata Sent to the API
 
 **File:** `services/api.ts`
 
@@ -4957,9 +5359,87 @@ f"expected_specs={expected_specs}" if expected_specs else None,
 
 This helps the AI focus on the exact label, screw, marking, or area being inspected.
 
+The camera screen sends these values:
+
+```tsx
+{
+  product_model: inspectionData.product_model,
+  production_line: inspectionData.production_line,
+  station_number: inspectionData.station_number,
+  production_shift: inspectionData.production_shift,
+  operator: inspectionData.operator,
+  device_id: inspectionData.device_id,
+  inspection_point: activePoint.name,
+  expected_specs: activePoint.specNotes,
+}
+```
+
+Try changing the expected specs for one point:
+
+```text
+Must show 40A, 230V, CE mark, and matching part number.
+```
+
+Then run the inspection again and check whether the explanation mentions those concrete requirements.
+
 ---
 
-### Lab 102: Store Production Keys in Vercel
+### Lab 107: Test Local Backend Access from a Phone
+
+This lab is for testing a local backend with a physical phone.
+
+Start FastAPI on all network interfaces:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Find your laptop's Wi-Fi IP.
+
+On Windows:
+
+```powershell
+ipconfig
+```
+
+Look for the active Wi-Fi adapter's IPv4 address, for example:
+
+```text
+192.168.1.42
+```
+
+Set the mobile config:
+
+```tsx
+export const API_BASE_URL = "http://192.168.1.42:8000";
+```
+
+Before using the app, open this URL from the phone browser:
+
+```text
+http://192.168.1.42:8000/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+If the phone browser cannot reach `/health`, fix network access before debugging React Native.
+
+Common local-network blockers:
+
+- Phone and laptop are on different Wi-Fi networks.
+- Laptop firewall blocks port `8000`.
+- Backend was started with `127.0.0.1` instead of `0.0.0.0`.
+- `API_BASE_URL` uses `localhost`, which points to the phone itself.
+
+---
+
+### Lab 108: Store Production Keys in Vercel
 
 If using the Vercel deployment:
 
@@ -4974,17 +5454,54 @@ OPENROUTER_MODEL
 MATCHING_THRESHOLD
 ```
 
-5. Redeploy the project.
+5. Choose the correct environment, usually **Production** for the live workshop API.
+6. Redeploy the project.
 
 Important:
 
 - Vercel environment variable changes do not affect an already deployed serverless function until redeploy.
 - Keep `.env` for local development only.
 - Keep production secrets in the deployment platform.
+- Do not paste production secrets into `constants/config.ts`.
 
 ---
 
-### Lab 103: Run a Full OpenRouter-Powered Inspection
+### Lab 109: Redeploy and Verify Production Health
+
+After changing Vercel environment variables, redeploy the backend.
+
+If using the Vercel dashboard:
+
+1. Open the project.
+2. Go to **Deployments**.
+3. Redeploy the latest deployment.
+4. Wait until the deployment is ready.
+
+If using the Vercel CLI:
+
+```bash
+npx vercel deploy --prod
+```
+
+Then check:
+
+```text
+https://synergrowth-python-api.vercel.app/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+**Important:** `/health` only proves the backend is online. It does not prove the OpenRouter key works, because `/health` does not call OpenRouter. Use `/analyze` or the mobile app to verify the AI path.
+
+---
+
+### Lab 110: Run a Full OpenRouter-Powered Inspection
 
 1. Confirm backend health:
 
@@ -5015,9 +5532,49 @@ Expected result:
 - The explanation mentions matched specs or concrete differences.
 - The Summary screen includes the result after tapping **Next**.
 
+Use this checklist during the test:
+
+| Check | Expected |
+| ----- | -------- |
+| Product screen | Shows point name, expected specs, and reference photo |
+| Camera screen before capture | Shows reference panel |
+| App logs | Shows `[API] POST /analyze` |
+| Backend logs | Shows `POST /analyze` |
+| Camera preview | Shows PASS or FAIL with confidence |
+| Summary screen | Includes the completed point result |
+
 ---
 
-### Lab 104: Troubleshoot Common Errors
+### Lab 111: Compare One PASS and One FAIL Scenario
+
+Run two controlled inspections.
+
+PASS scenario:
+
+1. Use a clear reference photo.
+2. Capture the same product area.
+3. Keep text readable and centered.
+4. Expect a high `matching_rate` and `prediction: pass`.
+
+FAIL scenario:
+
+1. Use the same reference photo.
+2. Capture a visibly different label, wrong rating, wrong part number, or blocked text.
+3. Expect a lower `matching_rate` and `prediction: fail`.
+
+Record observations:
+
+| Scenario | What to note |
+| -------- | ------------ |
+| PASS | Which specs matched? Was confidence high? |
+| FAIL | Which mismatch did the explanation mention? |
+| Unclear result | Was there blur, glare, cropping, or missing text? |
+
+**Workshop discussion:** if the model gives a surprising result, do not immediately assume the app is broken. Check photo quality, expected specs, model choice, and threshold.
+
+---
+
+### Lab 112: Troubleshoot Common Errors
 
 | Symptom | Likely cause | Fix |
 | ------- | ------------ | --- |
@@ -5027,6 +5584,21 @@ Expected result:
 | HTTP 422 from `/analyze` | Missing required form field | Verify `product_image` and `captured_photo` names |
 | HTTP 500 `Image analysis failed` | OpenRouter key/model/quota issue | Check backend logs and OpenRouter dashboard |
 | Result seems too strict or too lenient | Threshold/model prompt needs tuning | Adjust `MATCHING_THRESHOLD` or model choice |
+| Result explanation is vague | Image too blurry or expected specs too broad | Improve photo, write clearer expected specs |
+| Phone can open app but not backend | Local firewall or wrong Wi-Fi IP | Test `/health` in phone browser |
+| Vercel still uses old key/model | Deployment not refreshed after env change | Redeploy production |
+
+Use this debugging order:
+
+1. Open `/health`.
+2. Confirm `DEMO_MODE = false`.
+3. Confirm `API_BASE_URL` has no typo.
+4. Watch Expo logs for `[API] URL:`.
+5. Watch backend logs for `POST /analyze`.
+6. Check OpenRouter dashboard for key, quota, and model access.
+7. Test `/analyze` directly with curl if the mobile app still fails.
+
+**Rule of thumb:** prove the backend works with curl first, then prove the phone can reach it, then test the full app flow.
 
 ---
 
@@ -5038,10 +5610,13 @@ You now understand:
 - Why `DEMO_MODE = false` is required for real API calls
 - Why a phone cannot use `localhost` to reach a laptop server
 - How `services/api.ts` sends both reference and captured images to `/analyze`
+- How image compression affects upload speed and label readability
 - How `app/camera.tsx` passes product, inspection point, and expected specs metadata
 - How to store production OpenRouter keys in Vercel
+- How to verify production health after redeploying
+- How to compare PASS and FAIL scenarios
 - How to run and troubleshoot a full OpenRouter-powered inspection
 
 ---
 
-> **Congratulations!** You have completed a 6-day, 104-lab hands-on workshop. You built, customized, and connected a full AI-powered factory inspection system: a React Native mobile app, dynamic product and inspection point CRUD, persistent reference photos, a FastAPI backend, secure OpenRouter key storage, and a reference-vs-captured-photo AI analysis flow.
+> **Congratulations!** You have completed a 6-day, 112-lab hands-on workshop. You built, customized, and connected a full AI-powered factory inspection system: a React Native mobile app, dynamic product and inspection point CRUD, persistent reference photos, a FastAPI backend, secure OpenRouter key storage, and a reference-vs-captured-photo AI analysis flow.
