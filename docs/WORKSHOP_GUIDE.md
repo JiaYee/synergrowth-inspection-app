@@ -2264,7 +2264,7 @@ Use this table whenever you need to find where to change something:
 | 108 | Stored production keys in Vercel                    | Vercel Environment Variables        |
 | 109 | Redeployed and verified production health           | Vercel / `/health`                  |
 | 110 | Ran a full OpenRouter-powered inspection            | Phone / Expo Go                     |
-| 111 | Compared one PASS and one FAIL scenario             | Reference/captured photos           |
+| 111 | Compared PASS/FAIL scenarios and scan use cases     | Reference/captured photos           |
 | 112 | Troubleshot common API and key errors               | Backend logs / mobile alerts        |
 
 ---
@@ -5570,6 +5570,89 @@ Record observations:
 | FAIL | Which mismatch did the explanation mention? |
 | Unclear result | Was there blur, glare, cropping, or missing text? |
 
+#### Scan Use Case Bank
+
+Use these examples when creating products and inspection points. Each use case needs:
+
+1. A clear approved reference photo.
+2. A point name that tells the operator what to scan.
+3. Expected specs that tell the AI what matters most.
+4. At least one intentional fail example for testing.
+
+##### Electrical Label and Rating Scans
+
+| Use case | Point name | Expected specs | Good fail test |
+| -------- | ---------- | -------------- | -------------- |
+| Breaker rating label | Main rating label | Must show 40A, 230V, CE mark, matching part number | Capture a 400A or 32A label |
+| Power supply input label | Input voltage label | Must show 100-240V AC, 50/60Hz, correct model | Capture a label with different voltage range |
+| Fuse holder label | Fuse specification | Must show F2A 250V and correct warning text | Capture a T2A or 125V label |
+| Motor nameplate | Motor rating plate | Must show correct kW, RPM, voltage, phase, frequency | Capture a motor with different RPM or voltage |
+| Terminal block marking | Terminal label row | Must show L, N, PE labels in correct order | Capture swapped or missing labels |
+| Wire gauge label | Wiring specification label | Must show required AWG/mm2 size and temperature rating | Capture label with smaller wire size |
+
+##### Assembly and Orientation Scans
+
+| Use case | Point name | Expected specs | Good fail test |
+| -------- | ---------- | -------------- | -------------- |
+| Connector orientation | Connector keyed side | Connector notch must face up; latch visible on right side | Rotate connector 180 degrees |
+| Cable routing | Harness routing path | Cable must pass through clip A then clip B, no loose loop | Remove cable from one clip |
+| Screw presence | Four corner screws | All four screws installed and seated flush | Remove or loosen one screw |
+| Sticker placement | QC sticker position | Sticker must be straight and inside marked rectangle | Place sticker tilted or outside area |
+| Polarity orientation | Battery polarity label | Positive and negative symbols must match reference orientation | Capture reversed polarity marking |
+| Module alignment | DIN rail module alignment | Module must be fully seated, aligned with neighbors | Capture partially seated module |
+
+##### Packaging and Final Check Scans
+
+| Use case | Point name | Expected specs | Good fail test |
+| -------- | ---------- | -------------- | -------------- |
+| Carton product label | Shipping label | Product code, quantity, and batch number must match work order | Capture label with wrong quantity |
+| Box accessory check | Accessory kit contents | Manual, screws, cable ties, and warranty card visible | Remove one accessory |
+| Warning label check | Safety warning label | Yellow warning label present, readable, not covered | Cover part of the warning label |
+| Barcode position | Barcode label placement | Barcode must be present, horizontal, and scannable-looking | Capture torn or heavily wrinkled barcode |
+| Seal inspection | Tamper seal | Seal must be intact and placed across opening edge | Capture broken or missing seal |
+| Final product front | Front face condition | No scratches, dents, missing logo, or wrong color | Capture unit with visible scratch or missing logo |
+
+##### Defect and Condition Scans
+
+| Use case | Point name | Expected specs | Good fail test |
+| -------- | ---------- | -------------- | -------------- |
+| Surface damage | Front cover condition | Surface must be clean, no cracks, dents, or burn marks | Capture scratched or cracked cover |
+| Corrosion check | Terminal corrosion | Metal terminals must be clean and silver, no rust or green residue | Capture corroded terminal |
+| Glue or sealant amount | Sealant bead | Continuous bead around edge, no gaps or overflow | Capture missing section or messy overflow |
+| Display check | LCD display window | Display window must be clear, centered, and unscratched | Capture cracked or cloudy display |
+| Paint or color match | Housing color | Color must match reference and have no obvious discoloration | Capture wrong color housing |
+| Foreign object check | Interior cleanliness | No loose screws, wire offcuts, dust clumps, or debris | Place a loose screw in view |
+
+##### Safety and Compliance Scans
+
+| Use case | Point name | Expected specs | Good fail test |
+| -------- | ---------- | -------------- | -------------- |
+| CE/UL certification | Certification marks | CE and UL marks must be present and readable | Capture label missing one mark |
+| Grounding symbol | Ground marking | Ground symbol must be present beside grounding terminal | Capture terminal without symbol |
+| High voltage warning | Warning triangle | High voltage warning triangle must be present and unobstructed | Cover warning triangle |
+| Torque label | Torque specification | Must show exact torque value and unit, e.g. 1.2 Nm | Capture label with different torque value |
+| IP rating label | Ingress protection rating | Must show required IP rating, e.g. IP65 | Capture IP54 or missing IP rating |
+| Date or batch code | Traceability code | Batch/date code must be visible and match expected format | Capture label with missing or blurred code |
+
+##### Suggested Product Set for Practice
+
+Create three demo products so learners can try different inspection styles:
+
+| Product | Inspection points to add |
+| ------- | ------------------------ |
+| Breaker Panel SKU-123 | Main rating label, terminal label row, grounding symbol, screw presence |
+| Power Supply Unit PSU-24V | Input voltage label, output voltage label, fan guard screws, warning label |
+| Packaged Control Box | Carton product label, accessory kit contents, tamper seal, final product front |
+
+For each product, ask learners to capture:
+
+1. One clean matching photo.
+2. One wrong-rating or wrong-label photo.
+3. One blurry or glare-heavy photo.
+4. One photo with the inspected area partly outside the guide box.
+
+Then compare the explanations. The best inspection point descriptions are specific enough that the AI can explain exactly what matched or failed.
+
 **Workshop discussion:** if the model gives a surprising result, do not immediately assume the app is broken. Check photo quality, expected specs, model choice, and threshold.
 
 ---
@@ -5615,6 +5698,7 @@ You now understand:
 - How to store production OpenRouter keys in Vercel
 - How to verify production health after redeploying
 - How to compare PASS and FAIL scenarios
+- How to design realistic scan use cases for labels, assemblies, packaging, defects, and safety markings
 - How to run and troubleshoot a full OpenRouter-powered inspection
 
 ---
